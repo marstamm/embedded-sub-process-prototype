@@ -1,5 +1,5 @@
 import { fire, on } from "../eventBus.js";
-import { applyCss, openDiagram } from "../util.js";
+import { applyCss } from "../util.js";
 
 
 const init = (level) => {
@@ -16,10 +16,7 @@ const init = (level) => {
       padding: 5,
       pointerEvents: "none"
     }
-
     applyCss(highlight, css);
-
-    highlight.position = "absolute";
 
     marker.addEventListener('mouseenter', event => {
       console.log('enter');
@@ -40,4 +37,4 @@ const init = (level) => {
 }
 
 on('init', () => init(0));
-on('open', level => init(level))
+on('open', level => init(level));

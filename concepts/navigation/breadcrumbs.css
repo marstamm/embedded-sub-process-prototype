@@ -1,0 +1,19 @@
+.crumb::before {
+  content: " » ";
+  color: black;
+}
+
+.crumb:first-child::before {
+  content: "";
+  color: black;
+}
+
+.crumb {
+  cursor: pointer;
+  color: blue;
+}
+
+.crumb:last-child {
+  cursor: default;
+  color: black;
+}
