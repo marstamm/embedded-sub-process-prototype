@@ -4,20 +4,20 @@
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_1nd3hhm</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_1nd3hhm" sourceRef="StartEvent_1" targetRef="Activity_02wsv99" />
-    <bpmn:subProcess id="Activity_02wsv99" name="Level 1 - A">
+    <bpmn:sequenceFlow id="Flow_1nd3hhm" sourceRef="StartEvent_1" targetRef="existingEmbeddedProcess" />
+    <bpmn:subProcess id="existingEmbeddedProcess" name="Level 1 - A">
       <bpmn:incoming>Flow_1nd3hhm</bpmn:incoming>
       <bpmn:outgoing>Flow_11qmu2w</bpmn:outgoing>
     </bpmn:subProcess>
     <bpmn:endEvent id="Event_14ujloj">
       <bpmn:incoming>Flow_03skxmx</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_11qmu2w" sourceRef="Activity_02wsv99" targetRef="Activity_1h5q7or" />
-    <bpmn:subProcess id="Activity_1h5q7or" name="Level 1 - B">
+    <bpmn:sequenceFlow id="Flow_11qmu2w" sourceRef="existingEmbeddedProcess" targetRef="missingProcess" />
+    <bpmn:subProcess id="missingProcess" name="Level 1 - B">
       <bpmn:incoming>Flow_11qmu2w</bpmn:incoming>
       <bpmn:outgoing>Flow_03skxmx</bpmn:outgoing>
     </bpmn:subProcess>
-    <bpmn:sequenceFlow id="Flow_03skxmx" sourceRef="Activity_1h5q7or" targetRef="Event_14ujloj" />
+    <bpmn:sequenceFlow id="Flow_03skxmx" sourceRef="missingProcess" targetRef="Event_14ujloj" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0ljaq2x">
@@ -39,10 +39,10 @@
       <bpmndi:BPMNShape id="Event_14ujloj_di" bpmnElement="Event_14ujloj">
         <dc:Bounds x="732" y="99" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1ks2ftm_di" bpmnElement="Activity_02wsv99">
+      <bpmndi:BPMNShape id="Activity_1ks2ftm_di" bpmnElement="existingEmbeddedProcess">
         <dc:Bounds x="310" y="77" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1h5q7or_di" bpmnElement="Activity_1h5q7or">
+      <bpmndi:BPMNShape id="missingProcess_di" bpmnElement="missingProcess">
         <dc:Bounds x="520" y="77" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>

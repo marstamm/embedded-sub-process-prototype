@@ -6,10 +6,6 @@ import "./concepts/opening/index.js"
 
 const params = new URLSearchParams(location.search);
 
-openingSelect.addEventListener('change', () => {
-  fire('opening-change', navigationSelect.value);
-}
-)
 
 
 let navigation = params.get('navigation') || 'parent';
@@ -20,13 +16,26 @@ on('navigation-change', value => {
   params.set('navigation', value);
   window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
 });
-
 navigationSelect.addEventListener('change', () => {
     fire('navigation-change', navigationSelect.value);
-  }
-)
+});
 
-on('open', async level => {
+let opening = params.get('opening') || 'plus';
+openingSelect.value = opening;
+fire('opening-change', openingSelect.value);
+on('opening-change', value => {
+  params.set('opening', value);
+  window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
+});
+openingSelect.addEventListener('change', () => {
+    fire('opening-change', openingSelect.value);
+});
+
+
+on('open', async (level, present) => {
+  if(present === false) {
+    return await openDiagram('./foobar');
+  }
   if(level === 0) {
     await openDiagram('./resources/parent.svg');
   } else {
@@ -35,8 +44,8 @@ on('open', async level => {
 }, 100);
 
 (async () => {
-  await openDiagram('./resources/parent.svg');
-  await fire('init');
+  // await openDiagram('./resources/parent.svg');
+  await fire('open', 0);
 })()
 
 

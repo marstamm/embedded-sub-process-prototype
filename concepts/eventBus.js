@@ -12,10 +12,10 @@ export function on(event, callback, priority = 0) {
   }
 }
 
-export async function fire(event, payload) {
+export async function fire(event, ...payload) {
   console.log('fire ', event, payload);
 
   for(const subscriber of subscribers[event]) {
-    await subscriber.callback(payload);
+    await subscriber.callback(...payload);
   }
 }

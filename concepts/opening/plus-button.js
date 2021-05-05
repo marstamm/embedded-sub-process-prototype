@@ -1,9 +1,14 @@
 import { fire, on } from "../eventBus.js";
 import { applyCss } from "../util.js";
 
+let active = false;
+let currentLevel = 0;
 
 const init = (level) => {
-  document.querySelectorAll('[data-marker="sub-process"]').forEach(marker => {
+  currentLevel = level;
+  if(!active) return;
+
+  document.querySelectorAll('[data-marker="sub-process"]').forEach((marker, index) => {
     const bounds = marker.getBoundingClientRect();
     const highlight = document.createElement('div');
     const css = {
@@ -24,17 +29,22 @@ const init = (level) => {
     });
 
     marker.addEventListener('mouseleave', event => {
-      console.log('leave');
       highlight.remove();
     });
 
     marker.addEventListener('click', async event => {
-      // await openDiagram(`./resources/child${level + 1}.svg`);
       highlight.remove();
-      fire('open', level + 1);
+      fire('open', level + 1 , !index);
     });
   })
 }
 
 on('init', () => init(0));
 on('open', level => init(level));
+
+on('opening-change', type => {
+  active = type === 'plus';
+  if(active) {
+    init(currentLevel);
+  }
+});
