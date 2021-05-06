@@ -7,7 +7,7 @@ const createTree = (level) => {
   const template = level < 10 ? `<ul class="nested">
   <li class='single'>Empty</li>
   <li class='expand'><span class="caret"></span><span class="open">Level ${level}</span>
-</ul>` : `<li class='single'></li>`
+</ul>` : `<ul class="nested"><li class='single'>Empty</li></ul>`
 
   let child = createElement(template);
 
@@ -53,5 +53,6 @@ applyCss(element, style);
 on('navigation-change', type => {
   active = type === 'tree';
   element.style.display = active ? "" : "none";
+  diagram_container.style.marginLeft = active ? "200px" : "";
 })
 document.body.appendChild(element);
