@@ -28,8 +28,10 @@ const params = new URLSearchParams(location.search);
 //     fire('opening-change', openingSelect.value);
 // });
 
+window.level = 0;
 
 on('open', async (level, present) => {
+  window.level = level;
   clearModeler();
   if(present === false) {
     return await openDiagram('./foobar');

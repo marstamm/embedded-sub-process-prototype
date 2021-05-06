@@ -11,3 +11,21 @@
   stroke-width: 0.2rem;
   stroke-dasharray: 0.625rem;
 }
+
+.tabs {
+  border-bottom: 1px solid lightgray;
+  height: 30px;
+  padding: 5px;
+}
+
+.tab {
+  height: 100%;
+  border: 1px solid lightgrey;
+  border-bottom: none;
+  display: inline-block;
+  padding: 3 3 0 3;
+}
+
+.tab::after {
+  content: " ☒ ";
+}
