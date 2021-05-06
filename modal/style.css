@@ -1,0 +1,13 @@
+.djs-element.djs-shape:hover .djs-outline {
+  shape-rendering: crispEdges;
+  stroke: #f88;
+  stroke-width: 0.2rem;
+  stroke-dasharray: 0.625rem;
+}
+
+.djs-element.djs-shape.selected .djs-outline {
+  shape-rendering: crispEdges;
+  stroke: #7391c8;
+  stroke-width: 0.2rem;
+  stroke-dasharray: 0.625rem;
+}
