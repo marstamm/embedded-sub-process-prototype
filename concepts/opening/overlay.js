@@ -32,7 +32,6 @@ const init = (level) => {
   if(!active) return;
 
   const existingProcess = document.querySelector('[data-element-id="existingEmbeddedProcess"]')
-  const missingProcess = 
 
   addButton(existingProcess);
 }
@@ -40,7 +39,7 @@ const init = (level) => {
 on('selected', element => {
   if(element === document.querySelector('[data-element-id="missingProcess"]')) {
     addButton(element, true);
-  } else
+  }
 });
 
 on('open', level => init(level));
