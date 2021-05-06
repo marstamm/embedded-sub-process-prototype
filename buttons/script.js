@@ -2,6 +2,7 @@ import { fire, on } from "./concepts/eventBus.js";
 import { clearModeler, openDiagram } from "./concepts/util.js"
 import "./concepts/navigation/index.js"
 import "./concepts/opening/index.js"
+import processMap from "./concepts/processMap.js";
 
 
 const params = new URLSearchParams(location.search);
@@ -33,15 +34,10 @@ openingSelect.addEventListener('change', () => {
 
 
 on('open', async (level, present) => {
+  console.log('open', level);
   clearModeler();
-  if(present === false) {
-    return await openDiagram('./foobar');
-  }
-  if(level === 0) {
-    await openDiagram('./resources/parent.svg');
-  } else {
-    await openDiagram(`./resources/child${level}.svg`);
-  }
+
+  await openDiagram(`./resources/${processMap[level].link}`);
 
   addDiagramListeners();
 }, 100);

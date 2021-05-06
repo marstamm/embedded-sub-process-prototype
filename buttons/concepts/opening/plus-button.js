@@ -34,7 +34,7 @@ const init = (level) => {
 
     marker.addEventListener('click', async event => {
       highlight.remove();
-      fire('open', level + 1 , !index);
+      fire('open', marker.parentElement.parentElement.getAttribute('data-element-id'));
     });
   })
 }

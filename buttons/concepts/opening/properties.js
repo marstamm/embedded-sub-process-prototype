@@ -19,7 +19,7 @@ on('selected', element => {
 
   let propertyPanel = createElement('<img class="propertiesPanel" src="resources/properties-sub-process.png"></img>');
   propertyPanel.addEventListener('click', () => {
-    fire('open', currentLevel + 1);
+    fire('open', element.getAttribute('element'));
   })
   document.body.appendChild(propertyPanel);
 });

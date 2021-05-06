@@ -1,49 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0i86bru" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.7.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.14.0">
   <bpmn:process id="Process_0ljaq2x" isExecutable="true">
-    <bpmn:startEvent id="StartEvent_1">
-      <bpmn:outgoing>Flow_1nd3hhm</bpmn:outgoing>
+    <bpmn:startEvent id="StartEvent_1" name="Order Received">
+      <bpmn:outgoing>Flow_06rbgiv</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_1nd3hhm" sourceRef="StartEvent_1" targetRef="existingEmbeddedProcess" />
-    <bpmn:subProcess id="existingEmbeddedProcess" name="Level 1 - A">
-      <bpmn:incoming>Flow_1nd3hhm</bpmn:incoming>
-      <bpmn:outgoing>Flow_11qmu2w</bpmn:outgoing>
+    <bpmn:subProcess id="existingEmbeddedProcess" name="Prepare Articles">
+      <bpmn:incoming>Flow_0g8o19t</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ptk187</bpmn:outgoing>
     </bpmn:subProcess>
     <bpmn:endEvent id="Event_14ujloj">
-      <bpmn:incoming>Flow_03skxmx</bpmn:incoming>
+      <bpmn:incoming>Flow_18z9flt</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_11qmu2w" sourceRef="existingEmbeddedProcess" targetRef="missingProcess" />
-    <bpmn:subProcess id="missingProcess" name="Level 1 - B">
-      <bpmn:incoming>Flow_11qmu2w</bpmn:incoming>
+    <bpmn:subProcess id="procurePayment" name="Procure Payment">
+      <bpmn:incoming>Flow_1wkgdsw</bpmn:incoming>
       <bpmn:outgoing>Flow_03skxmx</bpmn:outgoing>
     </bpmn:subProcess>
-    <bpmn:sequenceFlow id="Flow_03skxmx" sourceRef="missingProcess" targetRef="Event_14ujloj" />
+    <bpmn:sequenceFlow id="Flow_03skxmx" sourceRef="procurePayment" targetRef="Gateway_032gabj" />
+    <bpmn:sequenceFlow id="Flow_06rbgiv" sourceRef="StartEvent_1" targetRef="Gateway_0p747t0" />
+    <bpmn:parallelGateway id="Gateway_0p747t0">
+      <bpmn:incoming>Flow_06rbgiv</bpmn:incoming>
+      <bpmn:outgoing>Flow_0g8o19t</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1wkgdsw</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_0g8o19t" sourceRef="Gateway_0p747t0" targetRef="existingEmbeddedProcess" />
+    <bpmn:sequenceFlow id="Flow_1wkgdsw" sourceRef="Gateway_0p747t0" targetRef="procurePayment" />
+    <bpmn:parallelGateway id="Gateway_032gabj">
+      <bpmn:incoming>Flow_03skxmx</bpmn:incoming>
+      <bpmn:incoming>Flow_0ptk187</bpmn:incoming>
+      <bpmn:outgoing>Flow_030be4a</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_0ptk187" sourceRef="existingEmbeddedProcess" targetRef="Gateway_032gabj" />
+    <bpmn:sequenceFlow id="Flow_030be4a" sourceRef="Gateway_032gabj" targetRef="Activity_1b7wgec" />
+    <bpmn:sequenceFlow id="Flow_18z9flt" sourceRef="Activity_1b7wgec" targetRef="Event_14ujloj" />
+    <bpmn:subProcess id="Activity_1b7wgec" name="Ship Items (todo)">
+      <bpmn:incoming>Flow_030be4a</bpmn:incoming>
+      <bpmn:outgoing>Flow_18z9flt</bpmn:outgoing>
+    </bpmn:subProcess>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0ljaq2x">
-      <bpmndi:BPMNEdge id="Flow_1nd3hhm_di" bpmnElement="Flow_1nd3hhm">
-        <di:waypoint x="215" y="117" />
-        <di:waypoint x="310" y="117" />
+      <bpmndi:BPMNEdge id="Flow_18z9flt_di" bpmnElement="Flow_18z9flt">
+        <di:waypoint x="820" y="200" />
+        <di:waypoint x="882" y="200" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_11qmu2w_di" bpmnElement="Flow_11qmu2w">
-        <di:waypoint x="410" y="117" />
-        <di:waypoint x="520" y="117" />
+      <bpmndi:BPMNEdge id="Flow_030be4a_di" bpmnElement="Flow_030be4a">
+        <di:waypoint x="646" y="200" />
+        <di:waypoint x="720" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ptk187_di" bpmnElement="Flow_0ptk187">
+        <di:waypoint x="530" y="120" />
+        <di:waypoint x="621" y="120" />
+        <di:waypoint x="621" y="175" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1wkgdsw_di" bpmnElement="Flow_1wkgdsw">
+        <di:waypoint x="300" y="235" />
+        <di:waypoint x="300" y="310" />
+        <di:waypoint x="430" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0g8o19t_di" bpmnElement="Flow_0g8o19t">
+        <di:waypoint x="300" y="185" />
+        <di:waypoint x="300" y="120" />
+        <di:waypoint x="430" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06rbgiv_di" bpmnElement="Flow_06rbgiv">
+        <di:waypoint x="198" y="210" />
+        <di:waypoint x="275" y="210" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_03skxmx_di" bpmnElement="Flow_03skxmx">
-        <di:waypoint x="620" y="117" />
-        <di:waypoint x="732" y="117" />
+        <di:waypoint x="530" y="310" />
+        <di:waypoint x="621" y="310" />
+        <di:waypoint x="621" y="225" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-        <dc:Bounds x="179" y="99" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_14ujloj_di" bpmnElement="Event_14ujloj">
-        <dc:Bounds x="732" y="99" width="36" height="36" />
+        <dc:Bounds x="162" y="192" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="142" y="235" width="77" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1ks2ftm_di" bpmnElement="existingEmbeddedProcess">
-        <dc:Bounds x="310" y="77" width="100" height="80" />
+        <dc:Bounds x="430" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="missingProcess_di" bpmnElement="missingProcess">
-        <dc:Bounds x="520" y="77" width="100" height="80" />
+      <bpmndi:BPMNShape id="Event_14ujloj_di" bpmnElement="Event_14ujloj">
+        <dc:Bounds x="882" y="182" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="missingProcess_di" bpmnElement="procurePayment">
+        <dc:Bounds x="430" y="270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1xl2pgf_di" bpmnElement="Gateway_0p747t0">
+        <dc:Bounds x="275" y="185" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_032gabj_di" bpmnElement="Gateway_032gabj">
+        <dc:Bounds x="596" y="175" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_12y0pas_di" bpmnElement="Activity_1b7wgec">
+        <dc:Bounds x="720" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

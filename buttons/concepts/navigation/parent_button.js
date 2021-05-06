@@ -1,7 +1,9 @@
 import { fire, on } from "../eventBus.js";
+import processMap from "../processMap.js";
 import { applyCss, createElement } from "../util.js";
 
 let currentLevel;
+let parent;
 let active = false;
 
 const template = '<button>Back to Parent</button>';
@@ -13,12 +15,13 @@ const button = createElement(template);
 applyCss(button, style);
 
 button.addEventListener('click', () => {
-  fire('open', currentLevel - 1);
+  fire('open', processMap[currentLevel]?.parent);
 });
 
 const addButton = () => {
-  console.log('addButton', currentLevel);
-  if(currentLevel >= 1) {
+  button.innerText = 'Back to ' + processMap[processMap[currentLevel]?.parent]?.name;
+
+  if(currentLevel) {
     modeler.prepend(button);
   }
   if (currentLevel === 0) {
