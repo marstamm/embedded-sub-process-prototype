@@ -1,5 +1,5 @@
 import { fire, on } from "./concepts/eventBus.js";
-import { openDiagram } from "./concepts/util.js"
+import { clearModeler, openDiagram } from "./concepts/util.js"
 import "./concepts/navigation/index.js"
 import "./concepts/opening/index.js"
 
@@ -33,6 +33,7 @@ openingSelect.addEventListener('change', () => {
 
 
 on('open', async (level, present) => {
+  clearModeler();
   if(present === false) {
     return await openDiagram('./foobar');
   }
@@ -41,10 +42,36 @@ on('open', async (level, present) => {
   } else {
     await openDiagram(`./resources/child${level}.svg`);
   }
+
+  addDiagramListeners();
 }, 100);
 
+
+
+modeler.addEventListener('click', () => {
+  console.log('deselect');
+  fire('selected', null);
+});
+on('selected', element => {
+  document.querySelectorAll('.selected').forEach(el => {
+    if(el === element) return;
+    el.classList.remove('selected');
+  })
+});
+
+function addDiagramListeners() {
+  document.querySelectorAll('.djs-element.djs-shape').forEach(el => {
+    console.log(el);
+    el.addEventListener('click', ev => {
+      console.log(ev);
+      el.classList.add('selected');
+      fire('selected', el, ev);
+      ev.stopPropagation();
+    });
+  });
+}
+
 (async () => {
-  // await openDiagram('./resources/parent.svg');
   await fire('open', 0);
 })()
 

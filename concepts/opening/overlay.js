@@ -4,7 +4,7 @@ import { applyCss, createElement } from "../util.js";
 let active = false;
 let currentLevel;
 
-function addButton(element) {
+function addButton(element, preventOpen = false) {
   const bounds = element.getBoundingClientRect();
   const wrapper = document.createElement('div');
   wrapper.className = "overlayWrapper";
@@ -21,23 +21,27 @@ function addButton(element) {
   modeler.appendChild(wrapper);
   button.addEventListener('click', async event => {
     wrapper.remove();
-    fire('open', currentLevel + 1);
+    fire('open', currentLevel + 1, !preventOpen);
   });
-  return button;
+  return wrapper;
 }
 
 const init = (level) => {
   currentLevel = level;
-  document.querySelectorAll('overlayWrapper').forEach(el => el.remove());
+  document.querySelectorAll('.overlayWrapper').forEach(el => el.remove());
   if(!active) return;
 
   const existingProcess = document.querySelector('[data-element-id="existingEmbeddedProcess"]')
-  const missingProcess = document.querySelector('[data-element-id="missingProcess"]')
+  const missingProcess = 
 
   addButton(existingProcess);
-
-
 }
+
+on('selected', element => {
+  if(element === document.querySelector('[data-element-id="missingProcess"]')) {
+    addButton(element, true);
+  } else
+});
 
 on('open', level => init(level));
 

@@ -35,6 +35,8 @@ on('open', level => {
   breadcrumbs.style.display = level === 0 ? 'none' : '';
 
   currentLevel = level;
+
+  active && modeler.prepend(breadcrumbs);
 })
 
 on('navigation-change', type => {

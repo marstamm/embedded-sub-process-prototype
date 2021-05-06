@@ -21,6 +21,7 @@ export const createElement = html => {
 }
 
 export const clearModeler = () => {
+
   modeler.innerHTML = `<img id="sidebar" src="resources/sidebar.png" />
-<div id="diagram_container"></div>`
+    <div id="diagram_container"></div>`
 }
