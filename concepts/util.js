@@ -8,7 +8,7 @@ export const applyCss = (element, css) => {
 
 export const openDiagram = (path) => {
   return fetch(path).then(async res => {
-    if (!response.ok) diagram_container.innerHTML = '';
+    if (!res.ok) diagram_container.innerHTML = '';
 
     const resSvg = await res.text();
     diagram_container.innerHTML = resSvg;
