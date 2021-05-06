@@ -5,6 +5,8 @@ let active = false;
 let currentLevel;
 
 function addButton(element, preventOpen = false) {
+  if(!active) return;
+
   const bounds = element.getBoundingClientRect();
   const wrapper = document.createElement('div');
   wrapper.className = "overlayWrapper";
@@ -29,7 +31,6 @@ function addButton(element, preventOpen = false) {
 const init = (level) => {
   currentLevel = level;
   document.querySelectorAll('.overlayWrapper').forEach(el => el.remove());
-  if(!active) return;
 
   const existingProcess = document.querySelector('[data-element-id="existingEmbeddedProcess"]')
 
