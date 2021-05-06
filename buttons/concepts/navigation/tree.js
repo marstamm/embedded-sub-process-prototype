@@ -54,6 +54,10 @@ const style = {
 }
 applyCss(element, style);
 
+on('open', () => {
+  diagram_container.style.marginLeft = active ? "200px" : "";
+});
+
 on('navigation-change', type => {
   active = type === 'tree';
   element.style.display = active ? "" : "none";
