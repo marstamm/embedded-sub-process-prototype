@@ -25,3 +25,9 @@ export const clearModeler = () => {
   modeler.innerHTML = `<img id="sidebar" src="resources/sidebar.png" />
     <div id="diagram_container"></div>`
 }
+
+export const clearElements = selector => {
+  document.querySelectorAll(selector).forEach(el => {
+    el.remove();
+  })
+}
