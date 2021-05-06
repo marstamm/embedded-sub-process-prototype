@@ -7,7 +7,7 @@ const createTree = (level) => {
   const template = level < 10 ? `<ul class="nested">
   <li class='single'>Empty</li>
   <li class='expand'><span class="caret"></span><span class="open">Level ${level}</span>
-</ul>` : `<ul class="nested"><li class='single'>Empty</li></ul>`
+</ul>` : `<ul class="nested"><li class='single'>A very long Process Name</li></ul>`
 
   let child = createElement(template);
 
@@ -45,7 +45,11 @@ const style = {
   cursor: 'pointer',
   left: '60px',
   border: '1px solid black',
-  paddingLeft: '30px'
+  paddingLeft: '30px',
+  maxWidth: "250px",
+  maxHeight: "500px",
+  overflow: "auto",
+  whiteSpace: "nowrap"
 
 }
 applyCss(element, style);
