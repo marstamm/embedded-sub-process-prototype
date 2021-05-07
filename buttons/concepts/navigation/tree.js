@@ -3,39 +3,48 @@ import { applyCss, createElement } from "../util.js";
 
 let active = false;
 
-const createTree = (level) => {
-  const template = level < 10 ? `<ul class="nested">
-  <li class='single'>Empty</li>
-  <li class='expand'><span class="caret"></span><span class="open">Level ${level}</span>
-</ul>` : `<ul class="nested"><li class='single'>A very long Process Name</li></ul>`
+const template = `
+<ul class="nested active">
+  <li class="expand">
+    <span class="caret"></span>
+    <span class="open" process="0">Order Workflow</span>
+    <ul class="nested">
+      <li class="expand">
+        <span class="caret"></span>
+        <span class="open" process="existingEmbeddedProcess">Prepare Articles</span>
+        <ul class="nested">
+          <li class="open" process="external_supplier">Call External Supplier</li>
+        </ul>
+      </li>
+      <li class="expand">
+        <span class="caret"></span>
+        <span class="open" process="procurePayment">Procure Payment</span>
+        <ul class="nested">
+          <li class="open" process="charge_card">Charge Card</li>
+          <li class="open" process="accounting">Accounting Stuff, I don't know</li>
+        </ul>
+      </li>
+      <li class="open" process="Activity_1b7wgec">Ship Items (todo)</li>
+    </ul>
+  </li>
+</ul>
+`
 
-  let child = createElement(template);
+const element = createElement(template);
 
-  const single = child.querySelector('.single')
-  single?.addEventListener('click', () => {
-    fire('open', level, false);
+element.querySelectorAll('.caret').forEach(toggle => {
+  toggle.addEventListener('click', () => {
+    toggle.parentElement.querySelector('.nested').classList.toggle("active");
   });
+});
 
-  let expand = child.querySelector('.expand')
-  if(expand) {
-    expand.querySelector('.caret').addEventListener("click", () => {
-      expand.querySelector('.nested').classList.toggle("active");
-    });
+element.querySelectorAll('.open').forEach(link => {
+  link.addEventListener("click", () => {
+    fire('open', link.getAttribute('process'));
+  })
+});
 
-    expand.querySelector('.open').addEventListener("click", () => {
-      fire('open', level);
-    });
 
-    expand.appendChild(createTree(level + 1));
-  }
-
-  return child;
-}
-
-let element = createTree(0);
-console.log(element);
-
-element.classList.add('active');
 const style = {
   display: 'none',
   position: 'absolute',

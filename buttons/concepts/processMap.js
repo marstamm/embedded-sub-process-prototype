@@ -6,6 +6,11 @@ export default {
     link: "parent.svg",
     parent: null
   },
+  "0": {
+    name: "Order Workflow",
+    link: "parent.svg",
+    parent: null
+  },
   "existingEmbeddedProcess": {
     name: "Prepare Articles",
     link: "prepareArticles.svg",
