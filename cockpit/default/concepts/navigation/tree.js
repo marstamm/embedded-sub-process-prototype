@@ -48,11 +48,11 @@ element.querySelectorAll('.open').forEach(link => {
 const style = {
   display: 'none',
   position: 'absolute',
-  top: '150px',
+  top: '100px',
+  left: '300px',
   color: 'blue',
   backgroundColor: 'rgba(255, 255, 255, 0.5)',
   cursor: 'pointer',
-  left: '60px',
   border: '1px solid black',
   paddingLeft: '30px',
   maxWidth: "250px",
