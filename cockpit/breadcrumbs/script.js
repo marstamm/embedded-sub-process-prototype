@@ -9,7 +9,7 @@ const params = new URLSearchParams(location.search);
 
 
 
-let navigation = params.get('navigation') || 'parent';
+let navigation = params.get('navigation') || 'breadcrumbs';
 navigationSelect.value = navigation;
 
 fire('navigation-change', navigationSelect.value);
