@@ -18,6 +18,16 @@ applyCss(breadcrumbs, style);
 
 on('open', level => {
 
+  let existingElement = document.getElementById(`crumb-${level}`)
+  if(existingElement) {
+    const nodesToRemove = [existingElement]
+    for(let sibling = existingElement.nextSibling; sibling; sibling = sibling.nextSibling) {
+      nodesToRemove.push(sibling)
+    };
+  
+    nodesToRemove.forEach(el => el.remove())  
+  }
+
   const name = processMap[level].name;
 
   const el = createElement(`<span class="crumb" id="crumb-${level}">${name}</span>`)

@@ -18,7 +18,7 @@ const breadcrumbs = crumbContainer;
 crumbsRoot.addEventListener('click', () => {
   let el = crumbsRoot;
   fire('open', 0);
-  const nodesToRemove = [el]
+  const nodesToRemove = []
   for(let sibling = el.nextSibling; sibling; sibling = sibling.nextSibling) {
     nodesToRemove.push(sibling)
   };
@@ -27,8 +27,18 @@ crumbsRoot.addEventListener('click', () => {
 });
 
 on('open', level => {
-  if(!active) {
+  if(!active || level == 0) {
     return;
+  }
+
+  let existingElement = document.getElementById(`crumb-${level}`)
+  if(existingElement) {
+    const nodesToRemove = [existingElement]
+    for(let sibling = existingElement.nextSibling; sibling; sibling = sibling.nextSibling) {
+      nodesToRemove.push(sibling)
+    };
+  
+    nodesToRemove.forEach(el => el.remove())  
   }
 
   const name = processMap[level].name;
@@ -55,9 +65,9 @@ on('open', level => {
 })
 
 on('navigation-change', type => {
-  active = type === 'breadcrumbs-cockpit';
-  // if(active) {
-    // modeler.prepend(breadcrumbs);
+  active = (type === 'breadcrumbs-cockpit' || type === 'breadcrumbs-cockpit-button');
+  // if(active ) {
+  //   crumbsRoot.remove();
   // }
   // else {
   //   breadcrumbs.remove();
