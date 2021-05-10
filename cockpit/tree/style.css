@@ -77,8 +77,11 @@ ul,
 
 .instance-tree .tree-node-label button {
   position: relative;
-  top: -5;
+  top: 0;
   bottom: 0;
+  padding: 0;
+  text-decoration: none;
+  border: 0;
 }
 .instance-tree .tree-node-label .btn-toggle {
   left: 4px;
@@ -101,4 +104,13 @@ ul,
 .instance-tree ul {
   /* position: absolute; */
   margin: 0;
+}
+
+.glyphicon-menu-down::before {
+  content: "v";
+}
+
+.tree-node-label {
+  display: block;
+  padding: 3px;
 }
