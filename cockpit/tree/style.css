@@ -1,0 +1,104 @@
+.djs-element.djs-shape:hover .djs-outline {
+  shape-rendering: crispEdges;
+  stroke: #f88;
+  stroke-width: 0.2rem;
+  stroke-dasharray: 0.625rem;
+}
+
+.djs-element.djs-shape.selected .djs-outline {
+  shape-rendering: crispEdges;
+  stroke: #7391c8;
+  stroke-width: 0.2rem;
+  stroke-dasharray: 0.625rem;
+}
+
+ul,
+#myUL {
+  list-style-type: none;
+}
+
+#myUL {
+  margin: 0;
+  padding: 0;
+}
+
+.caret {
+  cursor: pointer;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none;
+}
+
+.caret::before {
+  content: "\25B6";
+  color: black;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.caret-down::before {
+  transform: rotate(90deg);
+}
+
+.nested {
+  display: none;
+  color: blue;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.active {
+  display: block;
+}
+
+.expand {
+  position: relative;
+  left: -20;
+}
+
+.instance-tree ul {
+  display: none;
+}
+
+.instance-tree ul.active {
+  display: inherit;
+}
+
+.instance-tree .tree-node-label {
+  /* position: absolute; */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid #c8c8c8;
+  border-radius: 0;
+}
+
+.instance-tree .tree-node-label button {
+  position: relative;
+  top: -5;
+  bottom: 0;
+}
+.instance-tree .tree-node-label .btn-toggle {
+  left: 4px;
+}
+
+.instance-tree .tree-node-label {
+  /* position: absolute; */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid #c8c8c8;
+  border-radius: 0;
+}
+
+.instance-tree {
+  white-space: nowrap;
+}
+
+.instance-tree ul {
+  /* position: absolute; */
+  margin: 0;
+}
