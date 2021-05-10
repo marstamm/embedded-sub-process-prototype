@@ -14,3 +14,4 @@ These questions have to be answered independent of the solution whe choose
 - Selection from the "Filter" Tab
 - Modification across multiple levels
 - Heatmap
+- Migration
