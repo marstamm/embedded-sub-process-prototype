@@ -7,30 +7,7 @@ import processMap from "./concepts/processMap.js";
 
 const params = new URLSearchParams(location.search);
 
-
-
-let navigation = params.get('navigation') || 'parent';
-navigationSelect.value = navigation;
-
-fire('navigation-change', navigationSelect.value);
-on('navigation-change', value => {
-  params.set('navigation', value);
-  window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
-});
-navigationSelect.addEventListener('change', () => {
-    fire('navigation-change', navigationSelect.value);
-});
-
-let opening = params.get('opening') || 'plus';
-openingSelect.value = opening;
-fire('opening-change', openingSelect.value);
-on('opening-change', value => {
-  params.set('opening', value);
-  window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
-});
-openingSelect.addEventListener('change', () => {
-    fire('opening-change', openingSelect.value);
-});
+fire('opening-change', 'plus');
 
 
 on('open', async (level, present) => {
@@ -62,7 +39,7 @@ function addDiagramListeners() {
       console.log(ev);
       el.classList.add('selected');
       fire('selected', el, ev);
-      // ev.stopPropagation();
+      ev.stopPropagation();
     });
   });
 }
