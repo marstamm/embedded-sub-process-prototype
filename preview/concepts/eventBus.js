@@ -16,6 +16,10 @@ export async function fire(event, ...payload) {
   console.log('fire ', event, payload);
 
   for(const subscriber of subscribers[event]) {
-    await subscriber.callback(...payload);
+    try {
+      await subscriber.callback(...payload);
+    } catch (e) {
+      console.error(e);
+    }
   }
 }

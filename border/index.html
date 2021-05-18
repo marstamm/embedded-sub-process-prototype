@@ -3,15 +3,25 @@
 <div id="modeler">
   <img id="sidebar" src="resources/sidebar.png" />
   <div id="diagram_container"></div>
+
+  <div id="zoomButtons" style="
+    display: inline;
+    position: absolute;
+    right: 550px;
+    bottom: 250px;
+  ">
+    <button id="zoomIn">+</button>
+    <button id="zoomOut">-</button>
+  </div>
 </div>
 <img id="properties_panel" src="resources/properties_panel.png" />
 
 <div id="prototype-toggle">
   <div>
-    Diagram opening:
-    <select id="viewSelect">
-      <option value="border">Border</option>
-      <option value="split">Split-view</option>
+    Zooming:
+    <select id="zoomSelect">
+      <option value="content">Zoom Contents</option>
+      <option value="all">Zoom All</option>
     </select>
   </div>
 <!--   <div>
@@ -52,6 +62,7 @@
     display: inline;
     position: fixed;
     margin: 25px;
+    overflow: hidden;
   }
 
   button {

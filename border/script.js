@@ -10,22 +10,22 @@ const params = new URLSearchParams(location.search);
 
 fire('opening-change', 'plus');
 
-let view = params.get('view') || 'border';
-viewSelect.value = view;
-on('view-change', value => {
-  params.set('view', value);
+let zoom = params.get('zoom') || 'content';
+zoomSelect.value = zoom;
+on('zoom-change', value => {
+  params.set('zoom', value);
   window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
 });
-fire('view-change', viewSelect.value);
-viewSelect.addEventListener('change', () => {
-    fire('view-change', viewSelect.value);
+fire('zoom-change', zoomSelect.value);
+zoomSelect.addEventListener('change', () => {
+    fire('zoom-change', zoomSelect.value);
 });
 
 
 
 on('open', async (level, present) => {
   console.log('open', level);
-  clearModeler();
+  // clearModeler();
 
   await openDiagram(`./resources/${processMap[level].link}`);
 

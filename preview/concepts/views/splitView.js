@@ -44,30 +44,27 @@ buttons.querySelector('#togglePreview').addEventListener('click', () => {
 });
 
 on('open', async level => {
-
-  const parent = processMap[level].parent;
-
-  const diagram = await fetchDiagram('./resources/' + processMap[parent].link);
-  
-  preview.innerHTML = diagram;
-  // el.addEventListener('click', () => {
-  //   fire('open', level);
-  //   const nodesToRemove = [el]
-  //   for(let sibling = el.nextSibling; sibling; sibling = sibling.nextSibling) {
-  //     nodesToRemove.push(sibling)
-  //   };
-
-  //   nodesToRemove.forEach(el => el.remove())
-  // });
-  // preview.appendChild(el);
-
-
   preview.style.display = level === 0 ? 'none' : 'inline-block';
+  let existingPreview = preview.querySelector("#preview-" + level);
+  if(existingPreview) {
+    existingPreview.remove();
+  } else {
+    const parent = processMap[level].parent;
+    const diagram = await fetchDiagram('./resources/' + processMap[parent].link);
+    
+    const div = createElement(`<div id="preview-${parent}"></div>`);
 
+    div.innerHTML = diagram;
+    applyCss(div, {
+      border: '1px solid black'
+    });
+    
+    preview.appendChild(div);
+  }
   currentLevel = level;
 
   if(active) {
     modeler.prepend(preview);
     modeler.prepend(buttons);
   } 
-})
+}, 10)
