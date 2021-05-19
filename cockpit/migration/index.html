@@ -1,0 +1,50 @@
+
+
+<img src="resources/migration.png" />
+
+<div class="diagram diagram1">
+  <iframe src="../../border"></iframe>
+</div>
+<div class="diagram diagram2">
+  <iframe src="../../border"></iframe>
+</div>
+
+
+
+<style>
+  body {
+    overflow: hidden;
+    margin: 0;
+  }
+
+  iframe {
+    height: 100%;
+    width: 100%;
+  }
+
+  .diagram {
+    width: 960px;
+    height: 627px;
+    position: absolute;
+    background-color: white;
+  }
+
+  .diagram1 {
+    left: 0;
+    top: 220px;
+  }
+  .diagram2 {
+    left: 960px;
+    top: 220px;
+  }
+</style>
+
+<script>
+  document.querySelectorAll('iframe').forEach(el => {
+    el.addEventListener("load", ev => {
+      const new_style_element = document.createElement("style");
+      new_style_element.textContent = "#properties_panel, #header, #tabs, #sidebar { display: none !important; } "
+      ev.target.contentDocument.head.appendChild(new_style_element);
+  });
+  })
+</script>
