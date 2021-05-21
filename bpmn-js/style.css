@@ -1,0 +1,18 @@
+#diagramContainer.bordered {
+  padding: 50px;
+  /* width: 800px; */
+  height: calc(100% - 300px);
+  margin: 100px;
+  border: 5px solid transparent;
+  border-radius: 50px;
+  font-family: Arial, sans-serif;
+}
+
+#diagramContainer.bordered.visible {
+  border: 5px solid black;
+  border-radius: 50px;
+}
+
+#diagramContainer.bordered.visible .bpmn-icon-participant {
+  display: none;
+}
