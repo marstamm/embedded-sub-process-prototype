@@ -43,11 +43,7 @@ on('open', level => {
       let html = createElement(`
       <div>
         <button class="toggle"><</button>
-        <div class="dropdown">
-        <button class="parent">Open Parent</button>
-        <button class="jumpTo">Jump to</button>
-          <div class="itemList dropdown">
-          </div>
+        <div class="itemList dropdown">
         </div>
       </div>`)
 
@@ -65,30 +61,31 @@ on('open', level => {
         html.querySelector('.dropdown').classList.toggle('open');
       });
 
-      html.querySelector('.jumpTo').addEventListener('click', () => {
-        html.querySelector('.itemList').classList.toggle('open');
-      });
-
-      html.querySelector('.parent').addEventListener('click', () => {
-        fire('open', processMap[level].parent);
-      });
+      let prevEl;
 
       for(var parent = processMap[level].parent; parent !== null; parent = processMap[parent].parent) {
         let name = processMap[parent].name;
         let link = parent;
-        console.warn(name, parent);
-        const el = createElement(`<div>${name}</div>`);
-        el.addEventListener('click', () => {
-          console.log('open', link);
+
+        const el = createElement(`<ul><li>${name}</li></ul>`);
+        el.querySelector('li').addEventListener('click', () => {
           fire('open', link);
         });
-        html.querySelector('.itemList').appendChild(el);
+        
+        if(!prevEl) {
+          prevEl = el;
+        } else {
+          el.appendChild(prevEl);
+        }
+
+        prevEl = el;
       }
 
+      html.querySelector('.itemList').appendChild(prevEl);
       overlays.add(element, {
         position: {
-          right: 0,
-          bottom: 0
+          left: -20,
+          top: -20
         },
         html
       })
