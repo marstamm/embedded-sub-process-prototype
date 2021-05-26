@@ -20,35 +20,41 @@
       <bpmn:sequenceFlow id="Flow_0fxdsi0" sourceRef="charge_card" targetRef="accounting" />
       <bpmn:sequenceFlow id="Flow_0plet6t" sourceRef="accounting" targetRef="Event_1kwkvtu" />
     </bpmn:subProcess>
+    <bpmn:boundaryEvent id="Event_0vz1fx5" attachedToRef="Activity_127cbp9">
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_05nsy1v" />
+    </bpmn:boundaryEvent>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_19b1jrv">
       <bpmndi:BPMNShape id="Activity_127cbp9_di" bpmnElement="Activity_127cbp9" isExpanded="true">
         <dc:Bounds x="130" y="80" width="660" height="200" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_18b83j3_di" bpmnElement="Flow_18b83j3">
-        <di:waypoint x="275" y="190" />
-        <di:waypoint x="330" y="190" />
+      <bpmndi:BPMNEdge id="Flow_0plet6t_di" bpmnElement="Flow_0plet6t">
+        <di:waypoint x="590" y="190" />
+        <di:waypoint x="652" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0fxdsi0_di" bpmnElement="Flow_0fxdsi0">
         <di:waypoint x="430" y="190" />
         <di:waypoint x="490" y="190" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0plet6t_di" bpmnElement="Flow_0plet6t">
-        <di:waypoint x="590" y="190" />
-        <di:waypoint x="652" y="190" />
+      <bpmndi:BPMNEdge id="Flow_18b83j3_di" bpmnElement="Flow_18b83j3">
+        <di:waypoint x="275" y="190" />
+        <di:waypoint x="330" y="190" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="239" y="172" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1kwkvtu_di" bpmnElement="Event_1kwkvtu">
-        <dc:Bounds x="652" y="172" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0zbp6ih_di" bpmnElement="charge_card">
         <dc:Bounds x="330" y="150" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1kwkvtu_di" bpmnElement="Event_1kwkvtu">
+        <dc:Bounds x="652" y="172" width="36" height="36" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1haqgae_di" bpmnElement="accounting">
         <dc:Bounds x="490" y="150" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_14edy6w_di" bpmnElement="Event_0vz1fx5">
+        <dc:Bounds x="622" y="262" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

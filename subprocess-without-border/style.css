@@ -1,0 +1,27 @@
+.dropdown {
+  display: none;
+}
+
+.dropdown.open {
+  display: block;
+}
+
+.dropdown button {
+  background-color: white;
+  /* width: 15px;
+  height: 15px; */
+  padding: 1px;
+  border: 1px solid black;
+  white-space: nowrap;
+}
+
+.itemList div {
+  white-space: nowrap;
+  border: 1px solid black;
+  margin: 3px;
+  padding: 1px;
+}
+
+.hideSequenceFlow .sequenceFlow {
+  display: none;
+}

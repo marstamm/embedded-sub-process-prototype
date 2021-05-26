@@ -40,9 +40,20 @@ on('open', level => {
     }
 
     if(element.type === "bpmn:SubProcess" && !element.collapsed && !blacklist.includes(element.id)) {
-      let html = createElement('<button><</button>')
+      let html = createElement(`
+      <div>
+        <button class="toggle"><</button>
+        <div class="dropdown">
+        <button class="parent">Open Parent</button>
+        <button class="jumpTo">Jump to</button>
+          <div class="itemList dropdown">
+          </div>
+        </div>
+      </div>`)
 
-      applyCss(html, {
+      let toggle = html.querySelector('.toggle');
+
+      applyCss(toggle, {
         backgroundColor: "white",
         width: '15px',
         height: '15px',
@@ -50,9 +61,29 @@ on('open', level => {
         border: '1px solid black'
       });
 
-      html.addEventListener('click', () => {
+      toggle.addEventListener('click', () => {
+        html.querySelector('.dropdown').classList.toggle('open');
+      });
+
+      html.querySelector('.jumpTo').addEventListener('click', () => {
+        html.querySelector('.itemList').classList.toggle('open');
+      });
+
+      html.querySelector('.parent').addEventListener('click', () => {
         fire('open', processMap[level].parent);
       });
+
+      for(var parent = processMap[level].parent; parent !== null; parent = processMap[parent].parent) {
+        let name = processMap[parent].name;
+        let link = parent;
+        console.warn(name, parent);
+        const el = createElement(`<div>${name}</div>`);
+        el.addEventListener('click', () => {
+          console.log('open', link);
+          fire('open', link);
+        });
+        html.querySelector('.itemList').appendChild(el);
+      }
 
       overlays.add(element, {
         position: {
@@ -70,11 +101,47 @@ on('open', level => {
   const ContextPad = viewer.get('contextPad');
   console.log(ContextPad);
   
+  const contextPadProvider = {
+    getContextPadEntries: function(element) {
+      return function(entries) {
+        if(element?.type === "bpmn:SubProcess" && element?.collapsed) {
+          return {
+            ...entries,
+            'entry-1': {
+              label: 'AAA',
+              action: function() { fire('open', element.id) },
+              className: 'bpmn-icon-subprocess-expanded'
+            }
+          };
+        }
+        return entries;
+
+      }
+    }
+  };
+  ContextPad.registerProvider(800, contextPadProvider);
+
   eventBus.on('selection.changed', 999, e => {
     const selection = e.newSelection[0];
-    if(selection?.type === "bpmn:SubProcess" && !selection?.collapsed) {
+    if(selection?.type === "bpmn:SubProcess" && !selection?.collapsed && !blacklist.includes(selection?.id)) {
       ContextPad.close();
     }
   });
 
-})
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
