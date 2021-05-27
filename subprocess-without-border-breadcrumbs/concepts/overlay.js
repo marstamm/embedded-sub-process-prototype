@@ -17,13 +17,11 @@ on('open', level => {
     if(element.type === "bpmn:SubProcess" && element.collapsed && !blacklist.includes(element.id)) {
       let html = createElement('<button>></button>')
 
-      // applyCss(html, {
-      //   backgroundColor: "white",
-      //   width: '15px',
-      //   height: '15px',
-      //   padding: 0,
-      //   border: '1px solid black'
-      // });
+      applyCss(html, {
+        width: '15px',
+        height: '15px',
+        padding: 0,
+      });
 
       html.addEventListener('click', () => {
         console.log(element);
@@ -41,59 +39,43 @@ on('open', level => {
 
     if(element.type === "bpmn:SubProcess" && !element.collapsed && !blacklist.includes(element.id)) {
       let html = createElement(`
-      <div>
+      <div class="breadcrumbs">
         <button class="toggle"><</button>
-        <div class="itemList dropdown">
+        <div class="itemList">
         </div>
       </div>`)
 
       let toggle = html.querySelector('.toggle');
 
-      // applyCss(toggle, {
-      //   backgroundColor: "white",
-      //   width: '15px',
-      //   height: '15px',
-      //   padding: 0,
-      //   border: '1px solid black'
-      // });
+      applyCss(toggle, {
+        width: '15px',
+        height: '15px',
+        padding: 0,
+      });
 
-      if(processMap[level].parent == 0) {
-        toggle.addEventListener('click', () => {
-          fire('open', '0');
-        });  
-      } else {
-        toggle.addEventListener('click', () => {
-          html.querySelector('.dropdown').classList.toggle('open');
-        });
-      }
+      toggle.addEventListener('click', () => {
+        fire('open', processMap[level].parent)
+      });
 
       let prevEl;
-
-
 
       for(var parent = processMap[level].parent; parent !== null; parent = processMap[parent].parent) {
         let name = processMap[parent].name;
         let link = parent;
 
-        const el = createElement(`<ul><li>${name}</li></ul>`);
-        el.querySelector('li').addEventListener('click', () => {
+        const el = createElement(`<span>${name}</span>`);
+        el.addEventListener('click', () => {
           fire('open', link);
         });
         
-        if(!prevEl) {
-          prevEl = el;
-        } else {
-          el.appendChild(prevEl);
-        }
+        html.querySelector('.itemList').prepend(el);
 
-        prevEl = el;
       }
 
-      html.querySelector('.itemList').appendChild(prevEl);
       overlays.add(element, {
         position: {
           left: -20,
-          top: -20
+          top: -30
         },
         html
       })

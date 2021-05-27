@@ -29,12 +29,21 @@ body {
   white-space: nowrap;
 }
 
+.breadcrumbs {
+  display: flex;
+}
+
 .itemList {
-  border: 1px solid black;
-  filter: drop-shadow(2px 4px 6px black);
-  background: white;
   white-space: nowrap;
-  padding: 10;
+  padding-left: 10;
+  color: dodgerblue;
+  cursor: pointer;
+}
+
+.itemList span:not(:first-of-type)::before {
+  content: "»";
+  color: black;
+  padding: 5;
 }
 
 .itemList ul {

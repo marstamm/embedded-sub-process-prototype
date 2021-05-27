@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0b9qmjr" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.14.0">
+  <bpmn:process id="Process_131alo6" isExecutable="true">
+    <bpmn:subProcess id="Activity_0xq6qlz" name="Prepare Articles">
+      <bpmn:startEvent id="Event_1oc6ilc">
+        <bpmn:outgoing>Flow_1pdzt0z</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:endEvent id="Event_0q0rea5">
+        <bpmn:incoming>Flow_1phnj0g</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:subProcess id="Activity_0j0s3d7" name="Order Items">
+        <bpmn:incoming>Flow_1d8gi9y</bpmn:incoming>
+        <bpmn:outgoing>Flow_1phnj0g</bpmn:outgoing>
+        <bpmn:startEvent id="Event_0lw4uoq">
+          <bpmn:outgoing>Flow_1l9pige</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:sequenceFlow id="Flow_1l9pige" sourceRef="Event_0lw4uoq" targetRef="external_supplier" />
+        <bpmn:subProcess id="external_supplier" name="Call External Supplier">
+          <bpmn:incoming>Flow_1l9pige</bpmn:incoming>
+          <bpmn:outgoing>Flow_12fhafa</bpmn:outgoing>
+        </bpmn:subProcess>
+        <bpmn:endEvent id="Event_0877lz7">
+          <bpmn:incoming>Flow_12fhafa</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="Flow_12fhafa" sourceRef="external_supplier" targetRef="Event_0877lz7" />
+      </bpmn:subProcess>
+      <bpmn:task id="Activity_0e8gdtv" name="Check Items">
+        <bpmn:incoming>Flow_1pdzt0z</bpmn:incoming>
+        <bpmn:outgoing>Flow_1d8gi9y</bpmn:outgoing>
+      </bpmn:task>
+      <bpmn:sequenceFlow id="Flow_1pdzt0z" sourceRef="Event_1oc6ilc" targetRef="Activity_0e8gdtv" />
+      <bpmn:sequenceFlow id="Flow_1phnj0g" sourceRef="Activity_0j0s3d7" targetRef="Event_0q0rea5" />
+      <bpmn:sequenceFlow id="Flow_1d8gi9y" sourceRef="Activity_0e8gdtv" targetRef="Activity_0j0s3d7" />
+    </bpmn:subProcess>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_131alo6">
+      <bpmndi:BPMNShape id="Activity_0xq6qlz_di" bpmnElement="Activity_0xq6qlz" isExpanded="true">
+        <dc:Bounds x="160" y="80" width="960" height="290" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1pdzt0z_di" bpmnElement="Flow_1pdzt0z">
+        <di:waypoint x="298" y="235" />
+        <di:waypoint x="350" y="235" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1phnj0g_di" bpmnElement="Flow_1phnj0g">
+        <di:waypoint x="860" y="235" />
+        <di:waypoint x="972" y="235" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1d8gi9y_di" bpmnElement="Flow_1d8gi9y">
+        <di:waypoint x="450" y="235" />
+        <di:waypoint x="510" y="235" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1oc6ilc_di" bpmnElement="Event_1oc6ilc">
+        <dc:Bounds x="262" y="217" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0q0rea5_di" bpmnElement="Event_0q0rea5">
+        <dc:Bounds x="972" y="217" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0e8gdtv_di" bpmnElement="Activity_0e8gdtv">
+        <dc:Bounds x="350" y="195" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0j0s3d7_di" bpmnElement="Activity_0j0s3d7" isExpanded="true">
+        <dc:Bounds x="510" y="140" width="350" height="190" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_12fhafa_di" bpmnElement="Flow_12fhafa">
+        <di:waypoint x="740" y="240" />
+        <di:waypoint x="788" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1l9pige_di" bpmnElement="Flow_1l9pige">
+        <di:waypoint x="578" y="240" />
+        <di:waypoint x="640" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0lw4uoq_di" bpmnElement="Event_0lw4uoq">
+        <dc:Bounds x="542" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0877lz7_di" bpmnElement="Event_0877lz7">
+        <dc:Bounds x="788" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_003hnq0_di" bpmnElement="external_supplier">
+        <dc:Bounds x="640" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

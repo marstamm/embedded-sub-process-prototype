@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0wmvyv3" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.14.0">
+  <bpmn:process id="Process_031jpit" isExecutable="true">
+    <bpmn:subProcess id="Activity_1rnzdnq" name="Leaf Process">
+      <bpmn:startEvent id="StartEvent_1">
+        <bpmn:outgoing>Flow_0nn8yw0</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:task id="Activity_06osfbr" name="Do stuff">
+        <bpmn:incoming>Flow_0nn8yw0</bpmn:incoming>
+        <bpmn:outgoing>Flow_1sx04ln</bpmn:outgoing>
+      </bpmn:task>
+      <bpmn:endEvent id="Event_1hsqmvt">
+        <bpmn:incoming>Flow_1sx04ln</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_0nn8yw0" sourceRef="StartEvent_1" targetRef="Activity_06osfbr" />
+      <bpmn:sequenceFlow id="Flow_1sx04ln" sourceRef="Activity_06osfbr" targetRef="Event_1hsqmvt" />
+    </bpmn:subProcess>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_031jpit">
+      <bpmndi:BPMNShape id="Activity_1rnzdnq_di" bpmnElement="Activity_1rnzdnq" isExpanded="true">
+        <dc:Bounds x="200" y="80" width="440" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0nn8yw0_di" bpmnElement="Flow_0nn8yw0">
+        <di:waypoint x="315" y="190" />
+        <di:waypoint x="370" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1sx04ln_di" bpmnElement="Flow_1sx04ln">
+        <di:waypoint x="470" y="190" />
+        <di:waypoint x="532" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="279" y="172" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06osfbr_di" bpmnElement="Activity_06osfbr">
+        <dc:Bounds x="370" y="150" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1hsqmvt_di" bpmnElement="Event_1hsqmvt">
+        <dc:Bounds x="532" y="172" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
