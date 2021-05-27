@@ -2,7 +2,15 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-#diagramContainer button {
+#breadcrumbs {
+  position: absolute;
+  left: 100;
+  top: 35;
+  z-index: 1000;
+}
+
+#diagramContainer button,
+#breadcrumbs button {
   background-color: dodgerblue;
   width: 15px;
   height: 15px;
@@ -44,6 +52,10 @@ body {
   content: ">";
   color: black;
   padding: 5;
+}
+
+.itemList span:last-of-type {
+  color: black;
 }
 
 .itemList ul {
