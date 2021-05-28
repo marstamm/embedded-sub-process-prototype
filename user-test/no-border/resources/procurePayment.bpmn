@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1azpm6a" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.14.0">
+  <bpmn:process id="Process_19b1jrv" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_18b83j3</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:subProcess id="charge_card" name="Charge Card">
+      <bpmn:incoming>Flow_18b83j3</bpmn:incoming>
+      <bpmn:outgoing>Flow_0fxdsi0</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:endEvent id="Event_1kwkvtu">
+      <bpmn:incoming>Flow_0plet6t</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:subProcess id="accounting" name="Acounting Stuff, I don&#39;t know">
+      <bpmn:incoming>Flow_0fxdsi0</bpmn:incoming>
+      <bpmn:outgoing>Flow_0plet6t</bpmn:outgoing>
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_18b83j3" sourceRef="StartEvent_1" targetRef="charge_card" />
+    <bpmn:sequenceFlow id="Flow_0fxdsi0" sourceRef="charge_card" targetRef="accounting" />
+    <bpmn:sequenceFlow id="Flow_0plet6t" sourceRef="accounting" targetRef="Event_1kwkvtu" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_19b1jrv">
+      <bpmndi:BPMNEdge id="Flow_18b83j3_di" bpmnElement="Flow_18b83j3">
+        <di:waypoint x="235" y="130" />
+        <di:waypoint x="290" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0fxdsi0_di" bpmnElement="Flow_0fxdsi0">
+        <di:waypoint x="390" y="130" />
+        <di:waypoint x="450" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0plet6t_di" bpmnElement="Flow_0plet6t">
+        <di:waypoint x="550" y="130" />
+        <di:waypoint x="612" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="199" y="112" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1kwkvtu_di" bpmnElement="Event_1kwkvtu">
+        <dc:Bounds x="612" y="112" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0zbp6ih_di" bpmnElement="charge_card">
+        <dc:Bounds x="290" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1haqgae_di" bpmnElement="accounting">
+        <dc:Bounds x="450" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
