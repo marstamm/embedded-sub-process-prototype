@@ -11,12 +11,12 @@ const blacklist = [
 
 
 
-const toggleButton = createElement('<button>Toggle Sequence Flows</button>');
+// const toggleButton = createElement('<button>Toggle Sequence Flows</button>');
 
-toggleButton.addEventListener('click', () => {
-  // active = !active;
-  document.body.classList.toggle('hideSequenceFlow')
-})
+// toggleButton.addEventListener('click', () => {
+//   // active = !active;
+//   document.body.classList.toggle('hideSequenceFlow')
+// })
 
 // document.body.appendChild(toggleButton);
 
