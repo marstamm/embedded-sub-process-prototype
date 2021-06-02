@@ -70,10 +70,15 @@ on('open', level => {
         });
         
         html.querySelector('.itemList').prepend(el);
-
       }
 
-      breadcrumbs.appendChild(html);
+      overlays.add(element, {
+        position: {
+          left: 10,
+          top: -25
+        },
+        html
+      })
     }
 
   });
@@ -81,7 +86,6 @@ on('open', level => {
 
   const eventBus = viewer.get('eventBus');
   const ContextPad = viewer.get('contextPad');
-  console.log(ContextPad);
   
   const contextPadProvider = {
     getContextPadEntries: function(element) {

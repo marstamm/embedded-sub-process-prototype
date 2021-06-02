@@ -28,9 +28,6 @@ on('open', level => {
 
   elementRegistry.getAll().forEach(element => {    
     if(element.type === "bpmn:SubProcess" && !element.collapsed && !blacklist.includes(element.id)) {
-
-      console.log(element);
-
       let incoming = createElement(`<img src="resources/ingoing.png" class="sequenceFlow" style="height: 12px"/>`);
       let outgoing = createElement(`<img src="resources/outgoing.png" class="sequenceFlow" style="height: 12px"/>`);
   
