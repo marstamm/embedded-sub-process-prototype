@@ -1,9 +1,9 @@
-<img id="header" src="resources/Header.png" />
-<img id="tabs" src="resources/Tabs.png" />
+<img id="header" src="shared/resources/Header.png" />
+<img id="tabs" src="shared/resources/Tabs.png" />
 <div id="modeler">
-  <iframe class="embeddedVariant" src="./no-border"></iframe>
+  <iframe class="embeddedVariant" src="./overlay"></iframe>
 </div>
-<img id="properties_panel" src="resources/properties_panel.png" />
+<img id="properties_panel" src="shared/resources/properties_panel.png" />
 
 <select class="version-select" type="select">
   <option value="noBorder">Option A</option>
@@ -42,15 +42,15 @@
   document.querySelector('.version-select').addEventListener('change', function() {
     switch (this.value) {
       case 'noBorder':
-        iframe.src = './no-border'
+        iframe.src = './overlay'
         break;
     
       case 'fixedBorder':
-        iframe.src = './fixed-border'
+        iframe.src = './plus-button'
         break;
 
       case 'resizableBorder':
-        iframe.src = './resizable-border'
+        iframe.src = './tree'
         break;
 
       default:

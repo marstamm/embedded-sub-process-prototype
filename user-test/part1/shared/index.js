@@ -1,4 +1,3 @@
-// import {fetchDiagram, createElement, applyCss} from "./util/util.js"
 import { fire } from "./util/eventBus.js";
 import "./concepts/index.js"
 

@@ -6,7 +6,7 @@ import { fetchDiagram } from "../util/util.js";
 on('open', async process => {
   const viewer = window.viewer;
 
-  const url = './resources/' + processMap[process].link;
+  const url = '../shared/resources/' + processMap[process].link;
 
   const bpmnXML = await fetchDiagram(url);
 
