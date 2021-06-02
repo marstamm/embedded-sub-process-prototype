@@ -1,0 +1,60 @@
+<img id="header" src="resources/Header.png" />
+<img id="tabs" src="resources/Tabs.png" />
+<div id="modeler">
+  <iframe class="embeddedVariant" src="./no-border"></iframe>
+</div>
+<img id="properties_panel" src="resources/properties_panel.png" />
+
+<select class="version-select" type="select">
+  <option value="noBorder">Option A</option>
+  <option value="fixedBorder">Option B</option>
+  <option value="resizableBorder">Option C</option>
+</select>
+
+<style>
+  iframe {
+    border: 0;
+    width: calc(100% - 510px);
+    height: calc(100% - 100px);
+    overflow: hidden;
+  }
+
+  #modeler {
+    display: inline;
+    vertical-align: top;
+  }
+
+  body {
+    overflow: hidden;
+    margin: 0;
+  }
+
+  .version-select {
+    position: absolute;
+    bottom: 20;
+    left: 20;
+  }
+
+</style>
+
+<script>
+  let iframe = document.querySelector('.embeddedVariant');
+  document.querySelector('.version-select').addEventListener('change', function() {
+    switch (this.value) {
+      case 'noBorder':
+        iframe.src = './no-border'
+        break;
+    
+      case 'fixedBorder':
+        iframe.src = './fixed-border'
+        break;
+
+      case 'resizableBorder':
+        iframe.src = './resizable-border'
+        break;
+
+      default:
+        break;
+    }
+  })
+</script>
