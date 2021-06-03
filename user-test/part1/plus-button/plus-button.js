@@ -12,7 +12,8 @@ on('open', () => {
       let html = createElement('<div></div>')
 
       applyCss(html, {
-        backgroundColor: "rgba(0,0,255,0.2)",
+        backgroundColor: "dodgerblue",
+        opacity: '0.4',
         width: '15px',
         height: '15px',
         padding: 5,

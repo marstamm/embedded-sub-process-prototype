@@ -4,9 +4,8 @@ import { applyCss, createElement } from "../shared/util/util.js";
 const template = `
 <ul class="nested active">
   <li class="expand">
-    <span class="caret"></span>
     <span class="open" process="0">Order Workflow</span>
-    <ul class="nested">
+    <ul class="nested active">
       <li class="expand">
         <span class="caret"></span>
         <span class="open" process="existingEmbeddedProcess">Prepare Articles</span>
@@ -28,34 +27,60 @@ const template = `
 </ul>
 `
 
+on('open', level => {
+  document.querySelectorAll("[process]").forEach(el => {
+    if(el.getAttribute('process') == level) {
+      applyCss(el, {
+        color: 'black'
+      });
+    } else {
+      applyCss(el, {
+        color: 'inherit'
+      })
+    }
+  })
+});
+
 const element = createElement(template);
 
 element.querySelectorAll('.caret').forEach(toggle => {
   toggle.addEventListener('click', () => {
     toggle.parentElement.querySelector('.nested').classList.toggle("active");
+    toggle.classList.toggle("rotate");
   });
 });
 
 element.querySelectorAll('.open').forEach(link => {
   link.addEventListener("click", () => {
     fire('open', link.getAttribute('process'));
-  })
+
+    const parent = link.parentElement;
+
+    if(parent.classList.contains('expand')) {
+      parent.querySelector('.nested').classList.add("active");
+      parent.querySelector('.caret').classList.add("rotate");
+    }
+  });
 });
 
 
 const style = {
   position: 'absolute',
   top: '15px',
-  color: 'blue',
+  color: 'dodgerblue',
   backgroundColor: 'rgba(255, 255, 255, 0.5)',
   cursor: 'pointer',
   left: '125px',
   border: '1px solid black',
   paddingLeft: '30px',
-  maxWidth: "250px",
+  minWidth: "300px",
+  maxWidth: "300px",
   maxHeight: "500px",
   overflow: "auto",
-  whiteSpace: "nowrap"
+  whiteSpace: "nowrap",
+  paddingTop: '10px',
+  paddingBottom: '10px',
+  paddingRight: '10px'
 
 }
 applyCss(element, style);

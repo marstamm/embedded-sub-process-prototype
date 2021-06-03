@@ -23,13 +23,17 @@ ul,
   margin-right: 6px;
 }
 
+.rotate.caret::before {
+  transform: rotate(90deg);
+}
+
 .caret-down::before {
   transform: rotate(90deg);
 }
 
 .nested {
   display: none;
-  color: blue;
+  color: dodgerblue;
   background-color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
 }
