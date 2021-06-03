@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0i86bru" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.14.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0i86bru" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.14.0">
   <bpmn:process id="Process_0ljaq2x" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1" name="Order Received">
       <bpmn:outgoing>Flow_06rbgiv</bpmn:outgoing>
@@ -44,28 +44,6 @@
       <bpmn:outgoing>Flow_03nnbo0</bpmn:outgoing>
       <bpmn:errorEventDefinition id="ErrorEventDefinition_0gq0001" />
     </bpmn:boundaryEvent>
-    <bpmn:serviceTask id="A" name="Name">
-      <bpmn:extensionElements>
-        <camunda:connector>
-          <camunda:inputOutput>
-            <camunda:inputParameter name="Input_1daolqu" />
-            <camunda:outputParameter name="Output_31b3p99" />
-          </camunda:inputOutput>
-          <camunda:connectorId>Foobar</camunda:connectorId>
-        </camunda:connector>
-      </bpmn:extensionElements>
-    </bpmn:serviceTask>
-    <bpmn:serviceTask id="Activity_1unsgep" name="Name">
-      <bpmn:extensionElements>
-        <camunda:connector>
-          <camunda:inputOutput>
-            <camunda:inputParameter name="Input_1daolqu" />
-            <camunda:outputParameter name="Output_31b3p99" />
-          </camunda:inputOutput>
-          <camunda:connectorId>Foobar</camunda:connectorId>
-        </camunda:connector>
-      </bpmn:extensionElements>
-    </bpmn:serviceTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0ljaq2x">
@@ -111,12 +89,6 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="161" y="223" width="78" height="14" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1d50hkg_di" bpmnElement="A">
-        <dc:Bounds x="300" y="410" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1unsgep_di" bpmnElement="Activity_1unsgep">
-        <dc:Bounds x="440" y="410" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1ks2ftm_di" bpmnElement="existingEmbeddedProcess">
         <dc:Bounds x="510" y="80" width="100" height="80" />
