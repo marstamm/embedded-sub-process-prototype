@@ -4,6 +4,7 @@ import { applyCss, createElement } from "../shared/util/util.js";
 const template = `
 <ul class="nested active">
   <li class="expand">
+    <span class="caret" style="display: none"></span>
     <span class="open" process="0">Order Workflow</span>
     <ul class="nested active">
       <li class="expand">
@@ -73,7 +74,6 @@ const style = {
   left: '125px',
   border: '1px solid black',
   paddingLeft: '30px',
-  minWidth: "300px",
   maxWidth: "300px",
   maxHeight: "500px",
   overflow: "auto",
