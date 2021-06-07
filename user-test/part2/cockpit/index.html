@@ -1,0 +1,92 @@
+
+<div id="modeler">
+  <iframe class="embeddedVariant left" src="../no-border"></iframe>
+  <iframe class="embeddedVariant right" src="../no-border"></iframe>
+</div>
+
+<select class="version-select" type="select">
+  <option value="noBorder">Option A</option>
+  <option value="fixedBorder">Option B</option>
+  <option value="resizableBorder">Option C</option>
+</select>
+
+<style>
+  body {
+    background-image: url("./resources/background.png");
+  }
+
+  iframe {
+    border: 0;
+    width: calc(50% - 1px);
+    height: 590px;
+    overflow: hidden;
+    background-color: white;
+  }
+
+  .embeddedVariant.left {
+    position: absolute;
+    left: 0;
+    top: 250px;
+  }
+
+  .embeddedVariant.right {
+    position: absolute;
+    right: 0;
+    top: 250px;
+  }
+
+  #modeler {
+    display: inline;
+    vertical-align: top;
+    background-color: white;
+  }
+
+  body {
+    overflow: hidden;
+    margin: 0;
+  }
+
+  .version-select {
+    position: absolute;
+    bottom: 20;
+    left: 20;
+  }
+
+</style>
+
+<script>
+  let iframeLeft = document.querySelector('.embeddedVariant.left');
+  let iframeRight = document.querySelector('.embeddedVariant.right');
+
+  document.querySelector('.version-select').addEventListener('change', function() {
+    switch (this.value) {
+      case 'noBorder':
+        iframeLeft.src = '../no-border'
+        iframeRight.src = '../no-border'
+        break;
+    
+      case 'fixedBorder':
+        iframeLeft.src = '../fixed-border'
+        iframeRight.src = '../fixed-border'
+        break;
+
+      case 'resizableBorder':
+        iframeLeft.src = '../resizable-border'
+        iframeRight.src = '../resizable-border'
+        break;
+
+      default:
+        break;
+    }
+  });
+
+  document.querySelectorAll('iframe').forEach(el => {
+    el.addEventListener("load", ev => {
+      console.log('load', ev);
+      const new_style_element = document.createElement("style");
+      new_style_element.textContent = ".djs-palette { display: none !important; } "
+      ev.target.contentDocument.head.appendChild(new_style_element);
+    });
+  })
+
+</script>
