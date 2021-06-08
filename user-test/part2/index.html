@@ -6,9 +6,9 @@
 <img id="properties_panel" src="resources/properties_panel.png" />
 
 <select class="version-select" type="select">
-  <option value="noBorder">Option A</option>
-  <option value="fixedBorder">Option B</option>
-  <option value="resizableBorder">Option C</option>
+  <option value="A">Option A</option>
+  <option value="B">Option B</option>
+  <option value="C">Option C</option>
 </select>
 
 <style>
@@ -38,23 +38,38 @@
 </style>
 
 <script>
+  const params = new URLSearchParams(location.search);
   let iframe = document.querySelector('.embeddedVariant');
-  document.querySelector('.version-select').addEventListener('change', function() {
-    switch (this.value) {
-      case 'noBorder':
+  let select = document.querySelector('.version-select');
+  let selectedOption = params.get('option') || 'A';
+  select.value = selectedOption;
+
+
+  const setVersion = version => {
+    switch (version) {
+      case 'A':
         iframe.src = './no-border'
         break;
     
-      case 'fixedBorder':
+      case 'B':
         iframe.src = './fixed-border'
         break;
 
-      case 'resizableBorder':
+      case 'C':
         iframe.src = './resizable-border'
         break;
 
       default:
         break;
     }
+
+    params.set('version', version);
+    window.history.replaceState({}, '', `${location.pathname}?${params.toString()}`);
+  }
+
+  setVersion(selectedOption);
+
+  document.querySelector('.version-select').addEventListener('change', function() {
+    setVersion(this.value);
   })
 </script>
