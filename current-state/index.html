@@ -1,0 +1,30 @@
+<link rel="stylesheet" href="https://unpkg.com/bpmn-js@8.6.0/dist/assets/diagram-js.css" />
+<link rel="stylesheet" href="https://unpkg.com/bpmn-js@8.6.0/dist/assets/bpmn-font/css/bpmn.css" />
+
+<script src="bpmn-modeler.development.js"></script>
+
+
+<div id="diagramContainer"></div>
+
+
+<script>
+const viewer = window.viewer = new BpmnJS({ container: '#diagramContainer' });
+(async () => {
+  const fetchDiagram = (path) => {
+    return fetch(path).then(async res => {
+      if (!res.ok) { 
+        return res;
+      }
+
+      return await res.text();
+    });
+  }
+
+  const url = './simple.bpmn';
+
+  const bpmnXML = await fetchDiagram(url);
+
+  // import a BPMN 2.0 diagram
+  await viewer.importXML(bpmnXML);
+})();
+</script>
