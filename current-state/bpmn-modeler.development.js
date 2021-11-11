@@ -1,5 +1,5 @@
 /*!
- * bpmn-js - bpmn-modeler v8.7.1
+ * bpmn-js - bpmn-modeler v9.0.0-subprocesses.2
  *
  * Copyright (c) 2014-present, camunda Services GmbH
  *
@@ -8,7 +8,7 @@
  *
  * Source Code: https://github.com/bpmn-io/bpmn-js
  *
- * Date: 2021-08-18
+ * Date: 2021-11-11
  */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -18,26 +18,11 @@
 
 	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-	function getAugmentedNamespace(n) {
-		if (n.__esModule) return n;
-		var a = Object.defineProperty({}, '__esModule', {value: true});
-		Object.keys(n).forEach(function (k) {
-			var d = Object.getOwnPropertyDescriptor(n, k);
-			Object.defineProperty(a, k, d.get ? d : {
-				enumerable: true,
-				get: function () {
-					return n[k];
-				}
-			});
-		});
-		return a;
-	}
-
-	var inherits_browser$1 = {exports: {}};
+	var inherits_browser = {exports: {}};
 
 	if (typeof Object.create === 'function') {
 	  // implementation from standard node.js 'util' module
-	  inherits_browser$1.exports = function inherits(ctor, superCtor) {
+	  inherits_browser.exports = function inherits(ctor, superCtor) {
 	    if (superCtor) {
 	      ctor.super_ = superCtor;
 	      ctor.prototype = Object.create(superCtor.prototype, {
@@ -52,7 +37,7 @@
 	  };
 	} else {
 	  // old school shim for old browsers
-	  inherits_browser$1.exports = function inherits(ctor, superCtor) {
+	  inherits_browser.exports = function inherits(ctor, superCtor) {
 	    if (superCtor) {
 	      ctor.super_ = superCtor;
 	      var TempCtor = function () {};
@@ -63,7 +48,7 @@
 	  };
 	}
 
-	var inherits$2 = inherits_browser$1.exports;
+	var inherits$1 = inherits_browser.exports;
 
 	function createCommonjsModule(fn, module) {
 		return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -235,2642 +220,6 @@
 	 *
 	 * @return {Array<?>}
 	 */
-	function flatten$1(arr) {
-	  return Array.prototype.concat.apply([], arr);
-	}
-
-	var nativeToString$1 = Object.prototype.toString;
-	var nativeHasOwnProperty$1 = Object.prototype.hasOwnProperty;
-	function isUndefined$2(obj) {
-	  return obj === undefined;
-	}
-	function isDefined$1(obj) {
-	  return obj !== undefined;
-	}
-	function isNil$1(obj) {
-	  return obj == null;
-	}
-	function isArray$3(obj) {
-	  return nativeToString$1.call(obj) === '[object Array]';
-	}
-	function isObject$1(obj) {
-	  return nativeToString$1.call(obj) === '[object Object]';
-	}
-	function isNumber$1(obj) {
-	  return nativeToString$1.call(obj) === '[object Number]';
-	}
-	function isFunction$1(obj) {
-	  var tag = nativeToString$1.call(obj);
-	  return tag === '[object Function]' || tag === '[object AsyncFunction]' || tag === '[object GeneratorFunction]' || tag === '[object AsyncGeneratorFunction]' || tag === '[object Proxy]';
-	}
-	function isString$1(obj) {
-	  return nativeToString$1.call(obj) === '[object String]';
-	}
-	/**
-	 * Ensure collection is an array.
-	 *
-	 * @param {Object} obj
-	 */
-
-	function ensureArray$1(obj) {
-	  if (isArray$3(obj)) {
-	    return;
-	  }
-
-	  throw new Error('must supply array');
-	}
-	/**
-	 * Return true, if target owns a property with the given key.
-	 *
-	 * @param {Object} target
-	 * @param {String} key
-	 *
-	 * @return {Boolean}
-	 */
-
-	function has$1(target, key) {
-	  return nativeHasOwnProperty$1.call(target, key);
-	}
-
-	/**
-	 * Find element in collection.
-	 *
-	 * @param  {Array|Object} collection
-	 * @param  {Function|Object} matcher
-	 *
-	 * @return {Object}
-	 */
-
-	function find$1(collection, matcher) {
-	  matcher = toMatcher$1(matcher);
-	  var match;
-	  forEach$2(collection, function (val, key) {
-	    if (matcher(val, key)) {
-	      match = val;
-	      return false;
-	    }
-	  });
-	  return match;
-	}
-	/**
-	 * Find element index in collection.
-	 *
-	 * @param  {Array|Object} collection
-	 * @param  {Function} matcher
-	 *
-	 * @return {Object}
-	 */
-
-	function findIndex(collection, matcher) {
-	  matcher = toMatcher$1(matcher);
-	  var idx = isArray$3(collection) ? -1 : undefined;
-	  forEach$2(collection, function (val, key) {
-	    if (matcher(val, key)) {
-	      idx = key;
-	      return false;
-	    }
-	  });
-	  return idx;
-	}
-	/**
-	 * Find element in collection.
-	 *
-	 * @param  {Array|Object} collection
-	 * @param  {Function} matcher
-	 *
-	 * @return {Array} result
-	 */
-
-	function filter$1(collection, matcher) {
-	  var result = [];
-	  forEach$2(collection, function (val, key) {
-	    if (matcher(val, key)) {
-	      result.push(val);
-	    }
-	  });
-	  return result;
-	}
-	/**
-	 * Iterate over collection; returning something
-	 * (non-undefined) will stop iteration.
-	 *
-	 * @param  {Array|Object} collection
-	 * @param  {Function} iterator
-	 *
-	 * @return {Object} return result that stopped the iteration
-	 */
-
-	function forEach$2(collection, iterator) {
-	  var val, result;
-
-	  if (isUndefined$2(collection)) {
-	    return;
-	  }
-
-	  var convertKey = isArray$3(collection) ? toNum$1 : identity$1;
-
-	  for (var key in collection) {
-	    if (has$1(collection, key)) {
-	      val = collection[key];
-	      result = iterator(val, convertKey(key));
-
-	      if (result === false) {
-	        return val;
-	      }
-	    }
-	  }
-	}
-	/**
-	 * Return collection without element.
-	 *
-	 * @param  {Array} arr
-	 * @param  {Function} matcher
-	 *
-	 * @return {Array}
-	 */
-
-	function without$1(arr, matcher) {
-	  if (isUndefined$2(arr)) {
-	    return [];
-	  }
-
-	  ensureArray$1(arr);
-	  matcher = toMatcher$1(matcher);
-	  return arr.filter(function (el, idx) {
-	    return !matcher(el, idx);
-	  });
-	}
-	/**
-	 * Reduce collection, returning a single result.
-	 *
-	 * @param  {Object|Array} collection
-	 * @param  {Function} iterator
-	 * @param  {Any} result
-	 *
-	 * @return {Any} result returned from last iterator
-	 */
-
-	function reduce$2(collection, iterator, result) {
-	  forEach$2(collection, function (value, idx) {
-	    result = iterator(result, value, idx);
-	  });
-	  return result;
-	}
-	/**
-	 * Return true if every element in the collection
-	 * matches the criteria.
-	 *
-	 * @param  {Object|Array} collection
-	 * @param  {Function} matcher
-	 *
-	 * @return {Boolean}
-	 */
-
-	function every$1(collection, matcher) {
-	  return !!reduce$2(collection, function (matches, val, key) {
-	    return matches && matcher(val, key);
-	  }, true);
-	}
-	/**
-	 * Return true if some elements in the collection
-	 * match the criteria.
-	 *
-	 * @param  {Object|Array} collection
-	 * @param  {Function} matcher
-	 *
-	 * @return {Boolean}
-	 */
-
-	function some$1(collection, matcher) {
-	  return !!find$1(collection, matcher);
-	}
-	/**
-	 * Transform a collection into another collection
-	 * by piping each member through the given fn.
-	 *
-	 * @param  {Object|Array}   collection
-	 * @param  {Function} fn
-	 *
-	 * @return {Array} transformed collection
-	 */
-
-	function map$3(collection, fn) {
-	  var result = [];
-	  forEach$2(collection, function (val, key) {
-	    result.push(fn(val, key));
-	  });
-	  return result;
-	}
-	/**
-	 * Get the collections keys.
-	 *
-	 * @param  {Object|Array} collection
-	 *
-	 * @return {Array}
-	 */
-
-	function keys$2(collection) {
-	  return collection && Object.keys(collection) || [];
-	}
-	/**
-	 * Shorthand for `keys(o).length`.
-	 *
-	 * @param  {Object|Array} collection
-	 *
-	 * @return {Number}
-	 */
-
-	function size$1(collection) {
-	  return keys$2(collection).length;
-	}
-	/**
-	 * Get the values in the collection.
-	 *
-	 * @param  {Object|Array} collection
-	 *
-	 * @return {Array}
-	 */
-
-	function values$1(collection) {
-	  return map$3(collection, function (val) {
-	    return val;
-	  });
-	}
-	/**
-	 * Group collection members by attribute.
-	 *
-	 * @param  {Object|Array} collection
-	 * @param  {Function} extractor
-	 *
-	 * @return {Object} map with { attrValue => [ a, b, c ] }
-	 */
-
-	function groupBy$1(collection, extractor) {
-	  var grouped = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-	  extractor = toExtractor$1(extractor);
-	  forEach$2(collection, function (val) {
-	    var discriminator = extractor(val) || '_';
-	    var group = grouped[discriminator];
-
-	    if (!group) {
-	      group = grouped[discriminator] = [];
-	    }
-
-	    group.push(val);
-	  });
-	  return grouped;
-	}
-	function uniqueBy$1(extractor) {
-	  extractor = toExtractor$1(extractor);
-	  var grouped = {};
-
-	  for (var _len = arguments.length, collections = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-	    collections[_key - 1] = arguments[_key];
-	  }
-
-	  forEach$2(collections, function (c) {
-	    return groupBy$1(c, extractor, grouped);
-	  });
-	  var result = map$3(grouped, function (val, key) {
-	    return val[0];
-	  });
-	  return result;
-	}
-	var unionBy$1 = uniqueBy$1;
-	/**
-	 * Sort collection by criteria.
-	 *
-	 * @param  {Object|Array} collection
-	 * @param  {String|Function} extractor
-	 *
-	 * @return {Array}
-	 */
-
-	function sortBy$1(collection, extractor) {
-	  extractor = toExtractor$1(extractor);
-	  var sorted = [];
-	  forEach$2(collection, function (value, key) {
-	    var disc = extractor(value, key);
-	    var entry = {
-	      d: disc,
-	      v: value
-	    };
-
-	    for (var idx = 0; idx < sorted.length; idx++) {
-	      var d = sorted[idx].d;
-
-	      if (disc < d) {
-	        sorted.splice(idx, 0, entry);
-	        return;
-	      }
-	    } // not inserted, append (!)
-
-
-	    sorted.push(entry);
-	  });
-	  return map$3(sorted, function (e) {
-	    return e.v;
-	  });
-	}
-	/**
-	 * Create an object pattern matcher.
-	 *
-	 * @example
-	 *
-	 * const matcher = matchPattern({ id: 1 });
-	 *
-	 * var element = find(elements, matcher);
-	 *
-	 * @param  {Object} pattern
-	 *
-	 * @return {Function} matcherFn
-	 */
-
-	function matchPattern$1(pattern) {
-	  return function (el) {
-	    return every$1(pattern, function (val, key) {
-	      return el[key] === val;
-	    });
-	  };
-	}
-
-	function toExtractor$1(extractor) {
-	  return isFunction$1(extractor) ? extractor : function (e) {
-	    return e[extractor];
-	  };
-	}
-
-	function toMatcher$1(matcher) {
-	  return isFunction$1(matcher) ? matcher : function (e) {
-	    return e === matcher;
-	  };
-	}
-
-	function identity$1(arg) {
-	  return arg;
-	}
-
-	function toNum$1(arg) {
-	  return Number(arg);
-	}
-
-	/**
-	 * Debounce fn, calling it only once if
-	 * the given time elapsed between calls.
-	 *
-	 * @param  {Function} fn
-	 * @param  {Number} timeout
-	 *
-	 * @return {Function} debounced function
-	 */
-	function debounce$1(fn, timeout) {
-	  var timer;
-	  var lastArgs;
-	  var lastThis;
-	  var lastNow;
-
-	  function fire() {
-	    var now = Date.now();
-	    var scheduledDiff = lastNow + timeout - now;
-
-	    if (scheduledDiff > 0) {
-	      return schedule(scheduledDiff);
-	    }
-
-	    fn.apply(lastThis, lastArgs);
-	    timer = lastNow = lastArgs = lastThis = undefined;
-	  }
-
-	  function schedule(timeout) {
-	    timer = setTimeout(fire, timeout);
-	  }
-
-	  return function () {
-	    lastNow = Date.now();
-
-	    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-	      args[_key] = arguments[_key];
-	    }
-
-	    lastArgs = args;
-	    lastThis = this; // ensure an execution is scheduled
-
-	    if (!timer) {
-	      schedule(timeout);
-	    }
-	  };
-	}
-	/**
-	 * Throttle fn, calling at most once
-	 * in the given interval.
-	 *
-	 * @param  {Function} fn
-	 * @param  {Number} interval
-	 *
-	 * @return {Function} throttled function
-	 */
-
-	function throttle(fn, interval) {
-	  var throttling = false;
-	  return function () {
-	    if (throttling) {
-	      return;
-	    }
-
-	    fn.apply(void 0, arguments);
-	    throttling = true;
-	    setTimeout(function () {
-	      throttling = false;
-	    }, interval);
-	  };
-	}
-	/**
-	 * Bind function against target <this>.
-	 *
-	 * @param  {Function} fn
-	 * @param  {Object}   target
-	 *
-	 * @return {Function} bound function
-	 */
-
-	function bind$4(fn, target) {
-	  return fn.bind(target);
-	}
-
-	function _extends$1() {
-	  _extends$1 = Object.assign || function (target) {
-	    for (var i = 1; i < arguments.length; i++) {
-	      var source = arguments[i];
-
-	      for (var key in source) {
-	        if (Object.prototype.hasOwnProperty.call(source, key)) {
-	          target[key] = source[key];
-	        }
-	      }
-	    }
-
-	    return target;
-	  };
-
-	  return _extends$1.apply(this, arguments);
-	}
-
-	/**
-	 * Convenience wrapper for `Object.assign`.
-	 *
-	 * @param {Object} target
-	 * @param {...Object} others
-	 *
-	 * @return {Object} the target
-	 */
-
-	function assign$1(target) {
-	  for (var _len = arguments.length, others = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-	    others[_key - 1] = arguments[_key];
-	  }
-
-	  return _extends$1.apply(void 0, [target].concat(others));
-	}
-	/**
-	 * Pick given properties from the target object.
-	 *
-	 * @param {Object} target
-	 * @param {Array} properties
-	 *
-	 * @return {Object} target
-	 */
-
-	function pick$1(target, properties) {
-	  var result = {};
-	  var obj = Object(target);
-	  forEach$2(properties, function (prop) {
-	    if (prop in obj) {
-	      result[prop] = target[prop];
-	    }
-	  });
-	  return result;
-	}
-	/**
-	 * Pick all target properties, excluding the given ones.
-	 *
-	 * @param {Object} target
-	 * @param {Array} properties
-	 *
-	 * @return {Object} target
-	 */
-
-	function omit$1(target, properties) {
-	  var result = {};
-	  var obj = Object(target);
-	  forEach$2(obj, function (prop, key) {
-	    if (properties.indexOf(key) === -1) {
-	      result[key] = prop;
-	    }
-	  });
-	  return result;
-	}
-	/**
-	 * Recursively merge `...sources` into given target.
-	 *
-	 * Does support merging objects; does not support merging arrays.
-	 *
-	 * @param {Object} target
-	 * @param {...Object} sources
-	 *
-	 * @return {Object} the target
-	 */
-
-	function merge(target) {
-	  for (var _len2 = arguments.length, sources = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-	    sources[_key2 - 1] = arguments[_key2];
-	  }
-
-	  if (!sources.length) {
-	    return target;
-	  }
-
-	  forEach$2(sources, function (source) {
-	    // skip non-obj sources, i.e. null
-	    if (!source || !isObject$1(source)) {
-	      return;
-	    }
-
-	    forEach$2(source, function (sourceVal, key) {
-	      if (key === '__proto__') {
-	        return;
-	      }
-
-	      var targetVal = target[key];
-
-	      if (isObject$1(sourceVal)) {
-	        if (!isObject$1(targetVal)) {
-	          // override target[key] with object
-	          targetVal = {};
-	        }
-
-	        target[key] = merge(targetVal, sourceVal);
-	      } else {
-	        target[key] = sourceVal;
-	      }
-	    });
-	  });
-	  return target;
-	}
-
-	var index_esm = /*#__PURE__*/Object.freeze({
-		__proto__: null,
-		flatten: flatten$1,
-		find: find$1,
-		findIndex: findIndex,
-		filter: filter$1,
-		forEach: forEach$2,
-		without: without$1,
-		reduce: reduce$2,
-		every: every$1,
-		some: some$1,
-		map: map$3,
-		keys: keys$2,
-		size: size$1,
-		values: values$1,
-		groupBy: groupBy$1,
-		uniqueBy: uniqueBy$1,
-		unionBy: unionBy$1,
-		sortBy: sortBy$1,
-		matchPattern: matchPattern$1,
-		debounce: debounce$1,
-		throttle: throttle,
-		bind: bind$4,
-		isUndefined: isUndefined$2,
-		isDefined: isDefined$1,
-		isNil: isNil$1,
-		isArray: isArray$3,
-		isObject: isObject$1,
-		isNumber: isNumber$1,
-		isFunction: isFunction$1,
-		isString: isString$1,
-		ensureArray: ensureArray$1,
-		has: has$1,
-		assign: assign$1,
-		pick: pick$1,
-		omit: omit$1,
-		merge: merge
-	});
-
-	/**
-	 * Set attribute `name` to `val`, or get attr `name`.
-	 *
-	 * @param {Element} el
-	 * @param {String} name
-	 * @param {String} [val]
-	 * @api public
-	 */
-
-	var proto$1 = typeof Element !== 'undefined' ? Element.prototype : {};
-	var vendor$1 = proto$1.matches
-	  || proto$1.matchesSelector
-	  || proto$1.webkitMatchesSelector
-	  || proto$1.mozMatchesSelector
-	  || proto$1.msMatchesSelector
-	  || proto$1.oMatchesSelector;
-
-	var matchesSelector$1 = match$1;
-
-	/**
-	 * Match `el` to `selector`.
-	 *
-	 * @param {Element} el
-	 * @param {String} selector
-	 * @return {Boolean}
-	 * @api public
-	 */
-
-	function match$1(el, selector) {
-	  if (!el || el.nodeType !== 1) return false;
-	  if (vendor$1) return vendor$1.call(el, selector);
-	  var nodes = el.parentNode.querySelectorAll(selector);
-	  for (var i = 0; i < nodes.length; i++) {
-	    if (nodes[i] == el) return true;
-	  }
-	  return false;
-	}
-
-	/**
-	 * Closest
-	 *
-	 * @param {Element} el
-	 * @param {String} selector
-	 * @param {Boolean} checkYourSelf (optional)
-	 */
-	function closest$1 (element, selector, checkYourSelf) {
-	  var currentElem = checkYourSelf ? element : element.parentNode;
-
-	  while (currentElem && currentElem.nodeType !== document.DOCUMENT_NODE && currentElem.nodeType !== document.DOCUMENT_FRAGMENT_NODE) {
-
-	    if (matchesSelector$1(currentElem, selector)) {
-	      return currentElem;
-	    }
-
-	    currentElem = currentElem.parentNode;
-	  }
-
-	  return matchesSelector$1(currentElem, selector) ? currentElem : null;
-	}
-
-	var bind$3 = window.addEventListener ? 'addEventListener' : 'attachEvent',
-	    unbind$2 = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
-	    prefix$7 = bind$3 !== 'addEventListener' ? 'on' : '';
-
-	/**
-	 * Bind `el` event `type` to `fn`.
-	 *
-	 * @param {Element} el
-	 * @param {String} type
-	 * @param {Function} fn
-	 * @param {Boolean} capture
-	 * @return {Function}
-	 * @api public
-	 */
-
-	var bind_1$1 = function(el, type, fn, capture){
-	  el[bind$3](prefix$7 + type, fn, capture || false);
-	  return fn;
-	};
-
-	/**
-	 * Unbind `el` event `type`'s callback `fn`.
-	 *
-	 * @param {Element} el
-	 * @param {String} type
-	 * @param {Function} fn
-	 * @param {Boolean} capture
-	 * @return {Function}
-	 * @api public
-	 */
-
-	var unbind_1$1 = function(el, type, fn, capture){
-	  el[unbind$2](prefix$7 + type, fn, capture || false);
-	  return fn;
-	};
-
-	var componentEvent$1 = {
-		bind: bind_1$1,
-		unbind: unbind_1$1
-	};
-
-	/**
-	 * Module dependencies.
-	 */
-
-	/**
-	 * Delegate event `type` to `selector`
-	 * and invoke `fn(e)`. A callback function
-	 * is returned which may be passed to `.unbind()`.
-	 *
-	 * @param {Element} el
-	 * @param {String} selector
-	 * @param {String} type
-	 * @param {Function} fn
-	 * @param {Boolean} capture
-	 * @return {Function}
-	 * @api public
-	 */
-
-	// Some events don't bubble, so we want to bind to the capture phase instead
-	// when delegating.
-	var forceCaptureEvents$1 = ['focus', 'blur'];
-
-	function bind$1$1(el, selector, type, fn, capture) {
-	  if (forceCaptureEvents$1.indexOf(type) !== -1) {
-	    capture = true;
-	  }
-
-	  return componentEvent$1.bind(el, type, function (e) {
-	    var target = e.target || e.srcElement;
-	    e.delegateTarget = closest$1(target, selector, true);
-	    if (e.delegateTarget) {
-	      fn.call(el, e);
-	    }
-	  }, capture);
-	}
-
-	/**
-	 * Unbind event `type`'s callback `fn`.
-	 *
-	 * @param {Element} el
-	 * @param {String} type
-	 * @param {Function} fn
-	 * @param {Boolean} capture
-	 * @api public
-	 */
-	function unbind$1$1(el, type, fn, capture) {
-	  if (forceCaptureEvents$1.indexOf(type) !== -1) {
-	    capture = true;
-	  }
-
-	  return componentEvent$1.unbind(el, type, fn, capture);
-	}
-
-	var delegate$1 = {
-	  bind: bind$1$1,
-	  unbind: unbind$1$1
-	};
-
-	/**
-	 * Expose `parse`.
-	 */
-
-	var domify$1 = parse$3;
-
-	/**
-	 * Tests for browser support.
-	 */
-
-	var innerHTMLBug$1 = false;
-	var bugTestDiv$1;
-	if (typeof document !== 'undefined') {
-	  bugTestDiv$1 = document.createElement('div');
-	  // Setup
-	  bugTestDiv$1.innerHTML = '  <link/><table></table><a href="/a">a</a><input type="checkbox"/>';
-	  // Make sure that link elements get serialized correctly by innerHTML
-	  // This requires a wrapper element in IE
-	  innerHTMLBug$1 = !bugTestDiv$1.getElementsByTagName('link').length;
-	  bugTestDiv$1 = undefined;
-	}
-
-	/**
-	 * Wrap map from jquery.
-	 */
-
-	var map$2 = {
-	  legend: [1, '<fieldset>', '</fieldset>'],
-	  tr: [2, '<table><tbody>', '</tbody></table>'],
-	  col: [2, '<table><tbody></tbody><colgroup>', '</colgroup></table>'],
-	  // for script/link/style tags to work in IE6-8, you have to wrap
-	  // in a div with a non-whitespace character in front, ha!
-	  _default: innerHTMLBug$1 ? [1, 'X<div>', '</div>'] : [0, '', '']
-	};
-
-	map$2.td =
-	map$2.th = [3, '<table><tbody><tr>', '</tr></tbody></table>'];
-
-	map$2.option =
-	map$2.optgroup = [1, '<select multiple="multiple">', '</select>'];
-
-	map$2.thead =
-	map$2.tbody =
-	map$2.colgroup =
-	map$2.caption =
-	map$2.tfoot = [1, '<table>', '</table>'];
-
-	map$2.polyline =
-	map$2.ellipse =
-	map$2.polygon =
-	map$2.circle =
-	map$2.text =
-	map$2.line =
-	map$2.path =
-	map$2.rect =
-	map$2.g = [1, '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">','</svg>'];
-
-	/**
-	 * Parse `html` and return a DOM Node instance, which could be a TextNode,
-	 * HTML DOM Node of some kind (<div> for example), or a DocumentFragment
-	 * instance, depending on the contents of the `html` string.
-	 *
-	 * @param {String} html - HTML string to "domify"
-	 * @param {Document} doc - The `document` instance to create the Node for
-	 * @return {DOMNode} the TextNode, DOM Node, or DocumentFragment instance
-	 * @api private
-	 */
-
-	function parse$3(html, doc) {
-	  if ('string' != typeof html) throw new TypeError('String expected');
-
-	  // default to the global `document` object
-	  if (!doc) doc = document;
-
-	  // tag name
-	  var m = /<([\w:]+)/.exec(html);
-	  if (!m) return doc.createTextNode(html);
-
-	  html = html.replace(/^\s+|\s+$/g, ''); // Remove leading/trailing whitespace
-
-	  var tag = m[1];
-
-	  // body support
-	  if (tag == 'body') {
-	    var el = doc.createElement('html');
-	    el.innerHTML = html;
-	    return el.removeChild(el.lastChild);
-	  }
-
-	  // wrap map
-	  var wrap = map$2[tag] || map$2._default;
-	  var depth = wrap[0];
-	  var prefix = wrap[1];
-	  var suffix = wrap[2];
-	  var el = doc.createElement('div');
-	  el.innerHTML = prefix + html + suffix;
-	  while (depth--) el = el.lastChild;
-
-	  // one element
-	  if (el.firstChild == el.lastChild) {
-	    return el.removeChild(el.firstChild);
-	  }
-
-	  // several elements
-	  var fragment = doc.createDocumentFragment();
-	  while (el.firstChild) {
-	    fragment.appendChild(el.removeChild(el.firstChild));
-	  }
-
-	  return fragment;
-	}
-
-	function query$1(selector, el) {
-	  el = el || document;
-
-	  return el.querySelector(selector);
-	}
-
-	function remove$4(el) {
-	  el.parentNode && el.parentNode.removeChild(el);
-	}
-
-	function ensureImported$1(element, target) {
-
-	  if (element.ownerDocument !== target.ownerDocument) {
-	    try {
-	      // may fail on webkit
-	      return target.ownerDocument.importNode(element, true);
-	    } catch (e) {
-	      // ignore
-	    }
-	  }
-
-	  return element;
-	}
-
-	/**
-	 * appendTo utility
-	 */
-
-	/**
-	 * Append a node to a target element and return the appended node.
-	 *
-	 * @param  {SVGElement} element
-	 * @param  {SVGElement} target
-	 *
-	 * @return {SVGElement} the appended node
-	 */
-	function appendTo$1(element, target) {
-	  return target.appendChild(ensureImported$1(element, target));
-	}
-
-	/**
-	 * append utility
-	 */
-
-	/**
-	 * Append a node to an element
-	 *
-	 * @param  {SVGElement} element
-	 * @param  {SVGElement} node
-	 *
-	 * @return {SVGElement} the element
-	 */
-	function append$1(target, node) {
-	  appendTo$1(node, target);
-	  return target;
-	}
-
-	/**
-	 * attribute accessor utility
-	 */
-
-	var LENGTH_ATTR$1 = 2;
-
-	var CSS_PROPERTIES$1 = {
-	  'alignment-baseline': 1,
-	  'baseline-shift': 1,
-	  'clip': 1,
-	  'clip-path': 1,
-	  'clip-rule': 1,
-	  'color': 1,
-	  'color-interpolation': 1,
-	  'color-interpolation-filters': 1,
-	  'color-profile': 1,
-	  'color-rendering': 1,
-	  'cursor': 1,
-	  'direction': 1,
-	  'display': 1,
-	  'dominant-baseline': 1,
-	  'enable-background': 1,
-	  'fill': 1,
-	  'fill-opacity': 1,
-	  'fill-rule': 1,
-	  'filter': 1,
-	  'flood-color': 1,
-	  'flood-opacity': 1,
-	  'font': 1,
-	  'font-family': 1,
-	  'font-size': LENGTH_ATTR$1,
-	  'font-size-adjust': 1,
-	  'font-stretch': 1,
-	  'font-style': 1,
-	  'font-variant': 1,
-	  'font-weight': 1,
-	  'glyph-orientation-horizontal': 1,
-	  'glyph-orientation-vertical': 1,
-	  'image-rendering': 1,
-	  'kerning': 1,
-	  'letter-spacing': 1,
-	  'lighting-color': 1,
-	  'marker': 1,
-	  'marker-end': 1,
-	  'marker-mid': 1,
-	  'marker-start': 1,
-	  'mask': 1,
-	  'opacity': 1,
-	  'overflow': 1,
-	  'pointer-events': 1,
-	  'shape-rendering': 1,
-	  'stop-color': 1,
-	  'stop-opacity': 1,
-	  'stroke': 1,
-	  'stroke-dasharray': 1,
-	  'stroke-dashoffset': 1,
-	  'stroke-linecap': 1,
-	  'stroke-linejoin': 1,
-	  'stroke-miterlimit': 1,
-	  'stroke-opacity': 1,
-	  'stroke-width': LENGTH_ATTR$1,
-	  'text-anchor': 1,
-	  'text-decoration': 1,
-	  'text-rendering': 1,
-	  'unicode-bidi': 1,
-	  'visibility': 1,
-	  'word-spacing': 1,
-	  'writing-mode': 1
-	};
-
-
-	function getAttribute$1(node, name) {
-	  if (CSS_PROPERTIES$1[name]) {
-	    return node.style[name];
-	  } else {
-	    return node.getAttributeNS(null, name);
-	  }
-	}
-
-	function setAttribute$1(node, name, value) {
-	  var hyphenated = name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-
-	  var type = CSS_PROPERTIES$1[hyphenated];
-
-	  if (type) {
-	    // append pixel unit, unless present
-	    if (type === LENGTH_ATTR$1 && typeof value === 'number') {
-	      value = String(value) + 'px';
-	    }
-
-	    node.style[hyphenated] = value;
-	  } else {
-	    node.setAttributeNS(null, name, value);
-	  }
-	}
-
-	function setAttributes$1(node, attrs) {
-
-	  var names = Object.keys(attrs), i, name;
-
-	  for (i = 0, name; (name = names[i]); i++) {
-	    setAttribute$1(node, name, attrs[name]);
-	  }
-	}
-
-	/**
-	 * Gets or sets raw attributes on a node.
-	 *
-	 * @param  {SVGElement} node
-	 * @param  {Object} [attrs]
-	 * @param  {String} [name]
-	 * @param  {String} [value]
-	 *
-	 * @return {String}
-	 */
-	function attr$2(node, name, value) {
-	  if (typeof name === 'string') {
-	    if (value !== undefined) {
-	      setAttribute$1(node, name, value);
-	    } else {
-	      return getAttribute$1(node, name);
-	    }
-	  } else {
-	    setAttributes$1(node, name);
-	  }
-
-	  return node;
-	}
-
-	/**
-	 * Clear utility
-	 */
-	function index$1(arr, obj) {
-	  if (arr.indexOf) {
-	    return arr.indexOf(obj);
-	  }
-
-
-	  for (var i = 0; i < arr.length; ++i) {
-	    if (arr[i] === obj) {
-	      return i;
-	    }
-	  }
-
-	  return -1;
-	}
-
-	var re$2 = /\s+/;
-
-	var toString$2 = Object.prototype.toString;
-
-	function defined$1(o) {
-	  return typeof o !== 'undefined';
-	}
-
-	/**
-	 * Wrap `el` in a `ClassList`.
-	 *
-	 * @param {Element} el
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	function classes$2(el) {
-	  return new ClassList$2(el);
-	}
-
-	function ClassList$2(el) {
-	  if (!el || !el.nodeType) {
-	    throw new Error('A DOM element reference is required');
-	  }
-	  this.el = el;
-	  this.list = el.classList;
-	}
-
-	/**
-	 * Add class `name` if not already present.
-	 *
-	 * @param {String} name
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	ClassList$2.prototype.add = function(name) {
-
-	  // classList
-	  if (this.list) {
-	    this.list.add(name);
-	    return this;
-	  }
-
-	  // fallback
-	  var arr = this.array();
-	  var i = index$1(arr, name);
-	  if (!~i) {
-	    arr.push(name);
-	  }
-
-	  if (defined$1(this.el.className.baseVal)) {
-	    this.el.className.baseVal = arr.join(' ');
-	  } else {
-	    this.el.className = arr.join(' ');
-	  }
-
-	  return this;
-	};
-
-	/**
-	 * Remove class `name` when present, or
-	 * pass a regular expression to remove
-	 * any which match.
-	 *
-	 * @param {String|RegExp} name
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	ClassList$2.prototype.remove = function(name) {
-	  if ('[object RegExp]' === toString$2.call(name)) {
-	    return this.removeMatching(name);
-	  }
-
-	  // classList
-	  if (this.list) {
-	    this.list.remove(name);
-	    return this;
-	  }
-
-	  // fallback
-	  var arr = this.array();
-	  var i = index$1(arr, name);
-	  if (~i) {
-	    arr.splice(i, 1);
-	  }
-	  this.el.className.baseVal = arr.join(' ');
-	  return this;
-	};
-
-	/**
-	 * Remove all classes matching `re`.
-	 *
-	 * @param {RegExp} re
-	 * @return {ClassList}
-	 * @api private
-	 */
-
-	ClassList$2.prototype.removeMatching = function(re) {
-	  var arr = this.array();
-	  for (var i = 0; i < arr.length; i++) {
-	    if (re.test(arr[i])) {
-	      this.remove(arr[i]);
-	    }
-	  }
-	  return this;
-	};
-
-	/**
-	 * Toggle class `name`, can force state via `force`.
-	 *
-	 * For browsers that support classList, but do not support `force` yet,
-	 * the mistake will be detected and corrected.
-	 *
-	 * @param {String} name
-	 * @param {Boolean} force
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	ClassList$2.prototype.toggle = function(name, force) {
-	  // classList
-	  if (this.list) {
-	    if (defined$1(force)) {
-	      if (force !== this.list.toggle(name, force)) {
-	        this.list.toggle(name); // toggle again to correct
-	      }
-	    } else {
-	      this.list.toggle(name);
-	    }
-	    return this;
-	  }
-
-	  // fallback
-	  if (defined$1(force)) {
-	    if (!force) {
-	      this.remove(name);
-	    } else {
-	      this.add(name);
-	    }
-	  } else {
-	    if (this.has(name)) {
-	      this.remove(name);
-	    } else {
-	      this.add(name);
-	    }
-	  }
-
-	  return this;
-	};
-
-	/**
-	 * Return an array of classes.
-	 *
-	 * @return {Array}
-	 * @api public
-	 */
-
-	ClassList$2.prototype.array = function() {
-	  var className = this.el.getAttribute('class') || '';
-	  var str = className.replace(/^\s+|\s+$/g, '');
-	  var arr = str.split(re$2);
-	  if ('' === arr[0]) {
-	    arr.shift();
-	  }
-	  return arr;
-	};
-
-	/**
-	 * Check if class `name` is present.
-	 *
-	 * @param {String} name
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	ClassList$2.prototype.has =
-	ClassList$2.prototype.contains = function(name) {
-	  return (
-	    this.list ?
-	      this.list.contains(name) :
-	      !! ~index$1(this.array(), name)
-	  );
-	};
-
-	function remove$3(element) {
-	  var parent = element.parentNode;
-
-	  if (parent) {
-	    parent.removeChild(element);
-	  }
-
-	  return element;
-	}
-
-	/**
-	 * Clear utility
-	 */
-
-	/**
-	 * Removes all children from the given element
-	 *
-	 * @param  {DOMElement} element
-	 * @return {DOMElement} the element (for chaining)
-	 */
-	function clear$2(element) {
-	  var child;
-
-	  while ((child = element.firstChild)) {
-	    remove$3(child);
-	  }
-
-	  return element;
-	}
-
-	var ns$1 = {
-	  svg: 'http://www.w3.org/2000/svg'
-	};
-
-	/**
-	 * DOM parsing utility
-	 */
-
-	var SVG_START$1 = '<svg xmlns="' + ns$1.svg + '"';
-
-	function parse$2(svg) {
-
-	  var unwrap = false;
-
-	  // ensure we import a valid svg document
-	  if (svg.substring(0, 4) === '<svg') {
-	    if (svg.indexOf(ns$1.svg) === -1) {
-	      svg = SVG_START$1 + svg.substring(4);
-	    }
-	  } else {
-	    // namespace svg
-	    svg = SVG_START$1 + '>' + svg + '</svg>';
-	    unwrap = true;
-	  }
-
-	  var parsed = parseDocument$1(svg);
-
-	  if (!unwrap) {
-	    return parsed;
-	  }
-
-	  var fragment = document.createDocumentFragment();
-
-	  var parent = parsed.firstChild;
-
-	  while (parent.firstChild) {
-	    fragment.appendChild(parent.firstChild);
-	  }
-
-	  return fragment;
-	}
-
-	function parseDocument$1(svg) {
-
-	  var parser;
-
-	  // parse
-	  parser = new DOMParser();
-	  parser.async = false;
-
-	  return parser.parseFromString(svg, 'text/xml');
-	}
-
-	/**
-	 * Create utility for SVG elements
-	 */
-
-
-	/**
-	 * Create a specific type from name or SVG markup.
-	 *
-	 * @param {String} name the name or markup of the element
-	 * @param {Object} [attrs] attributes to set on the element
-	 *
-	 * @returns {SVGElement}
-	 */
-	function create$2(name, attrs) {
-	  var element;
-
-	  if (name.charAt(0) === '<') {
-	    element = parse$2(name).firstChild;
-	    element = document.importNode(element, true);
-	  } else {
-	    element = document.createElementNS(ns$1.svg, name);
-	  }
-
-	  if (attrs) {
-	    attr$2(element, attrs);
-	  }
-
-	  return element;
-	}
-
-	/**
-	 * Geometry helpers
-	 */
-
-	// fake node used to instantiate svg geometry elements
-	create$2('svg');
-
-	/**
-	 * Serialization util
-	 */
-
-	var TEXT_ENTITIES = /([&<>]{1})/g;
-	var ATTR_ENTITIES = /([\n\r"]{1})/g;
-
-	var ENTITY_REPLACEMENT = {
-	  '&': '&amp;',
-	  '<': '&lt;',
-	  '>': '&gt;',
-	  '"': '\''
-	};
-
-	function escape$1(str, pattern) {
-
-	  function replaceFn(match, entity) {
-	    return ENTITY_REPLACEMENT[entity] || entity;
-	  }
-
-	  return str.replace(pattern, replaceFn);
-	}
-
-	function serialize(node, output) {
-
-	  var i, len, attrMap, attrNode, childNodes;
-
-	  switch (node.nodeType) {
-	  // TEXT
-	  case 3:
-	    // replace special XML characters
-	    output.push(escape$1(node.textContent, TEXT_ENTITIES));
-	    break;
-
-	  // ELEMENT
-	  case 1:
-	    output.push('<', node.tagName);
-
-	    if (node.hasAttributes()) {
-	      attrMap = node.attributes;
-	      for (i = 0, len = attrMap.length; i < len; ++i) {
-	        attrNode = attrMap.item(i);
-	        output.push(' ', attrNode.name, '="', escape$1(attrNode.value, ATTR_ENTITIES), '"');
-	      }
-	    }
-
-	    if (node.hasChildNodes()) {
-	      output.push('>');
-	      childNodes = node.childNodes;
-	      for (i = 0, len = childNodes.length; i < len; ++i) {
-	        serialize(childNodes.item(i), output);
-	      }
-	      output.push('</', node.tagName, '>');
-	    } else {
-	      output.push('/>');
-	    }
-	    break;
-
-	  // COMMENT
-	  case 8:
-	    output.push('<!--', escape$1(node.nodeValue, TEXT_ENTITIES), '-->');
-	    break;
-
-	  // CDATA
-	  case 4:
-	    output.push('<![CDATA[', node.nodeValue, ']]>');
-	    break;
-
-	  default:
-	    throw new Error('unable to handle node ' + node.nodeType);
-	  }
-
-	  return output;
-	}
-
-	/**
-	 * innerHTML like functionality for SVG elements.
-	 * based on innerSVG (https://code.google.com/p/innersvg)
-	 */
-
-
-	function set$1(element, svg) {
-
-	  var parsed = parse$2(svg);
-
-	  // clear element contents
-	  clear$2(element);
-
-	  if (!svg) {
-	    return;
-	  }
-
-	  if (!isFragment(parsed)) {
-	    // extract <svg> from parsed document
-	    parsed = parsed.documentElement;
-	  }
-
-	  var nodes = slice$1(parsed.childNodes);
-
-	  // import + append each node
-	  for (var i = 0; i < nodes.length; i++) {
-	    appendTo$1(nodes[i], element);
-	  }
-
-	}
-
-	function get$1(element) {
-	  var child = element.firstChild,
-	      output = [];
-
-	  while (child) {
-	    serialize(child, output);
-	    child = child.nextSibling;
-	  }
-
-	  return output.join('');
-	}
-
-	function isFragment(node) {
-	  return node.nodeName === '#document-fragment';
-	}
-
-	function innerSVG(element, svg) {
-
-	  if (svg !== undefined) {
-
-	    try {
-	      set$1(element, svg);
-	    } catch (e) {
-	      throw new Error('error parsing SVG: ' + e.message);
-	    }
-
-	    return element;
-	  } else {
-	    return get$1(element);
-	  }
-	}
-
-
-	function slice$1(arr) {
-	  return Array.prototype.slice.call(arr);
-	}
-
-	var CLASS_PATTERN = /^class /;
-
-	function isClass(fn) {
-	  return CLASS_PATTERN.test(fn.toString());
-	}
-
-	function isArray$2(obj) {
-	  return Object.prototype.toString.call(obj) === '[object Array]';
-	}
-
-	function hasOwnProp(obj, prop) {
-	  return Object.prototype.hasOwnProperty.call(obj, prop);
-	}
-
-	function annotate() {
-	  var args = Array.prototype.slice.call(arguments);
-
-	  if (args.length === 1 && isArray$2(args[0])) {
-	    args = args[0];
-	  }
-
-	  var fn = args.pop();
-
-	  fn.$inject = args;
-
-	  return fn;
-	}
-
-
-	// Current limitations:
-	// - can't put into "function arg" comments
-	// function /* (no parenthesis like this) */ (){}
-	// function abc( /* xx (no parenthesis like this) */ a, b) {}
-	//
-	// Just put the comment before function or inside:
-	// /* (((this is fine))) */ function(a, b) {}
-	// function abc(a) { /* (((this is fine))) */}
-	//
-	// - can't reliably auto-annotate constructor; we'll match the
-	// first constructor(...) pattern found which may be the one
-	// of a nested class, too.
-
-	var CONSTRUCTOR_ARGS = /constructor\s*[^(]*\(\s*([^)]*)\)/m;
-	var FN_ARGS = /^(?:async )?(?:function\s*)?[^(]*\(\s*([^)]*)\)/m;
-	var FN_ARG = /\/\*([^*]*)\*\//m;
-
-	function parseAnnotations(fn) {
-
-	  if (typeof fn !== 'function') {
-	    throw new Error('Cannot annotate "' + fn + '". Expected a function!');
-	  }
-
-	  var match = fn.toString().match(isClass(fn) ? CONSTRUCTOR_ARGS : FN_ARGS);
-
-	  // may parse class without constructor
-	  if (!match) {
-	    return [];
-	  }
-
-	  return match[1] && match[1].split(',').map(function(arg) {
-	    match = arg.match(FN_ARG);
-	    return match ? match[1].trim() : arg.trim();
-	  }) || [];
-	}
-
-	function Module() {
-	  var providers = [];
-
-	  this.factory = function(name, factory) {
-	    providers.push([name, 'factory', factory]);
-	    return this;
-	  };
-
-	  this.value = function(name, value) {
-	    providers.push([name, 'value', value]);
-	    return this;
-	  };
-
-	  this.type = function(name, type) {
-	    providers.push([name, 'type', type]);
-	    return this;
-	  };
-
-	  this.forEach = function(iterator) {
-	    providers.forEach(iterator);
-	  };
-
-	}
-
-	function Injector(modules, parent) {
-	  parent = parent || {
-	    get: function(name, strict) {
-	      currentlyResolving.push(name);
-
-	      if (strict === false) {
-	        return null;
-	      } else {
-	        throw error('No provider for "' + name + '"!');
-	      }
-	    }
-	  };
-
-	  var currentlyResolving = [];
-	  var providers = this._providers = Object.create(parent._providers || null);
-	  var instances = this._instances = Object.create(null);
-
-	  var self = instances.injector = this;
-
-	  var error = function(msg) {
-	    var stack = currentlyResolving.join(' -> ');
-	    currentlyResolving.length = 0;
-	    return new Error(stack ? msg + ' (Resolving: ' + stack + ')' : msg);
-	  };
-
-	  /**
-	   * Return a named service.
-	   *
-	   * @param {String} name
-	   * @param {Boolean} [strict=true] if false, resolve missing services to null
-	   *
-	   * @return {Object}
-	   */
-	  var get = function(name, strict) {
-	    if (!providers[name] && name.indexOf('.') !== -1) {
-	      var parts = name.split('.');
-	      var pivot = get(parts.shift());
-
-	      while (parts.length) {
-	        pivot = pivot[parts.shift()];
-	      }
-
-	      return pivot;
-	    }
-
-	    if (hasOwnProp(instances, name)) {
-	      return instances[name];
-	    }
-
-	    if (hasOwnProp(providers, name)) {
-	      if (currentlyResolving.indexOf(name) !== -1) {
-	        currentlyResolving.push(name);
-	        throw error('Cannot resolve circular dependency!');
-	      }
-
-	      currentlyResolving.push(name);
-	      instances[name] = providers[name][0](providers[name][1]);
-	      currentlyResolving.pop();
-
-	      return instances[name];
-	    }
-
-	    return parent.get(name, strict);
-	  };
-
-	  var fnDef = function(fn, locals) {
-
-	    if (typeof locals === 'undefined') {
-	      locals = {};
-	    }
-
-	    if (typeof fn !== 'function') {
-	      if (isArray$2(fn)) {
-	        fn = annotate(fn.slice());
-	      } else {
-	        throw new Error('Cannot invoke "' + fn + '". Expected a function!');
-	      }
-	    }
-
-	    var inject = fn.$inject || parseAnnotations(fn);
-	    var dependencies = inject.map(function(dep) {
-	      if (hasOwnProp(locals, dep)) {
-	        return locals[dep];
-	      } else {
-	        return get(dep);
-	      }
-	    });
-
-	    return {
-	      fn: fn,
-	      dependencies: dependencies
-	    };
-	  };
-
-	  var instantiate = function(Type) {
-	    var def = fnDef(Type);
-
-	    var fn = def.fn,
-	        dependencies = def.dependencies;
-
-	    // instantiate var args constructor
-	    var Constructor = Function.prototype.bind.apply(fn, [ null ].concat(dependencies));
-
-	    return new Constructor();
-	  };
-
-	  var invoke = function(func, context, locals) {
-	    var def = fnDef(func, locals);
-
-	    var fn = def.fn,
-	        dependencies = def.dependencies;
-
-	    return fn.apply(context, dependencies);
-	  };
-
-
-	  var createPrivateInjectorFactory = function(privateChildInjector) {
-	    return annotate(function(key) {
-	      return privateChildInjector.get(key);
-	    });
-	  };
-
-	  var createChild = function(modules, forceNewInstances) {
-	    if (forceNewInstances && forceNewInstances.length) {
-	      var fromParentModule = Object.create(null);
-	      var matchedScopes = Object.create(null);
-
-	      var privateInjectorsCache = [];
-	      var privateChildInjectors = [];
-	      var privateChildFactories = [];
-
-	      var provider;
-	      var cacheIdx;
-	      var privateChildInjector;
-	      var privateChildInjectorFactory;
-	      for (var name in providers) {
-	        provider = providers[name];
-
-	        if (forceNewInstances.indexOf(name) !== -1) {
-	          if (provider[2] === 'private') {
-	            cacheIdx = privateInjectorsCache.indexOf(provider[3]);
-	            if (cacheIdx === -1) {
-	              privateChildInjector = provider[3].createChild([], forceNewInstances);
-	              privateChildInjectorFactory = createPrivateInjectorFactory(privateChildInjector);
-	              privateInjectorsCache.push(provider[3]);
-	              privateChildInjectors.push(privateChildInjector);
-	              privateChildFactories.push(privateChildInjectorFactory);
-	              fromParentModule[name] = [privateChildInjectorFactory, name, 'private', privateChildInjector];
-	            } else {
-	              fromParentModule[name] = [privateChildFactories[cacheIdx], name, 'private', privateChildInjectors[cacheIdx]];
-	            }
-	          } else {
-	            fromParentModule[name] = [provider[2], provider[1]];
-	          }
-	          matchedScopes[name] = true;
-	        }
-
-	        if ((provider[2] === 'factory' || provider[2] === 'type') && provider[1].$scope) {
-	          /* jshint -W083 */
-	          forceNewInstances.forEach(function(scope) {
-	            if (provider[1].$scope.indexOf(scope) !== -1) {
-	              fromParentModule[name] = [provider[2], provider[1]];
-	              matchedScopes[scope] = true;
-	            }
-	          });
-	        }
-	      }
-
-	      forceNewInstances.forEach(function(scope) {
-	        if (!matchedScopes[scope]) {
-	          throw new Error('No provider for "' + scope + '". Cannot use provider from the parent!');
-	        }
-	      });
-
-	      modules.unshift(fromParentModule);
-	    }
-
-	    return new Injector(modules, self);
-	  };
-
-	  var factoryMap = {
-	    factory: invoke,
-	    type: instantiate,
-	    value: function(value) {
-	      return value;
-	    }
-	  };
-
-	  modules.forEach(function(module) {
-
-	    function arrayUnwrap(type, value) {
-	      if (type !== 'value' && isArray$2(value)) {
-	        value = annotate(value.slice());
-	      }
-
-	      return value;
-	    }
-
-	    // TODO(vojta): handle wrong inputs (modules)
-	    if (module instanceof Module) {
-	      module.forEach(function(provider) {
-	        var name = provider[0];
-	        var type = provider[1];
-	        var value = provider[2];
-
-	        providers[name] = [factoryMap[type], arrayUnwrap(type, value), type];
-	      });
-	    } else if (typeof module === 'object') {
-	      if (module.__exports__) {
-	        var clonedModule = Object.keys(module).reduce(function(m, key) {
-	          if (key.substring(0, 2) !== '__') {
-	            m[key] = module[key];
-	          }
-	          return m;
-	        }, Object.create(null));
-
-	        var privateInjector = new Injector((module.__modules__ || []).concat([clonedModule]), self);
-	        var getFromPrivateInjector = annotate(function(key) {
-	          return privateInjector.get(key);
-	        });
-	        module.__exports__.forEach(function(key) {
-	          providers[key] = [getFromPrivateInjector, key, 'private', privateInjector];
-	        });
-	      } else {
-	        Object.keys(module).forEach(function(name) {
-	          if (module[name][2] === 'private') {
-	            providers[name] = module[name];
-	            return;
-	          }
-
-	          var type = module[name][0];
-	          var value = module[name][1];
-
-	          providers[name] = [factoryMap[type], arrayUnwrap(type, value), type];
-	        });
-	      }
-	    }
-	  });
-
-	  // public API
-	  this.get = get;
-	  this.invoke = invoke;
-	  this.instantiate = instantiate;
-	  this.createChild = createChild;
-	}
-
-	var inherits_browser = {exports: {}};
-
-	if (typeof Object.create === 'function') {
-	  // implementation from standard node.js 'util' module
-	  inherits_browser.exports = function inherits(ctor, superCtor) {
-	    if (superCtor) {
-	      ctor.super_ = superCtor;
-	      ctor.prototype = Object.create(superCtor.prototype, {
-	        constructor: {
-	          value: ctor,
-	          enumerable: false,
-	          writable: true,
-	          configurable: true
-	        }
-	      });
-	    }
-	  };
-	} else {
-	  // old school shim for old browsers
-	  inherits_browser.exports = function inherits(ctor, superCtor) {
-	    if (superCtor) {
-	      ctor.super_ = superCtor;
-	      var TempCtor = function () {};
-	      TempCtor.prototype = superCtor.prototype;
-	      ctor.prototype = new TempCtor();
-	      ctor.prototype.constructor = ctor;
-	    }
-	  };
-	}
-
-	var inherits$1 = inherits_browser.exports;
-
-	var DEFAULT_RENDER_PRIORITY$1 = 1000;
-
-	/**
-	 * The base implementation of shape and connection renderers.
-	 *
-	 * @param {EventBus} eventBus
-	 * @param {number} [renderPriority=1000]
-	 */
-	function BaseRenderer(eventBus, renderPriority) {
-	  var self = this;
-
-	  renderPriority = renderPriority || DEFAULT_RENDER_PRIORITY$1;
-
-	  eventBus.on([ 'render.shape', 'render.connection' ], renderPriority, function(evt, context) {
-	    var type = evt.type,
-	        element = context.element,
-	        visuals = context.gfx;
-
-	    if (self.canRender(element)) {
-	      if (type === 'render.shape') {
-	        return self.drawShape(visuals, element);
-	      } else {
-	        return self.drawConnection(visuals, element);
-	      }
-	    }
-	  });
-
-	  eventBus.on([ 'render.getShapePath', 'render.getConnectionPath'], renderPriority, function(evt, element) {
-	    if (self.canRender(element)) {
-	      if (evt.type === 'render.getShapePath') {
-	        return self.getShapePath(element);
-	      } else {
-	        return self.getConnectionPath(element);
-	      }
-	    }
-	  });
-	}
-
-	/**
-	 * Should check whether *this* renderer can render
-	 * the element/connection.
-	 *
-	 * @param {element} element
-	 *
-	 * @returns {boolean}
-	 */
-	BaseRenderer.prototype.canRender = function() {};
-
-	/**
-	 * Provides the shape's snap svg element to be drawn on the `canvas`.
-	 *
-	 * @param {djs.Graphics} visuals
-	 * @param {Shape} shape
-	 *
-	 * @returns {Snap.svg} [returns a Snap.svg paper element ]
-	 */
-	BaseRenderer.prototype.drawShape = function() {};
-
-	/**
-	 * Provides the shape's snap svg element to be drawn on the `canvas`.
-	 *
-	 * @param {djs.Graphics} visuals
-	 * @param {Connection} connection
-	 *
-	 * @returns {Snap.svg} [returns a Snap.svg paper element ]
-	 */
-	BaseRenderer.prototype.drawConnection = function() {};
-
-	/**
-	 * Gets the SVG path of a shape that represents it's visual bounds.
-	 *
-	 * @param {Shape} shape
-	 *
-	 * @return {string} svg path
-	 */
-	BaseRenderer.prototype.getShapePath = function() {};
-
-	/**
-	 * Gets the SVG path of a connection that represents it's visual bounds.
-	 *
-	 * @param {Connection} connection
-	 *
-	 * @return {string} svg path
-	 */
-	BaseRenderer.prototype.getConnectionPath = function() {};
-
-	function ensureImported(element, target) {
-
-	  if (element.ownerDocument !== target.ownerDocument) {
-	    try {
-	      // may fail on webkit
-	      return target.ownerDocument.importNode(element, true);
-	    } catch (e) {
-	      // ignore
-	    }
-	  }
-
-	  return element;
-	}
-
-	/**
-	 * appendTo utility
-	 */
-
-	/**
-	 * Append a node to a target element and return the appended node.
-	 *
-	 * @param  {SVGElement} element
-	 * @param  {SVGElement} target
-	 *
-	 * @return {SVGElement} the appended node
-	 */
-	function appendTo(element, target) {
-	  return target.appendChild(ensureImported(element, target));
-	}
-
-	/**
-	 * append utility
-	 */
-
-	/**
-	 * Append a node to an element
-	 *
-	 * @param  {SVGElement} element
-	 * @param  {SVGElement} node
-	 *
-	 * @return {SVGElement} the element
-	 */
-	function append(target, node) {
-	  appendTo(node, target);
-	  return target;
-	}
-
-	/**
-	 * attribute accessor utility
-	 */
-
-	var LENGTH_ATTR = 2;
-
-	var CSS_PROPERTIES = {
-	  'alignment-baseline': 1,
-	  'baseline-shift': 1,
-	  'clip': 1,
-	  'clip-path': 1,
-	  'clip-rule': 1,
-	  'color': 1,
-	  'color-interpolation': 1,
-	  'color-interpolation-filters': 1,
-	  'color-profile': 1,
-	  'color-rendering': 1,
-	  'cursor': 1,
-	  'direction': 1,
-	  'display': 1,
-	  'dominant-baseline': 1,
-	  'enable-background': 1,
-	  'fill': 1,
-	  'fill-opacity': 1,
-	  'fill-rule': 1,
-	  'filter': 1,
-	  'flood-color': 1,
-	  'flood-opacity': 1,
-	  'font': 1,
-	  'font-family': 1,
-	  'font-size': LENGTH_ATTR,
-	  'font-size-adjust': 1,
-	  'font-stretch': 1,
-	  'font-style': 1,
-	  'font-variant': 1,
-	  'font-weight': 1,
-	  'glyph-orientation-horizontal': 1,
-	  'glyph-orientation-vertical': 1,
-	  'image-rendering': 1,
-	  'kerning': 1,
-	  'letter-spacing': 1,
-	  'lighting-color': 1,
-	  'marker': 1,
-	  'marker-end': 1,
-	  'marker-mid': 1,
-	  'marker-start': 1,
-	  'mask': 1,
-	  'opacity': 1,
-	  'overflow': 1,
-	  'pointer-events': 1,
-	  'shape-rendering': 1,
-	  'stop-color': 1,
-	  'stop-opacity': 1,
-	  'stroke': 1,
-	  'stroke-dasharray': 1,
-	  'stroke-dashoffset': 1,
-	  'stroke-linecap': 1,
-	  'stroke-linejoin': 1,
-	  'stroke-miterlimit': 1,
-	  'stroke-opacity': 1,
-	  'stroke-width': LENGTH_ATTR,
-	  'text-anchor': 1,
-	  'text-decoration': 1,
-	  'text-rendering': 1,
-	  'unicode-bidi': 1,
-	  'visibility': 1,
-	  'word-spacing': 1,
-	  'writing-mode': 1
-	};
-
-
-	function getAttribute(node, name) {
-	  if (CSS_PROPERTIES[name]) {
-	    return node.style[name];
-	  } else {
-	    return node.getAttributeNS(null, name);
-	  }
-	}
-
-	function setAttribute(node, name, value) {
-	  var hyphenated = name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-
-	  var type = CSS_PROPERTIES[hyphenated];
-
-	  if (type) {
-	    // append pixel unit, unless present
-	    if (type === LENGTH_ATTR && typeof value === 'number') {
-	      value = String(value) + 'px';
-	    }
-
-	    node.style[hyphenated] = value;
-	  } else {
-	    node.setAttributeNS(null, name, value);
-	  }
-	}
-
-	function setAttributes(node, attrs) {
-
-	  var names = Object.keys(attrs), i, name;
-
-	  for (i = 0, name; (name = names[i]); i++) {
-	    setAttribute(node, name, attrs[name]);
-	  }
-	}
-
-	/**
-	 * Gets or sets raw attributes on a node.
-	 *
-	 * @param  {SVGElement} node
-	 * @param  {Object} [attrs]
-	 * @param  {String} [name]
-	 * @param  {String} [value]
-	 *
-	 * @return {String}
-	 */
-	function attr$1(node, name, value) {
-	  if (typeof name === 'string') {
-	    if (value !== undefined) {
-	      setAttribute(node, name, value);
-	    } else {
-	      return getAttribute(node, name);
-	    }
-	  } else {
-	    setAttributes(node, name);
-	  }
-
-	  return node;
-	}
-
-	/**
-	 * Clear utility
-	 */
-	function index(arr, obj) {
-	  if (arr.indexOf) {
-	    return arr.indexOf(obj);
-	  }
-
-
-	  for (var i = 0; i < arr.length; ++i) {
-	    if (arr[i] === obj) {
-	      return i;
-	    }
-	  }
-
-	  return -1;
-	}
-
-	var re$1 = /\s+/;
-
-	var toString$1 = Object.prototype.toString;
-
-	function defined(o) {
-	  return typeof o !== 'undefined';
-	}
-
-	/**
-	 * Wrap `el` in a `ClassList`.
-	 *
-	 * @param {Element} el
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	function classes$1(el) {
-	  return new ClassList$1(el);
-	}
-
-	function ClassList$1(el) {
-	  if (!el || !el.nodeType) {
-	    throw new Error('A DOM element reference is required');
-	  }
-	  this.el = el;
-	  this.list = el.classList;
-	}
-
-	/**
-	 * Add class `name` if not already present.
-	 *
-	 * @param {String} name
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	ClassList$1.prototype.add = function(name) {
-
-	  // classList
-	  if (this.list) {
-	    this.list.add(name);
-	    return this;
-	  }
-
-	  // fallback
-	  var arr = this.array();
-	  var i = index(arr, name);
-	  if (!~i) {
-	    arr.push(name);
-	  }
-
-	  if (defined(this.el.className.baseVal)) {
-	    this.el.className.baseVal = arr.join(' ');
-	  } else {
-	    this.el.className = arr.join(' ');
-	  }
-
-	  return this;
-	};
-
-	/**
-	 * Remove class `name` when present, or
-	 * pass a regular expression to remove
-	 * any which match.
-	 *
-	 * @param {String|RegExp} name
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	ClassList$1.prototype.remove = function(name) {
-	  if ('[object RegExp]' === toString$1.call(name)) {
-	    return this.removeMatching(name);
-	  }
-
-	  // classList
-	  if (this.list) {
-	    this.list.remove(name);
-	    return this;
-	  }
-
-	  // fallback
-	  var arr = this.array();
-	  var i = index(arr, name);
-	  if (~i) {
-	    arr.splice(i, 1);
-	  }
-	  this.el.className.baseVal = arr.join(' ');
-	  return this;
-	};
-
-	/**
-	 * Remove all classes matching `re`.
-	 *
-	 * @param {RegExp} re
-	 * @return {ClassList}
-	 * @api private
-	 */
-
-	ClassList$1.prototype.removeMatching = function(re) {
-	  var arr = this.array();
-	  for (var i = 0; i < arr.length; i++) {
-	    if (re.test(arr[i])) {
-	      this.remove(arr[i]);
-	    }
-	  }
-	  return this;
-	};
-
-	/**
-	 * Toggle class `name`, can force state via `force`.
-	 *
-	 * For browsers that support classList, but do not support `force` yet,
-	 * the mistake will be detected and corrected.
-	 *
-	 * @param {String} name
-	 * @param {Boolean} force
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	ClassList$1.prototype.toggle = function(name, force) {
-	  // classList
-	  if (this.list) {
-	    if (defined(force)) {
-	      if (force !== this.list.toggle(name, force)) {
-	        this.list.toggle(name); // toggle again to correct
-	      }
-	    } else {
-	      this.list.toggle(name);
-	    }
-	    return this;
-	  }
-
-	  // fallback
-	  if (defined(force)) {
-	    if (!force) {
-	      this.remove(name);
-	    } else {
-	      this.add(name);
-	    }
-	  } else {
-	    if (this.has(name)) {
-	      this.remove(name);
-	    } else {
-	      this.add(name);
-	    }
-	  }
-
-	  return this;
-	};
-
-	/**
-	 * Return an array of classes.
-	 *
-	 * @return {Array}
-	 * @api public
-	 */
-
-	ClassList$1.prototype.array = function() {
-	  var className = this.el.getAttribute('class') || '';
-	  var str = className.replace(/^\s+|\s+$/g, '');
-	  var arr = str.split(re$1);
-	  if ('' === arr[0]) {
-	    arr.shift();
-	  }
-	  return arr;
-	};
-
-	/**
-	 * Check if class `name` is present.
-	 *
-	 * @param {String} name
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	ClassList$1.prototype.has =
-	ClassList$1.prototype.contains = function(name) {
-	  return (
-	    this.list ?
-	      this.list.contains(name) :
-	      !! ~index(this.array(), name)
-	  );
-	};
-
-	function remove$2(element) {
-	  var parent = element.parentNode;
-
-	  if (parent) {
-	    parent.removeChild(element);
-	  }
-
-	  return element;
-	}
-
-	/**
-	 * Clear utility
-	 */
-
-	/**
-	 * Removes all children from the given element
-	 *
-	 * @param  {DOMElement} element
-	 * @return {DOMElement} the element (for chaining)
-	 */
-	function clear$1(element) {
-	  var child;
-
-	  while ((child = element.firstChild)) {
-	    remove$2(child);
-	  }
-
-	  return element;
-	}
-
-	function clone$1(element) {
-	  return element.cloneNode(true);
-	}
-
-	var ns = {
-	  svg: 'http://www.w3.org/2000/svg'
-	};
-
-	/**
-	 * DOM parsing utility
-	 */
-
-	var SVG_START = '<svg xmlns="' + ns.svg + '"';
-
-	function parse$1(svg) {
-
-	  var unwrap = false;
-
-	  // ensure we import a valid svg document
-	  if (svg.substring(0, 4) === '<svg') {
-	    if (svg.indexOf(ns.svg) === -1) {
-	      svg = SVG_START + svg.substring(4);
-	    }
-	  } else {
-	    // namespace svg
-	    svg = SVG_START + '>' + svg + '</svg>';
-	    unwrap = true;
-	  }
-
-	  var parsed = parseDocument(svg);
-
-	  if (!unwrap) {
-	    return parsed;
-	  }
-
-	  var fragment = document.createDocumentFragment();
-
-	  var parent = parsed.firstChild;
-
-	  while (parent.firstChild) {
-	    fragment.appendChild(parent.firstChild);
-	  }
-
-	  return fragment;
-	}
-
-	function parseDocument(svg) {
-
-	  var parser;
-
-	  // parse
-	  parser = new DOMParser();
-	  parser.async = false;
-
-	  return parser.parseFromString(svg, 'text/xml');
-	}
-
-	/**
-	 * Create utility for SVG elements
-	 */
-
-
-	/**
-	 * Create a specific type from name or SVG markup.
-	 *
-	 * @param {String} name the name or markup of the element
-	 * @param {Object} [attrs] attributes to set on the element
-	 *
-	 * @returns {SVGElement}
-	 */
-	function create$1(name, attrs) {
-	  var element;
-
-	  if (name.charAt(0) === '<') {
-	    element = parse$1(name).firstChild;
-	    element = document.importNode(element, true);
-	  } else {
-	    element = document.createElementNS(ns.svg, name);
-	  }
-
-	  if (attrs) {
-	    attr$1(element, attrs);
-	  }
-
-	  return element;
-	}
-
-	/**
-	 * Geometry helpers
-	 */
-
-	// fake node used to instantiate svg geometry elements
-	var node = create$1('svg');
-
-	function extend$1(object, props) {
-	  var i, k, keys = Object.keys(props);
-
-	  for (i = 0; (k = keys[i]); i++) {
-	    object[k] = props[k];
-	  }
-
-	  return object;
-	}
-
-	/**
-	 * Create matrix via args.
-	 *
-	 * @example
-	 *
-	 * createMatrix({ a: 1, b: 1 });
-	 * createMatrix();
-	 * createMatrix(1, 2, 0, 0, 30, 20);
-	 *
-	 * @return {SVGMatrix}
-	 */
-	function createMatrix(a, b, c, d, e, f) {
-	  var matrix = node.createSVGMatrix();
-
-	  switch (arguments.length) {
-	  case 0:
-	    return matrix;
-	  case 1:
-	    return extend$1(matrix, a);
-	  case 6:
-	    return extend$1(matrix, {
-	      a: a,
-	      b: b,
-	      c: c,
-	      d: d,
-	      e: e,
-	      f: f
-	    });
-	  }
-	}
-
-	function createTransform(matrix) {
-	  if (matrix) {
-	    return node.createSVGTransformFromMatrix(matrix);
-	  } else {
-	    return node.createSVGTransform();
-	  }
-	}
-
-	/**
-	 * transform accessor utility
-	 */
-
-	function wrapMatrix(transformList, transform) {
-	  if (transform instanceof SVGMatrix) {
-	    return transformList.createSVGTransformFromMatrix(transform);
-	  }
-
-	  return transform;
-	}
-
-
-	function setTransforms(transformList, transforms) {
-	  var i, t;
-
-	  transformList.clear();
-
-	  for (i = 0; (t = transforms[i]); i++) {
-	    transformList.appendItem(wrapMatrix(transformList, t));
-	  }
-	}
-
-	/**
-	 * Get or set the transforms on the given node.
-	 *
-	 * @param {SVGElement} node
-	 * @param  {SVGTransform|SVGMatrix|Array<SVGTransform|SVGMatrix>} [transforms]
-	 *
-	 * @return {SVGTransform} the consolidated transform
-	 */
-	function transform$1(node, transforms) {
-	  var transformList = node.transform.baseVal;
-
-	  if (transforms) {
-
-	    if (!Array.isArray(transforms)) {
-	      transforms = [ transforms ];
-	    }
-
-	    setTransforms(transformList, transforms);
-	  }
-
-	  return transformList.consolidate();
-	}
-
-	function componentsToPath(elements) {
-	  return elements.join(',').replace(/,?([A-z]),?/g, '$1');
-	}
-
-	function toSVGPoints(points) {
-	  var result = '';
-
-	  for (var i = 0, p; (p = points[i]); i++) {
-	    result += p.x + ',' + p.y + ' ';
-	  }
-
-	  return result;
-	}
-
-	function createLine(points, attrs) {
-
-	  var line = create$1('polyline');
-	  attr$1(line, { points: toSVGPoints(points) });
-
-	  if (attrs) {
-	    attr$1(line, attrs);
-	  }
-
-	  return line;
-	}
-
-	function updateLine(gfx, points) {
-	  attr$1(gfx, { points: toSVGPoints(points) });
-
-	  return gfx;
-	}
-
-	/**
-	 * Flatten array, one level deep.
-	 *
-	 * @param {Array<?>} arr
-	 *
-	 * @return {Array<?>}
-	 */
 	function flatten(arr) {
 	  return Array.prototype.concat.apply([], arr);
 	}
@@ -2886,7 +235,7 @@
 	function isNil(obj) {
 	  return obj == null;
 	}
-	function isArray$1(obj) {
+	function isArray$2(obj) {
 	  return nativeToString.call(obj) === '[object Array]';
 	}
 	function isObject(obj) {
@@ -2909,7 +258,7 @@
 	 */
 
 	function ensureArray(obj) {
-	  if (isArray$1(obj)) {
+	  if (isArray$2(obj)) {
 	    return;
 	  }
 
@@ -2940,13 +289,33 @@
 	function find(collection, matcher) {
 	  matcher = toMatcher(matcher);
 	  var match;
-	  forEach$1(collection, function (val, key) {
+	  forEach(collection, function (val, key) {
 	    if (matcher(val, key)) {
 	      match = val;
 	      return false;
 	    }
 	  });
 	  return match;
+	}
+	/**
+	 * Find element index in collection.
+	 *
+	 * @param  {Array|Object} collection
+	 * @param  {Function} matcher
+	 *
+	 * @return {Object}
+	 */
+
+	function findIndex(collection, matcher) {
+	  matcher = toMatcher(matcher);
+	  var idx = isArray$2(collection) ? -1 : undefined;
+	  forEach(collection, function (val, key) {
+	    if (matcher(val, key)) {
+	      idx = key;
+	      return false;
+	    }
+	  });
+	  return idx;
 	}
 	/**
 	 * Find element in collection.
@@ -2959,7 +328,7 @@
 
 	function filter(collection, matcher) {
 	  var result = [];
-	  forEach$1(collection, function (val, key) {
+	  forEach(collection, function (val, key) {
 	    if (matcher(val, key)) {
 	      result.push(val);
 	    }
@@ -2976,14 +345,14 @@
 	 * @return {Object} return result that stopped the iteration
 	 */
 
-	function forEach$1(collection, iterator) {
+	function forEach(collection, iterator) {
 	  var val, result;
 
 	  if (isUndefined$1(collection)) {
 	    return;
 	  }
 
-	  var convertKey = isArray$1(collection) ? toNum : identity;
+	  var convertKey = isArray$2(collection) ? toNum : identity;
 
 	  for (var key in collection) {
 	    if (has(collection, key)) {
@@ -3026,8 +395,8 @@
 	 * @return {Any} result returned from last iterator
 	 */
 
-	function reduce$1(collection, iterator, result) {
-	  forEach$1(collection, function (value, idx) {
+	function reduce(collection, iterator, result) {
+	  forEach(collection, function (value, idx) {
 	    result = iterator(result, value, idx);
 	  });
 	  return result;
@@ -3043,7 +412,7 @@
 	 */
 
 	function every(collection, matcher) {
-	  return !!reduce$1(collection, function (matches, val, key) {
+	  return !!reduce(collection, function (matches, val, key) {
 	    return matches && matcher(val, key);
 	  }, true);
 	}
@@ -3072,7 +441,7 @@
 
 	function map$1(collection, fn) {
 	  var result = [];
-	  forEach$1(collection, function (val, key) {
+	  forEach(collection, function (val, key) {
 	    result.push(fn(val, key));
 	  });
 	  return result;
@@ -3085,7 +454,7 @@
 	 * @return {Array}
 	 */
 
-	function keys$1(collection) {
+	function keys(collection) {
 	  return collection && Object.keys(collection) || [];
 	}
 	/**
@@ -3097,7 +466,7 @@
 	 */
 
 	function size(collection) {
-	  return keys$1(collection).length;
+	  return keys(collection).length;
 	}
 	/**
 	 * Get the values in the collection.
@@ -3124,7 +493,7 @@
 	function groupBy(collection, extractor) {
 	  var grouped = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 	  extractor = toExtractor(extractor);
-	  forEach$1(collection, function (val) {
+	  forEach(collection, function (val) {
 	    var discriminator = extractor(val) || '_';
 	    var group = grouped[discriminator];
 
@@ -3144,7 +513,7 @@
 	    collections[_key - 1] = arguments[_key];
 	  }
 
-	  forEach$1(collections, function (c) {
+	  forEach(collections, function (c) {
 	    return groupBy(c, extractor, grouped);
 	  });
 	  var result = map$1(grouped, function (val, key) {
@@ -3165,7 +534,7 @@
 	function sortBy(collection, extractor) {
 	  extractor = toExtractor(extractor);
 	  var sorted = [];
-	  forEach$1(collection, function (value, key) {
+	  forEach(collection, function (value, key) {
 	    var disc = extractor(value, key);
 	    var entry = {
 	      d: disc,
@@ -3335,7 +704,7 @@
 	function pick(target, properties) {
 	  var result = {};
 	  var obj = Object(target);
-	  forEach$1(properties, function (prop) {
+	  forEach(properties, function (prop) {
 	    if (prop in obj) {
 	      result[prop] = target[prop];
 	    }
@@ -3354,12 +723,1721 @@
 	function omit(target, properties) {
 	  var result = {};
 	  var obj = Object(target);
-	  forEach$1(obj, function (prop, key) {
+	  forEach(obj, function (prop, key) {
 	    if (properties.indexOf(key) === -1) {
 	      result[key] = prop;
 	    }
 	  });
 	  return result;
+	}
+
+	/**
+	 * Set attribute `name` to `val`, or get attr `name`.
+	 *
+	 * @param {Element} el
+	 * @param {String} name
+	 * @param {String} [val]
+	 * @api public
+	 */
+	function attr$1(el, name, val) {
+	  // get
+	  if (arguments.length == 2) {
+	    return el.getAttribute(name);
+	  }
+
+	  // remove
+	  if (val === null) {
+	    return el.removeAttribute(name);
+	  }
+
+	  // set
+	  el.setAttribute(name, val);
+
+	  return el;
+	}
+
+	var indexOf$1 = [].indexOf;
+
+	var indexof = function(arr, obj){
+	  if (indexOf$1) return arr.indexOf(obj);
+	  for (var i = 0; i < arr.length; ++i) {
+	    if (arr[i] === obj) return i;
+	  }
+	  return -1;
+	};
+
+	/**
+	 * Taken from https://github.com/component/classes
+	 *
+	 * Without the component bits.
+	 */
+
+	/**
+	 * Whitespace regexp.
+	 */
+
+	var re$1 = /\s+/;
+
+	/**
+	 * toString reference.
+	 */
+
+	var toString$1 = Object.prototype.toString;
+
+	/**
+	 * Wrap `el` in a `ClassList`.
+	 *
+	 * @param {Element} el
+	 * @return {ClassList}
+	 * @api public
+	 */
+
+	function classes$1(el) {
+	  return new ClassList$1(el);
+	}
+
+	/**
+	 * Initialize a new ClassList for `el`.
+	 *
+	 * @param {Element} el
+	 * @api private
+	 */
+
+	function ClassList$1(el) {
+	  if (!el || !el.nodeType) {
+	    throw new Error('A DOM element reference is required');
+	  }
+	  this.el = el;
+	  this.list = el.classList;
+	}
+
+	/**
+	 * Add class `name` if not already present.
+	 *
+	 * @param {String} name
+	 * @return {ClassList}
+	 * @api public
+	 */
+
+	ClassList$1.prototype.add = function (name) {
+	  // classList
+	  if (this.list) {
+	    this.list.add(name);
+	    return this;
+	  }
+
+	  // fallback
+	  var arr = this.array();
+	  var i = indexof(arr, name);
+	  if (!~i) arr.push(name);
+	  this.el.className = arr.join(' ');
+	  return this;
+	};
+
+	/**
+	 * Remove class `name` when present, or
+	 * pass a regular expression to remove
+	 * any which match.
+	 *
+	 * @param {String|RegExp} name
+	 * @return {ClassList}
+	 * @api public
+	 */
+
+	ClassList$1.prototype.remove = function (name) {
+	  if ('[object RegExp]' == toString$1.call(name)) {
+	    return this.removeMatching(name);
+	  }
+
+	  // classList
+	  if (this.list) {
+	    this.list.remove(name);
+	    return this;
+	  }
+
+	  // fallback
+	  var arr = this.array();
+	  var i = indexof(arr, name);
+	  if (~i) arr.splice(i, 1);
+	  this.el.className = arr.join(' ');
+	  return this;
+	};
+
+	/**
+	 * Remove all classes matching `re`.
+	 *
+	 * @param {RegExp} re
+	 * @return {ClassList}
+	 * @api private
+	 */
+
+	ClassList$1.prototype.removeMatching = function (re) {
+	  var arr = this.array();
+	  for (var i = 0; i < arr.length; i++) {
+	    if (re.test(arr[i])) {
+	      this.remove(arr[i]);
+	    }
+	  }
+	  return this;
+	};
+
+	/**
+	 * Toggle class `name`, can force state via `force`.
+	 *
+	 * For browsers that support classList, but do not support `force` yet,
+	 * the mistake will be detected and corrected.
+	 *
+	 * @param {String} name
+	 * @param {Boolean} force
+	 * @return {ClassList}
+	 * @api public
+	 */
+
+	ClassList$1.prototype.toggle = function (name, force) {
+	  // classList
+	  if (this.list) {
+	    if ('undefined' !== typeof force) {
+	      if (force !== this.list.toggle(name, force)) {
+	        this.list.toggle(name); // toggle again to correct
+	      }
+	    } else {
+	      this.list.toggle(name);
+	    }
+	    return this;
+	  }
+
+	  // fallback
+	  if ('undefined' !== typeof force) {
+	    if (!force) {
+	      this.remove(name);
+	    } else {
+	      this.add(name);
+	    }
+	  } else {
+	    if (this.has(name)) {
+	      this.remove(name);
+	    } else {
+	      this.add(name);
+	    }
+	  }
+
+	  return this;
+	};
+
+	/**
+	 * Return an array of classes.
+	 *
+	 * @return {Array}
+	 * @api public
+	 */
+
+	ClassList$1.prototype.array = function () {
+	  var className = this.el.getAttribute('class') || '';
+	  var str = className.replace(/^\s+|\s+$/g, '');
+	  var arr = str.split(re$1);
+	  if ('' === arr[0]) arr.shift();
+	  return arr;
+	};
+
+	/**
+	 * Check if class `name` is present.
+	 *
+	 * @param {String} name
+	 * @return {ClassList}
+	 * @api public
+	 */
+
+	ClassList$1.prototype.has = ClassList$1.prototype.contains = function (name) {
+	  return this.list ? this.list.contains(name) : !!~indexof(this.array(), name);
+	};
+
+	/**
+	 * Remove all children from the given element.
+	 */
+	function clear$1(el) {
+
+	  var c;
+
+	  while (el.childNodes.length) {
+	    c = el.childNodes[0];
+	    el.removeChild(c);
+	  }
+
+	  return el;
+	}
+
+	var proto = typeof Element !== 'undefined' ? Element.prototype : {};
+	var vendor = proto.matches
+	  || proto.matchesSelector
+	  || proto.webkitMatchesSelector
+	  || proto.mozMatchesSelector
+	  || proto.msMatchesSelector
+	  || proto.oMatchesSelector;
+
+	var matchesSelector = match;
+
+	/**
+	 * Match `el` to `selector`.
+	 *
+	 * @param {Element} el
+	 * @param {String} selector
+	 * @return {Boolean}
+	 * @api public
+	 */
+
+	function match(el, selector) {
+	  if (!el || el.nodeType !== 1) return false;
+	  if (vendor) return vendor.call(el, selector);
+	  var nodes = el.parentNode.querySelectorAll(selector);
+	  for (var i = 0; i < nodes.length; i++) {
+	    if (nodes[i] == el) return true;
+	  }
+	  return false;
+	}
+
+	/**
+	 * Closest
+	 *
+	 * @param {Element} el
+	 * @param {String} selector
+	 * @param {Boolean} checkYourSelf (optional)
+	 */
+	function closest (element, selector, checkYourSelf) {
+	  var currentElem = checkYourSelf ? element : element.parentNode;
+
+	  while (currentElem && currentElem.nodeType !== document.DOCUMENT_NODE && currentElem.nodeType !== document.DOCUMENT_FRAGMENT_NODE) {
+
+	    if (matchesSelector(currentElem, selector)) {
+	      return currentElem;
+	    }
+
+	    currentElem = currentElem.parentNode;
+	  }
+
+	  return matchesSelector(currentElem, selector) ? currentElem : null;
+	}
+
+	var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
+	    unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
+	    prefix$6 = bind !== 'addEventListener' ? 'on' : '';
+
+	/**
+	 * Bind `el` event `type` to `fn`.
+	 *
+	 * @param {Element} el
+	 * @param {String} type
+	 * @param {Function} fn
+	 * @param {Boolean} capture
+	 * @return {Function}
+	 * @api public
+	 */
+
+	var bind_1 = function(el, type, fn, capture){
+	  el[bind](prefix$6 + type, fn, capture || false);
+	  return fn;
+	};
+
+	/**
+	 * Unbind `el` event `type`'s callback `fn`.
+	 *
+	 * @param {Element} el
+	 * @param {String} type
+	 * @param {Function} fn
+	 * @param {Boolean} capture
+	 * @return {Function}
+	 * @api public
+	 */
+
+	var unbind_1 = function(el, type, fn, capture){
+	  el[unbind](prefix$6 + type, fn, capture || false);
+	  return fn;
+	};
+
+	var componentEvent = {
+		bind: bind_1,
+		unbind: unbind_1
+	};
+
+	/**
+	 * Module dependencies.
+	 */
+
+	/**
+	 * Delegate event `type` to `selector`
+	 * and invoke `fn(e)`. A callback function
+	 * is returned which may be passed to `.unbind()`.
+	 *
+	 * @param {Element} el
+	 * @param {String} selector
+	 * @param {String} type
+	 * @param {Function} fn
+	 * @param {Boolean} capture
+	 * @return {Function}
+	 * @api public
+	 */
+
+	// Some events don't bubble, so we want to bind to the capture phase instead
+	// when delegating.
+	var forceCaptureEvents = ['focus', 'blur'];
+
+	function bind$1(el, selector, type, fn, capture) {
+	  if (forceCaptureEvents.indexOf(type) !== -1) {
+	    capture = true;
+	  }
+
+	  return componentEvent.bind(el, type, function (e) {
+	    var target = e.target || e.srcElement;
+	    e.delegateTarget = closest(target, selector, true);
+	    if (e.delegateTarget) {
+	      fn.call(el, e);
+	    }
+	  }, capture);
+	}
+
+	/**
+	 * Unbind event `type`'s callback `fn`.
+	 *
+	 * @param {Element} el
+	 * @param {String} type
+	 * @param {Function} fn
+	 * @param {Boolean} capture
+	 * @api public
+	 */
+	function unbind$1(el, type, fn, capture) {
+	  if (forceCaptureEvents.indexOf(type) !== -1) {
+	    capture = true;
+	  }
+
+	  return componentEvent.unbind(el, type, fn, capture);
+	}
+
+	var delegate = {
+	  bind: bind$1,
+	  unbind: unbind$1
+	};
+
+	/**
+	 * Expose `parse`.
+	 */
+
+	var domify = parse$1;
+
+	/**
+	 * Tests for browser support.
+	 */
+
+	var innerHTMLBug = false;
+	var bugTestDiv;
+	if (typeof document !== 'undefined') {
+	  bugTestDiv = document.createElement('div');
+	  // Setup
+	  bugTestDiv.innerHTML = '  <link/><table></table><a href="/a">a</a><input type="checkbox"/>';
+	  // Make sure that link elements get serialized correctly by innerHTML
+	  // This requires a wrapper element in IE
+	  innerHTMLBug = !bugTestDiv.getElementsByTagName('link').length;
+	  bugTestDiv = undefined;
+	}
+
+	/**
+	 * Wrap map from jquery.
+	 */
+
+	var map = {
+	  legend: [1, '<fieldset>', '</fieldset>'],
+	  tr: [2, '<table><tbody>', '</tbody></table>'],
+	  col: [2, '<table><tbody></tbody><colgroup>', '</colgroup></table>'],
+	  // for script/link/style tags to work in IE6-8, you have to wrap
+	  // in a div with a non-whitespace character in front, ha!
+	  _default: innerHTMLBug ? [1, 'X<div>', '</div>'] : [0, '', '']
+	};
+
+	map.td =
+	map.th = [3, '<table><tbody><tr>', '</tr></tbody></table>'];
+
+	map.option =
+	map.optgroup = [1, '<select multiple="multiple">', '</select>'];
+
+	map.thead =
+	map.tbody =
+	map.colgroup =
+	map.caption =
+	map.tfoot = [1, '<table>', '</table>'];
+
+	map.polyline =
+	map.ellipse =
+	map.polygon =
+	map.circle =
+	map.text =
+	map.line =
+	map.path =
+	map.rect =
+	map.g = [1, '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">','</svg>'];
+
+	/**
+	 * Parse `html` and return a DOM Node instance, which could be a TextNode,
+	 * HTML DOM Node of some kind (<div> for example), or a DocumentFragment
+	 * instance, depending on the contents of the `html` string.
+	 *
+	 * @param {String} html - HTML string to "domify"
+	 * @param {Document} doc - The `document` instance to create the Node for
+	 * @return {DOMNode} the TextNode, DOM Node, or DocumentFragment instance
+	 * @api private
+	 */
+
+	function parse$1(html, doc) {
+	  if ('string' != typeof html) throw new TypeError('String expected');
+
+	  // default to the global `document` object
+	  if (!doc) doc = document;
+
+	  // tag name
+	  var m = /<([\w:]+)/.exec(html);
+	  if (!m) return doc.createTextNode(html);
+
+	  html = html.replace(/^\s+|\s+$/g, ''); // Remove leading/trailing whitespace
+
+	  var tag = m[1];
+
+	  // body support
+	  if (tag == 'body') {
+	    var el = doc.createElement('html');
+	    el.innerHTML = html;
+	    return el.removeChild(el.lastChild);
+	  }
+
+	  // wrap map
+	  var wrap = map[tag] || map._default;
+	  var depth = wrap[0];
+	  var prefix = wrap[1];
+	  var suffix = wrap[2];
+	  var el = doc.createElement('div');
+	  el.innerHTML = prefix + html + suffix;
+	  while (depth--) el = el.lastChild;
+
+	  // one element
+	  if (el.firstChild == el.lastChild) {
+	    return el.removeChild(el.firstChild);
+	  }
+
+	  // several elements
+	  var fragment = doc.createDocumentFragment();
+	  while (el.firstChild) {
+	    fragment.appendChild(el.removeChild(el.firstChild));
+	  }
+
+	  return fragment;
+	}
+
+	function query(selector, el) {
+	  el = el || document;
+
+	  return el.querySelector(selector);
+	}
+
+	function all(selector, el) {
+	  el = el || document;
+
+	  return el.querySelectorAll(selector);
+	}
+
+	function remove$2(el) {
+	  el.parentNode && el.parentNode.removeChild(el);
+	}
+
+	function ensureImported(element, target) {
+
+	  if (element.ownerDocument !== target.ownerDocument) {
+	    try {
+	      // may fail on webkit
+	      return target.ownerDocument.importNode(element, true);
+	    } catch (e) {
+	      // ignore
+	    }
+	  }
+
+	  return element;
+	}
+
+	/**
+	 * appendTo utility
+	 */
+
+	/**
+	 * Append a node to a target element and return the appended node.
+	 *
+	 * @param  {SVGElement} element
+	 * @param  {SVGElement} target
+	 *
+	 * @return {SVGElement} the appended node
+	 */
+	function appendTo(element, target) {
+	  return target.appendChild(ensureImported(element, target));
+	}
+
+	/**
+	 * append utility
+	 */
+
+	/**
+	 * Append a node to an element
+	 *
+	 * @param  {SVGElement} element
+	 * @param  {SVGElement} node
+	 *
+	 * @return {SVGElement} the element
+	 */
+	function append(target, node) {
+	  appendTo(node, target);
+	  return target;
+	}
+
+	/**
+	 * attribute accessor utility
+	 */
+
+	var LENGTH_ATTR = 2;
+
+	var CSS_PROPERTIES = {
+	  'alignment-baseline': 1,
+	  'baseline-shift': 1,
+	  'clip': 1,
+	  'clip-path': 1,
+	  'clip-rule': 1,
+	  'color': 1,
+	  'color-interpolation': 1,
+	  'color-interpolation-filters': 1,
+	  'color-profile': 1,
+	  'color-rendering': 1,
+	  'cursor': 1,
+	  'direction': 1,
+	  'display': 1,
+	  'dominant-baseline': 1,
+	  'enable-background': 1,
+	  'fill': 1,
+	  'fill-opacity': 1,
+	  'fill-rule': 1,
+	  'filter': 1,
+	  'flood-color': 1,
+	  'flood-opacity': 1,
+	  'font': 1,
+	  'font-family': 1,
+	  'font-size': LENGTH_ATTR,
+	  'font-size-adjust': 1,
+	  'font-stretch': 1,
+	  'font-style': 1,
+	  'font-variant': 1,
+	  'font-weight': 1,
+	  'glyph-orientation-horizontal': 1,
+	  'glyph-orientation-vertical': 1,
+	  'image-rendering': 1,
+	  'kerning': 1,
+	  'letter-spacing': 1,
+	  'lighting-color': 1,
+	  'marker': 1,
+	  'marker-end': 1,
+	  'marker-mid': 1,
+	  'marker-start': 1,
+	  'mask': 1,
+	  'opacity': 1,
+	  'overflow': 1,
+	  'pointer-events': 1,
+	  'shape-rendering': 1,
+	  'stop-color': 1,
+	  'stop-opacity': 1,
+	  'stroke': 1,
+	  'stroke-dasharray': 1,
+	  'stroke-dashoffset': 1,
+	  'stroke-linecap': 1,
+	  'stroke-linejoin': 1,
+	  'stroke-miterlimit': 1,
+	  'stroke-opacity': 1,
+	  'stroke-width': LENGTH_ATTR,
+	  'text-anchor': 1,
+	  'text-decoration': 1,
+	  'text-rendering': 1,
+	  'unicode-bidi': 1,
+	  'visibility': 1,
+	  'word-spacing': 1,
+	  'writing-mode': 1
+	};
+
+
+	function getAttribute(node, name) {
+	  if (CSS_PROPERTIES[name]) {
+	    return node.style[name];
+	  } else {
+	    return node.getAttributeNS(null, name);
+	  }
+	}
+
+	function setAttribute(node, name, value) {
+	  var hyphenated = name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+
+	  var type = CSS_PROPERTIES[hyphenated];
+
+	  if (type) {
+	    // append pixel unit, unless present
+	    if (type === LENGTH_ATTR && typeof value === 'number') {
+	      value = String(value) + 'px';
+	    }
+
+	    node.style[hyphenated] = value;
+	  } else {
+	    node.setAttributeNS(null, name, value);
+	  }
+	}
+
+	function setAttributes(node, attrs) {
+
+	  var names = Object.keys(attrs), i, name;
+
+	  for (i = 0, name; (name = names[i]); i++) {
+	    setAttribute(node, name, attrs[name]);
+	  }
+	}
+
+	/**
+	 * Gets or sets raw attributes on a node.
+	 *
+	 * @param  {SVGElement} node
+	 * @param  {Object} [attrs]
+	 * @param  {String} [name]
+	 * @param  {String} [value]
+	 *
+	 * @return {String}
+	 */
+	function attr(node, name, value) {
+	  if (typeof name === 'string') {
+	    if (value !== undefined) {
+	      setAttribute(node, name, value);
+	    } else {
+	      return getAttribute(node, name);
+	    }
+	  } else {
+	    setAttributes(node, name);
+	  }
+
+	  return node;
+	}
+
+	/**
+	 * Clear utility
+	 */
+	function index(arr, obj) {
+	  if (arr.indexOf) {
+	    return arr.indexOf(obj);
+	  }
+
+
+	  for (var i = 0; i < arr.length; ++i) {
+	    if (arr[i] === obj) {
+	      return i;
+	    }
+	  }
+
+	  return -1;
+	}
+
+	var re = /\s+/;
+
+	var toString = Object.prototype.toString;
+
+	function defined(o) {
+	  return typeof o !== 'undefined';
+	}
+
+	/**
+	 * Wrap `el` in a `ClassList`.
+	 *
+	 * @param {Element} el
+	 * @return {ClassList}
+	 * @api public
+	 */
+
+	function classes(el) {
+	  return new ClassList(el);
+	}
+
+	function ClassList(el) {
+	  if (!el || !el.nodeType) {
+	    throw new Error('A DOM element reference is required');
+	  }
+	  this.el = el;
+	  this.list = el.classList;
+	}
+
+	/**
+	 * Add class `name` if not already present.
+	 *
+	 * @param {String} name
+	 * @return {ClassList}
+	 * @api public
+	 */
+
+	ClassList.prototype.add = function(name) {
+
+	  // classList
+	  if (this.list) {
+	    this.list.add(name);
+	    return this;
+	  }
+
+	  // fallback
+	  var arr = this.array();
+	  var i = index(arr, name);
+	  if (!~i) {
+	    arr.push(name);
+	  }
+
+	  if (defined(this.el.className.baseVal)) {
+	    this.el.className.baseVal = arr.join(' ');
+	  } else {
+	    this.el.className = arr.join(' ');
+	  }
+
+	  return this;
+	};
+
+	/**
+	 * Remove class `name` when present, or
+	 * pass a regular expression to remove
+	 * any which match.
+	 *
+	 * @param {String|RegExp} name
+	 * @return {ClassList}
+	 * @api public
+	 */
+
+	ClassList.prototype.remove = function(name) {
+	  if ('[object RegExp]' === toString.call(name)) {
+	    return this.removeMatching(name);
+	  }
+
+	  // classList
+	  if (this.list) {
+	    this.list.remove(name);
+	    return this;
+	  }
+
+	  // fallback
+	  var arr = this.array();
+	  var i = index(arr, name);
+	  if (~i) {
+	    arr.splice(i, 1);
+	  }
+	  this.el.className.baseVal = arr.join(' ');
+	  return this;
+	};
+
+	/**
+	 * Remove all classes matching `re`.
+	 *
+	 * @param {RegExp} re
+	 * @return {ClassList}
+	 * @api private
+	 */
+
+	ClassList.prototype.removeMatching = function(re) {
+	  var arr = this.array();
+	  for (var i = 0; i < arr.length; i++) {
+	    if (re.test(arr[i])) {
+	      this.remove(arr[i]);
+	    }
+	  }
+	  return this;
+	};
+
+	/**
+	 * Toggle class `name`, can force state via `force`.
+	 *
+	 * For browsers that support classList, but do not support `force` yet,
+	 * the mistake will be detected and corrected.
+	 *
+	 * @param {String} name
+	 * @param {Boolean} force
+	 * @return {ClassList}
+	 * @api public
+	 */
+
+	ClassList.prototype.toggle = function(name, force) {
+	  // classList
+	  if (this.list) {
+	    if (defined(force)) {
+	      if (force !== this.list.toggle(name, force)) {
+	        this.list.toggle(name); // toggle again to correct
+	      }
+	    } else {
+	      this.list.toggle(name);
+	    }
+	    return this;
+	  }
+
+	  // fallback
+	  if (defined(force)) {
+	    if (!force) {
+	      this.remove(name);
+	    } else {
+	      this.add(name);
+	    }
+	  } else {
+	    if (this.has(name)) {
+	      this.remove(name);
+	    } else {
+	      this.add(name);
+	    }
+	  }
+
+	  return this;
+	};
+
+	/**
+	 * Return an array of classes.
+	 *
+	 * @return {Array}
+	 * @api public
+	 */
+
+	ClassList.prototype.array = function() {
+	  var className = this.el.getAttribute('class') || '';
+	  var str = className.replace(/^\s+|\s+$/g, '');
+	  var arr = str.split(re);
+	  if ('' === arr[0]) {
+	    arr.shift();
+	  }
+	  return arr;
+	};
+
+	/**
+	 * Check if class `name` is present.
+	 *
+	 * @param {String} name
+	 * @return {ClassList}
+	 * @api public
+	 */
+
+	ClassList.prototype.has =
+	ClassList.prototype.contains = function(name) {
+	  return (
+	    this.list ?
+	      this.list.contains(name) :
+	      !! ~index(this.array(), name)
+	  );
+	};
+
+	function remove$1(element) {
+	  var parent = element.parentNode;
+
+	  if (parent) {
+	    parent.removeChild(element);
+	  }
+
+	  return element;
+	}
+
+	/**
+	 * Clear utility
+	 */
+
+	/**
+	 * Removes all children from the given element
+	 *
+	 * @param  {DOMElement} element
+	 * @return {DOMElement} the element (for chaining)
+	 */
+	function clear(element) {
+	  var child;
+
+	  while ((child = element.firstChild)) {
+	    remove$1(child);
+	  }
+
+	  return element;
+	}
+
+	function clone$1(element) {
+	  return element.cloneNode(true);
+	}
+
+	var ns = {
+	  svg: 'http://www.w3.org/2000/svg'
+	};
+
+	/**
+	 * DOM parsing utility
+	 */
+
+	var SVG_START = '<svg xmlns="' + ns.svg + '"';
+
+	function parse(svg) {
+
+	  var unwrap = false;
+
+	  // ensure we import a valid svg document
+	  if (svg.substring(0, 4) === '<svg') {
+	    if (svg.indexOf(ns.svg) === -1) {
+	      svg = SVG_START + svg.substring(4);
+	    }
+	  } else {
+	    // namespace svg
+	    svg = SVG_START + '>' + svg + '</svg>';
+	    unwrap = true;
+	  }
+
+	  var parsed = parseDocument(svg);
+
+	  if (!unwrap) {
+	    return parsed;
+	  }
+
+	  var fragment = document.createDocumentFragment();
+
+	  var parent = parsed.firstChild;
+
+	  while (parent.firstChild) {
+	    fragment.appendChild(parent.firstChild);
+	  }
+
+	  return fragment;
+	}
+
+	function parseDocument(svg) {
+
+	  var parser;
+
+	  // parse
+	  parser = new DOMParser();
+	  parser.async = false;
+
+	  return parser.parseFromString(svg, 'text/xml');
+	}
+
+	/**
+	 * Create utility for SVG elements
+	 */
+
+
+	/**
+	 * Create a specific type from name or SVG markup.
+	 *
+	 * @param {String} name the name or markup of the element
+	 * @param {Object} [attrs] attributes to set on the element
+	 *
+	 * @returns {SVGElement}
+	 */
+	function create$1(name, attrs) {
+	  var element;
+
+	  if (name.charAt(0) === '<') {
+	    element = parse(name).firstChild;
+	    element = document.importNode(element, true);
+	  } else {
+	    element = document.createElementNS(ns.svg, name);
+	  }
+
+	  if (attrs) {
+	    attr(element, attrs);
+	  }
+
+	  return element;
+	}
+
+	/**
+	 * Geometry helpers
+	 */
+
+	// fake node used to instantiate svg geometry elements
+	var node = create$1('svg');
+
+	function extend$1(object, props) {
+	  var i, k, keys = Object.keys(props);
+
+	  for (i = 0; (k = keys[i]); i++) {
+	    object[k] = props[k];
+	  }
+
+	  return object;
+	}
+
+	/**
+	 * Create matrix via args.
+	 *
+	 * @example
+	 *
+	 * createMatrix({ a: 1, b: 1 });
+	 * createMatrix();
+	 * createMatrix(1, 2, 0, 0, 30, 20);
+	 *
+	 * @return {SVGMatrix}
+	 */
+	function createMatrix(a, b, c, d, e, f) {
+	  var matrix = node.createSVGMatrix();
+
+	  switch (arguments.length) {
+	  case 0:
+	    return matrix;
+	  case 1:
+	    return extend$1(matrix, a);
+	  case 6:
+	    return extend$1(matrix, {
+	      a: a,
+	      b: b,
+	      c: c,
+	      d: d,
+	      e: e,
+	      f: f
+	    });
+	  }
+	}
+
+	function createTransform(matrix) {
+	  if (matrix) {
+	    return node.createSVGTransformFromMatrix(matrix);
+	  } else {
+	    return node.createSVGTransform();
+	  }
+	}
+
+	/**
+	 * Serialization util
+	 */
+
+	var TEXT_ENTITIES = /([&<>]{1})/g;
+	var ATTR_ENTITIES = /([\n\r"]{1})/g;
+
+	var ENTITY_REPLACEMENT = {
+	  '&': '&amp;',
+	  '<': '&lt;',
+	  '>': '&gt;',
+	  '"': '\''
+	};
+
+	function escape$1(str, pattern) {
+
+	  function replaceFn(match, entity) {
+	    return ENTITY_REPLACEMENT[entity] || entity;
+	  }
+
+	  return str.replace(pattern, replaceFn);
+	}
+
+	function serialize(node, output) {
+
+	  var i, len, attrMap, attrNode, childNodes;
+
+	  switch (node.nodeType) {
+	  // TEXT
+	  case 3:
+	    // replace special XML characters
+	    output.push(escape$1(node.textContent, TEXT_ENTITIES));
+	    break;
+
+	  // ELEMENT
+	  case 1:
+	    output.push('<', node.tagName);
+
+	    if (node.hasAttributes()) {
+	      attrMap = node.attributes;
+	      for (i = 0, len = attrMap.length; i < len; ++i) {
+	        attrNode = attrMap.item(i);
+	        output.push(' ', attrNode.name, '="', escape$1(attrNode.value, ATTR_ENTITIES), '"');
+	      }
+	    }
+
+	    if (node.hasChildNodes()) {
+	      output.push('>');
+	      childNodes = node.childNodes;
+	      for (i = 0, len = childNodes.length; i < len; ++i) {
+	        serialize(childNodes.item(i), output);
+	      }
+	      output.push('</', node.tagName, '>');
+	    } else {
+	      output.push('/>');
+	    }
+	    break;
+
+	  // COMMENT
+	  case 8:
+	    output.push('<!--', escape$1(node.nodeValue, TEXT_ENTITIES), '-->');
+	    break;
+
+	  // CDATA
+	  case 4:
+	    output.push('<![CDATA[', node.nodeValue, ']]>');
+	    break;
+
+	  default:
+	    throw new Error('unable to handle node ' + node.nodeType);
+	  }
+
+	  return output;
+	}
+
+	/**
+	 * innerHTML like functionality for SVG elements.
+	 * based on innerSVG (https://code.google.com/p/innersvg)
+	 */
+
+
+	function set$1(element, svg) {
+
+	  var parsed = parse(svg);
+
+	  // clear element contents
+	  clear(element);
+
+	  if (!svg) {
+	    return;
+	  }
+
+	  if (!isFragment(parsed)) {
+	    // extract <svg> from parsed document
+	    parsed = parsed.documentElement;
+	  }
+
+	  var nodes = slice$1(parsed.childNodes);
+
+	  // import + append each node
+	  for (var i = 0; i < nodes.length; i++) {
+	    appendTo(nodes[i], element);
+	  }
+
+	}
+
+	function get$1(element) {
+	  var child = element.firstChild,
+	      output = [];
+
+	  while (child) {
+	    serialize(child, output);
+	    child = child.nextSibling;
+	  }
+
+	  return output.join('');
+	}
+
+	function isFragment(node) {
+	  return node.nodeName === '#document-fragment';
+	}
+
+	function innerSVG(element, svg) {
+
+	  if (svg !== undefined) {
+
+	    try {
+	      set$1(element, svg);
+	    } catch (e) {
+	      throw new Error('error parsing SVG: ' + e.message);
+	    }
+
+	    return element;
+	  } else {
+	    return get$1(element);
+	  }
+	}
+
+
+	function slice$1(arr) {
+	  return Array.prototype.slice.call(arr);
+	}
+
+	/**
+	 * transform accessor utility
+	 */
+
+	function wrapMatrix(transformList, transform) {
+	  if (transform instanceof SVGMatrix) {
+	    return transformList.createSVGTransformFromMatrix(transform);
+	  }
+
+	  return transform;
+	}
+
+
+	function setTransforms(transformList, transforms) {
+	  var i, t;
+
+	  transformList.clear();
+
+	  for (i = 0; (t = transforms[i]); i++) {
+	    transformList.appendItem(wrapMatrix(transformList, t));
+	  }
+	}
+
+	/**
+	 * Get or set the transforms on the given node.
+	 *
+	 * @param {SVGElement} node
+	 * @param  {SVGTransform|SVGMatrix|Array<SVGTransform|SVGMatrix>} [transforms]
+	 *
+	 * @return {SVGTransform} the consolidated transform
+	 */
+	function transform$1(node, transforms) {
+	  var transformList = node.transform.baseVal;
+
+	  if (transforms) {
+
+	    if (!Array.isArray(transforms)) {
+	      transforms = [ transforms ];
+	    }
+
+	    setTransforms(transformList, transforms);
+	  }
+
+	  return transformList.consolidate();
+	}
+
+	var CLASS_PATTERN = /^class /;
+
+	function isClass(fn) {
+	  return CLASS_PATTERN.test(fn.toString());
+	}
+
+	function isArray$1(obj) {
+	  return Object.prototype.toString.call(obj) === '[object Array]';
+	}
+
+	function hasOwnProp(obj, prop) {
+	  return Object.prototype.hasOwnProperty.call(obj, prop);
+	}
+
+	function annotate() {
+	  var args = Array.prototype.slice.call(arguments);
+
+	  if (args.length === 1 && isArray$1(args[0])) {
+	    args = args[0];
+	  }
+
+	  var fn = args.pop();
+
+	  fn.$inject = args;
+
+	  return fn;
+	}
+
+
+	// Current limitations:
+	// - can't put into "function arg" comments
+	// function /* (no parenthesis like this) */ (){}
+	// function abc( /* xx (no parenthesis like this) */ a, b) {}
+	//
+	// Just put the comment before function or inside:
+	// /* (((this is fine))) */ function(a, b) {}
+	// function abc(a) { /* (((this is fine))) */}
+	//
+	// - can't reliably auto-annotate constructor; we'll match the
+	// first constructor(...) pattern found which may be the one
+	// of a nested class, too.
+
+	var CONSTRUCTOR_ARGS = /constructor\s*[^(]*\(\s*([^)]*)\)/m;
+	var FN_ARGS = /^(?:async )?(?:function\s*)?[^(]*\(\s*([^)]*)\)/m;
+	var FN_ARG = /\/\*([^*]*)\*\//m;
+
+	function parseAnnotations(fn) {
+
+	  if (typeof fn !== 'function') {
+	    throw new Error('Cannot annotate "' + fn + '". Expected a function!');
+	  }
+
+	  var match = fn.toString().match(isClass(fn) ? CONSTRUCTOR_ARGS : FN_ARGS);
+
+	  // may parse class without constructor
+	  if (!match) {
+	    return [];
+	  }
+
+	  return match[1] && match[1].split(',').map(function(arg) {
+	    match = arg.match(FN_ARG);
+	    return match ? match[1].trim() : arg.trim();
+	  }) || [];
+	}
+
+	function Module() {
+	  var providers = [];
+
+	  this.factory = function(name, factory) {
+	    providers.push([name, 'factory', factory]);
+	    return this;
+	  };
+
+	  this.value = function(name, value) {
+	    providers.push([name, 'value', value]);
+	    return this;
+	  };
+
+	  this.type = function(name, type) {
+	    providers.push([name, 'type', type]);
+	    return this;
+	  };
+
+	  this.forEach = function(iterator) {
+	    providers.forEach(iterator);
+	  };
+
+	}
+
+	function Injector(modules, parent) {
+	  parent = parent || {
+	    get: function(name, strict) {
+	      currentlyResolving.push(name);
+
+	      if (strict === false) {
+	        return null;
+	      } else {
+	        throw error('No provider for "' + name + '"!');
+	      }
+	    }
+	  };
+
+	  var currentlyResolving = [];
+	  var providers = this._providers = Object.create(parent._providers || null);
+	  var instances = this._instances = Object.create(null);
+
+	  var self = instances.injector = this;
+
+	  var error = function(msg) {
+	    var stack = currentlyResolving.join(' -> ');
+	    currentlyResolving.length = 0;
+	    return new Error(stack ? msg + ' (Resolving: ' + stack + ')' : msg);
+	  };
+
+	  /**
+	   * Return a named service.
+	   *
+	   * @param {String} name
+	   * @param {Boolean} [strict=true] if false, resolve missing services to null
+	   *
+	   * @return {Object}
+	   */
+	  var get = function(name, strict) {
+	    if (!providers[name] && name.indexOf('.') !== -1) {
+	      var parts = name.split('.');
+	      var pivot = get(parts.shift());
+
+	      while (parts.length) {
+	        pivot = pivot[parts.shift()];
+	      }
+
+	      return pivot;
+	    }
+
+	    if (hasOwnProp(instances, name)) {
+	      return instances[name];
+	    }
+
+	    if (hasOwnProp(providers, name)) {
+	      if (currentlyResolving.indexOf(name) !== -1) {
+	        currentlyResolving.push(name);
+	        throw error('Cannot resolve circular dependency!');
+	      }
+
+	      currentlyResolving.push(name);
+	      instances[name] = providers[name][0](providers[name][1]);
+	      currentlyResolving.pop();
+
+	      return instances[name];
+	    }
+
+	    return parent.get(name, strict);
+	  };
+
+	  var fnDef = function(fn, locals) {
+
+	    if (typeof locals === 'undefined') {
+	      locals = {};
+	    }
+
+	    if (typeof fn !== 'function') {
+	      if (isArray$1(fn)) {
+	        fn = annotate(fn.slice());
+	      } else {
+	        throw new Error('Cannot invoke "' + fn + '". Expected a function!');
+	      }
+	    }
+
+	    var inject = fn.$inject || parseAnnotations(fn);
+	    var dependencies = inject.map(function(dep) {
+	      if (hasOwnProp(locals, dep)) {
+	        return locals[dep];
+	      } else {
+	        return get(dep);
+	      }
+	    });
+
+	    return {
+	      fn: fn,
+	      dependencies: dependencies
+	    };
+	  };
+
+	  var instantiate = function(Type) {
+	    var def = fnDef(Type);
+
+	    var fn = def.fn,
+	        dependencies = def.dependencies;
+
+	    // instantiate var args constructor
+	    var Constructor = Function.prototype.bind.apply(fn, [ null ].concat(dependencies));
+
+	    return new Constructor();
+	  };
+
+	  var invoke = function(func, context, locals) {
+	    var def = fnDef(func, locals);
+
+	    var fn = def.fn,
+	        dependencies = def.dependencies;
+
+	    return fn.apply(context, dependencies);
+	  };
+
+
+	  var createPrivateInjectorFactory = function(privateChildInjector) {
+	    return annotate(function(key) {
+	      return privateChildInjector.get(key);
+	    });
+	  };
+
+	  var createChild = function(modules, forceNewInstances) {
+	    if (forceNewInstances && forceNewInstances.length) {
+	      var fromParentModule = Object.create(null);
+	      var matchedScopes = Object.create(null);
+
+	      var privateInjectorsCache = [];
+	      var privateChildInjectors = [];
+	      var privateChildFactories = [];
+
+	      var provider;
+	      var cacheIdx;
+	      var privateChildInjector;
+	      var privateChildInjectorFactory;
+	      for (var name in providers) {
+	        provider = providers[name];
+
+	        if (forceNewInstances.indexOf(name) !== -1) {
+	          if (provider[2] === 'private') {
+	            cacheIdx = privateInjectorsCache.indexOf(provider[3]);
+	            if (cacheIdx === -1) {
+	              privateChildInjector = provider[3].createChild([], forceNewInstances);
+	              privateChildInjectorFactory = createPrivateInjectorFactory(privateChildInjector);
+	              privateInjectorsCache.push(provider[3]);
+	              privateChildInjectors.push(privateChildInjector);
+	              privateChildFactories.push(privateChildInjectorFactory);
+	              fromParentModule[name] = [privateChildInjectorFactory, name, 'private', privateChildInjector];
+	            } else {
+	              fromParentModule[name] = [privateChildFactories[cacheIdx], name, 'private', privateChildInjectors[cacheIdx]];
+	            }
+	          } else {
+	            fromParentModule[name] = [provider[2], provider[1]];
+	          }
+	          matchedScopes[name] = true;
+	        }
+
+	        if ((provider[2] === 'factory' || provider[2] === 'type') && provider[1].$scope) {
+	          /* jshint -W083 */
+	          forceNewInstances.forEach(function(scope) {
+	            if (provider[1].$scope.indexOf(scope) !== -1) {
+	              fromParentModule[name] = [provider[2], provider[1]];
+	              matchedScopes[scope] = true;
+	            }
+	          });
+	        }
+	      }
+
+	      forceNewInstances.forEach(function(scope) {
+	        if (!matchedScopes[scope]) {
+	          throw new Error('No provider for "' + scope + '". Cannot use provider from the parent!');
+	        }
+	      });
+
+	      modules.unshift(fromParentModule);
+	    }
+
+	    return new Injector(modules, self);
+	  };
+
+	  var factoryMap = {
+	    factory: invoke,
+	    type: instantiate,
+	    value: function(value) {
+	      return value;
+	    }
+	  };
+
+	  modules.forEach(function(module) {
+
+	    function arrayUnwrap(type, value) {
+	      if (type !== 'value' && isArray$1(value)) {
+	        value = annotate(value.slice());
+	      }
+
+	      return value;
+	    }
+
+	    // TODO(vojta): handle wrong inputs (modules)
+	    if (module instanceof Module) {
+	      module.forEach(function(provider) {
+	        var name = provider[0];
+	        var type = provider[1];
+	        var value = provider[2];
+
+	        providers[name] = [factoryMap[type], arrayUnwrap(type, value), type];
+	      });
+	    } else if (typeof module === 'object') {
+	      if (module.__exports__) {
+	        var clonedModule = Object.keys(module).reduce(function(m, key) {
+	          if (key.substring(0, 2) !== '__') {
+	            m[key] = module[key];
+	          }
+	          return m;
+	        }, Object.create(null));
+
+	        var privateInjector = new Injector((module.__modules__ || []).concat([clonedModule]), self);
+	        var getFromPrivateInjector = annotate(function(key) {
+	          return privateInjector.get(key);
+	        });
+	        module.__exports__.forEach(function(key) {
+	          providers[key] = [getFromPrivateInjector, key, 'private', privateInjector];
+	        });
+	      } else {
+	        Object.keys(module).forEach(function(name) {
+	          if (module[name][2] === 'private') {
+	            providers[name] = module[name];
+	            return;
+	          }
+
+	          var type = module[name][0];
+	          var value = module[name][1];
+
+	          providers[name] = [factoryMap[type], arrayUnwrap(type, value), type];
+	        });
+	      }
+	    }
+	  });
+
+	  // public API
+	  this.get = get;
+	  this.invoke = invoke;
+	  this.instantiate = instantiate;
+	  this.createChild = createChild;
+	}
+
+	var DEFAULT_RENDER_PRIORITY$1 = 1000;
+
+	/**
+	 * The base implementation of shape and connection renderers.
+	 *
+	 * @param {EventBus} eventBus
+	 * @param {number} [renderPriority=1000]
+	 */
+	function BaseRenderer(eventBus, renderPriority) {
+	  var self = this;
+
+	  renderPriority = renderPriority || DEFAULT_RENDER_PRIORITY$1;
+
+	  eventBus.on([ 'render.shape', 'render.connection' ], renderPriority, function(evt, context) {
+	    var type = evt.type,
+	        element = context.element,
+	        visuals = context.gfx,
+	        attrs = context.attrs;
+
+	    if (self.canRender(element)) {
+	      if (type === 'render.shape') {
+	        return self.drawShape(visuals, element, attrs);
+	      } else {
+	        return self.drawConnection(visuals, element, attrs);
+	      }
+	    }
+	  });
+
+	  eventBus.on([ 'render.getShapePath', 'render.getConnectionPath'], renderPriority, function(evt, element) {
+	    if (self.canRender(element)) {
+	      if (evt.type === 'render.getShapePath') {
+	        return self.getShapePath(element);
+	      } else {
+	        return self.getConnectionPath(element);
+	      }
+	    }
+	  });
+	}
+
+	/**
+	 * Should check whether *this* renderer can render
+	 * the element/connection.
+	 *
+	 * @param {element} element
+	 *
+	 * @returns {boolean}
+	 */
+	BaseRenderer.prototype.canRender = function() {};
+
+	/**
+	 * Provides the shape's snap svg element to be drawn on the `canvas`.
+	 *
+	 * @param {djs.Graphics} visuals
+	 * @param {Shape} shape
+	 *
+	 * @returns {Snap.svg} [returns a Snap.svg paper element ]
+	 */
+	BaseRenderer.prototype.drawShape = function() {};
+
+	/**
+	 * Provides the shape's snap svg element to be drawn on the `canvas`.
+	 *
+	 * @param {djs.Graphics} visuals
+	 * @param {Connection} connection
+	 *
+	 * @returns {Snap.svg} [returns a Snap.svg paper element ]
+	 */
+	BaseRenderer.prototype.drawConnection = function() {};
+
+	/**
+	 * Gets the SVG path of a shape that represents it's visual bounds.
+	 *
+	 * @param {Shape} shape
+	 *
+	 * @return {string} svg path
+	 */
+	BaseRenderer.prototype.getShapePath = function() {};
+
+	/**
+	 * Gets the SVG path of a connection that represents it's visual bounds.
+	 *
+	 * @param {Connection} connection
+	 *
+	 * @return {string} svg path
+	 */
+	BaseRenderer.prototype.getConnectionPath = function() {};
+
+	function componentsToPath(elements) {
+	  return elements.join(',').replace(/,?([A-z]),?/g, '$1');
+	}
+
+	function toSVGPoints(points) {
+	  var result = '';
+
+	  for (var i = 0, p; (p = points[i]); i++) {
+	    result += p.x + ',' + p.y + ' ';
+	  }
+
+	  return result;
+	}
+
+	function createLine(points, attrs) {
+
+	  var line = create$1('polyline');
+	  attr(line, { points: toSVGPoints(points) });
+
+	  if (attrs) {
+	    attr(line, attrs);
+	  }
+
+	  return line;
+	}
+
+	function updateLine(gfx, points) {
+	  attr(gfx, { points: toSVGPoints(points) });
+
+	  return gfx;
 	}
 
 	/**
@@ -3430,14 +2508,14 @@
 
 	  depth = depth || 0;
 
-	  if (!isArray$1(elements)) {
+	  if (!isArray$2(elements)) {
 	    elements = [ elements ];
 	  }
 
-	  forEach$1(elements, function(s, i) {
+	  forEach(elements, function(s, i) {
 	    var filter = fn(s, i, depth);
 
-	    if (isArray$1(filter) && filter.length) {
+	    if (isArray$2(filter) && filter.length) {
 	      eachElement(filter, fn, depth + 1);
 	    }
 	  });
@@ -3552,9 +2630,9 @@
 	      allShapes[element.id] = element;
 
 	      // remember all connections
-	      forEach$1(element.incoming, handleConnection);
+	      forEach(element.incoming, handleConnection);
 
-	      forEach$1(element.outgoing, handleConnection);
+	      forEach(element.outgoing, handleConnection);
 
 	      // recurse into children
 	      return element.children;
@@ -3582,7 +2660,7 @@
 	function getBBox(elements, stopRecursion) {
 
 	  stopRecursion = !!stopRecursion;
-	  if (!isArray$1(elements)) {
+	  if (!isArray$2(elements)) {
 	    elements = [elements];
 	  }
 
@@ -3591,7 +2669,7 @@
 	      maxX,
 	      maxY;
 
-	  forEach$1(elements, function(element) {
+	  forEach(elements, function(element) {
 
 	    // If element is a connection the bbox must be computed first
 	    var bbox = element;
@@ -3645,7 +2723,7 @@
 
 	  var filteredElements = {};
 
-	  forEach$1(elements, function(element) {
+	  forEach(elements, function(element) {
 
 	    var e = element;
 
@@ -3726,10 +2804,10 @@
 	  return true;
 	};
 
-	DefaultRenderer.prototype.drawShape = function drawShape(visuals, element) {
+	DefaultRenderer.prototype.drawShape = function drawShape(visuals, element, attrs) {
 	  var rect = create$1('rect');
 
-	  attr$1(rect, {
+	  attr(rect, {
 	    x: 0,
 	    y: 0,
 	    width: element.width || 0,
@@ -3737,9 +2815,9 @@
 	  });
 
 	  if (isFrameElement$1(element)) {
-	    attr$1(rect, this.FRAME_STYLE);
+	    attr(rect, assign({}, this.FRAME_STYLE, attrs || {}));
 	  } else {
-	    attr$1(rect, this.SHAPE_STYLE);
+	    attr(rect, assign({}, this.SHAPE_STYLE, attrs || {}));
 	  }
 
 	  append(visuals, rect);
@@ -3747,9 +2825,9 @@
 	  return rect;
 	};
 
-	DefaultRenderer.prototype.drawConnection = function drawConnection(visuals, connection) {
+	DefaultRenderer.prototype.drawConnection = function drawConnection(visuals, connection, attrs) {
 
-	  var line = createLine(connection.waypoints, this.CONNECTION_STYLE);
+	  var line = createLine(connection.waypoints, assign({}, this.CONNECTION_STYLE, attrs || {}));
 	  append(visuals, line);
 
 	  return line;
@@ -3838,12 +2916,12 @@
 	   */
 	  this.style = function(traits, additionalAttrs) {
 
-	    if (!isArray$1(traits) && !additionalAttrs) {
+	    if (!isArray$2(traits) && !additionalAttrs) {
 	      additionalAttrs = traits;
 	      traits = [];
 	    }
 
-	    var attrs = reduce$1(traits, function(attrs, t) {
+	    var attrs = reduce(traits, function(attrs, t) {
 	      return assign(attrs, defaultTraits[t] || {});
 	    }, {});
 
@@ -3851,7 +2929,7 @@
 	  };
 
 	  this.computeStyle = function(custom, traits, defaultStyles) {
-	    if (!isArray$1(traits)) {
+	    if (!isArray$2(traits)) {
 	      defaultStyles = traits;
 	      traits = [];
 	    }
@@ -3874,7 +2952,7 @@
 	 *
 	 * @return {number} the previous index of the element
 	 */
-	function remove$1(collection, element) {
+	function remove(collection, element) {
 
 	  if (!collection || !element) {
 	    return -1;
@@ -3950,7 +3028,7 @@
 	 * @return {number} the index or -1 if collection or element do
 	 *                  not exist or the element is not contained.
 	 */
-	function indexOf$1(collection, element) {
+	function indexOf(collection, element) {
 
 	  if (!collection || !element) {
 	    return -1;
@@ -4020,7 +3098,7 @@
 	function pointsAligned(a, b) {
 	  var points;
 
-	  if (isArray$1(a)) {
+	  if (isArray$2(a)) {
 	    points = a;
 	  } else {
 	    points = [ a, b ];
@@ -4040,7 +3118,7 @@
 	function pointsAlignedHorizontally(a, b) {
 	  var points;
 
-	  if (isArray$1(a)) {
+	  if (isArray$2(a)) {
 	    points = a;
 	  } else {
 	    points = [ a, b ];
@@ -4056,7 +3134,7 @@
 	function pointsAlignedVertically(a, b) {
 	  var points;
 
-	  if (isArray$1(a)) {
+	  if (isArray$2(a)) {
 	    points = a;
 	  } else {
 	    points = [ a, b ];
@@ -5274,7 +4352,7 @@
 
 	function createGroup(parent, cls, childIndex) {
 	  var group = create$1('g');
-	  classes$1(group).add(cls);
+	  classes(group).add(cls);
 
 	  var index = childIndex !== undefined ? childIndex : parent.childNodes.length - 1;
 
@@ -5323,28 +4401,28 @@
 	  'elementRegistry'
 	];
 
+	/**
+	 * Creates a <svg> element that is wrapped into a <div>.
+	 * This way we are always able to correctly figure out the size of the svg element
+	 * by querying the parent node.
 
+	 * (It is not possible to get the size of a svg element cross browser @ 2014-04-01)
+
+	 * <div class="djs-container" style="width: {desired-width}, height: {desired-height}">
+	 *   <svg width="100%" height="100%">
+	 *    ...
+	 *   </svg>
+	 * </div>
+	 */
 	Canvas.prototype._init = function(config) {
 
 	  var eventBus = this._eventBus;
-
-	  // Creates a <svg> element that is wrapped into a <div>.
-	  // This way we are always able to correctly figure out the size of the svg element
-	  // by querying the parent node.
-	  //
-	  // (It is not possible to get the size of a svg element cross browser @ 2014-04-01)
-	  //
-	  // <div class="djs-container" style="width: {desired-width}, height: {desired-height}">
-	  //   <svg width="100%" height="100%">
-	  //    ...
-	  //   </svg>
-	  // </div>
 
 	  // html container
 	  var container = this._container = createContainer(config);
 
 	  var svg = this._svg = create$1('svg');
-	  attr$1(svg, { width: '100%', height: '100%' });
+	  attr(svg, { width: '100%', height: '100%' });
 
 	  append(container, svg);
 
@@ -5426,11 +4504,15 @@
 	    var type = getType(element);
 
 	    if (type === 'root') {
-	      self.setRootElement(null, true);
+	      self.setRootElementForPlane(null, self.findPlane(element), true);
 	    } else {
 	      self._removeElement(element, type);
 	    }
 	  });
+
+	  // remove all planes
+	  this._activePlane = null;
+	  this._planes = {};
 
 	  // force recomputation of view box
 	  delete this._cachedViewbox;
@@ -5443,7 +4525,7 @@
 	 * @returns {SVGElement}
 	 */
 	Canvas.prototype.getDefaultLayer = function() {
-	  return this.getPlane(BASE_LAYER).layer;
+	  return this.getLayer(BASE_LAYER);
 	};
 
 	/**
@@ -5496,7 +4578,7 @@
 	    index = 0;
 	  }
 
-	  var childIndex = reduce$1(this._layers, function(childIndex, layer) {
+	  var childIndex = reduce(this._layers, function(childIndex, layer) {
 	    if (index >= layer.index) {
 	      childIndex++;
 	    }
@@ -5514,9 +4596,6 @@
 	/**
 	 * Returns a plane that is used to draw elements on it.
 	 *
-	 * Non-existing planes retrieved through this method
-	 * will be created.
-	 *
 	 * @param {string} name
 	 *
 	 * @return {Object} plane descriptor with { layer, rootElement, name }
@@ -5528,23 +4607,47 @@
 
 	  var plane = this._planes[name];
 
-	  if (!plane) {
-	    plane = this._planes[name] = this._createPlane(name);
-	  }
-
 	  return plane;
 	};
 
-	Canvas.prototype._createPlane = function(name) {
+	/**
+	 * Creates a plane that is used to draw elements on it. If no
+	 * root element is provided, an implicit root will be used.
+	 *
+	 * @param {string} name
+	 * @param {Object|djs.model.Root} [rootElement] optional root element
+	 *
+	 * @return {Object} plane descriptor with { layer, rootElement, name }
+	 */
+	Canvas.prototype.createPlane = function(name, rootElement) {
+	  if (!name) {
+	    throw new Error('must specify a name');
+	  }
+
+	  if (this._planes[name]) {
+	    throw new Error('plane ' + name + ' already exists');
+	  }
+
+	  if (!rootElement) {
+	    rootElement = {
+	      id: '__implicitroot' + name,
+	      children: [],
+	      isImplicit: true
+	    };
+	  }
+
 	  var svgLayer = this.getLayer(name);
+	  classes(svgLayer).add(HIDDEN_MARKER);
 
-	  classes$1(svgLayer).add(HIDDEN_MARKER);
-
-	  return {
+	  var plane = this._planes[name] = {
 	    layer: svgLayer,
-	    rootElement: null,
-	    name: name
+	    name: name,
+	    rootElement: null
 	  };
+
+	  this.setRootElementForPlane(rootElement, plane);
+
+	  return plane;
 	};
 
 	/**
@@ -5563,15 +4666,15 @@
 	    plane = this.getPlane(plane);
 	  }
 
-	  // Hide previous Plane
+	  // hide previous Plane
 	  if (this._activePlane) {
-	    classes$1(this._activePlane.layer).add(HIDDEN_MARKER);
+	    classes(this._activePlane.layer).add(HIDDEN_MARKER);
 	  }
 
 	  this._activePlane = plane;
 
-	  // Show current Plane
-	  classes$1(plane.layer).remove(HIDDEN_MARKER);
+	  // show current Plane
+	  classes(plane.layer).remove(HIDDEN_MARKER);
 
 	  if (plane.rootElement) {
 	    this._elementRegistry.updateGraphics(plane.rootElement, this._svg, true);
@@ -5583,16 +4686,28 @@
 	};
 
 	/**
+	 * Returns the currently active layer
+	 *
+	 * @returns {SVGElement}
+	 */
+
+	Canvas.prototype.getActiveLayer = function() {
+	  return this.getActivePlane().layer;
+	};
+
+	/**
 	 * Returns the currently active plane.
 	 *
 	 * @return {Object} plane descriptor with { layer, rootElement, name }
 	 */
 	Canvas.prototype.getActivePlane = function() {
-	  if (!this._activePlane) {
+	  var plane = this._activePlane;
+	  if (!plane) {
+	    plane = this.createPlane(BASE_LAYER);
 	    this.setActivePlane(BASE_LAYER);
 	  }
 
-	  return this._activePlane;
+	  return plane;
 	};
 
 	/**
@@ -5641,14 +4756,14 @@
 	    return;
 	  }
 
-	  forEach$1([ container.gfx, container.secondaryGfx ], function(gfx) {
+	  forEach([ container.gfx, container.secondaryGfx ], function(gfx) {
 	    if (gfx) {
 
 	      // invoke either addClass or removeClass based on mode
 	      if (add) {
-	        classes$1(gfx).add(marker);
+	        classes(gfx).add(marker);
 	      } else {
-	        classes$1(gfx).remove(marker);
+	        classes(gfx).remove(marker);
 	      }
 	    }
 	  });
@@ -5714,7 +4829,7 @@
 
 	  var gfx = this.getGraphics(element);
 
-	  return classes$1(gfx).has(marker);
+	  return classes(gfx).has(marker);
 	};
 
 	/**
@@ -5736,13 +4851,6 @@
 
 	Canvas.prototype.getRootElement = function() {
 	  var plane = this.getActivePlane();
-	  if (!plane.rootElement) {
-	    this.setRootElement({
-	      id: '__implicitroot' + plane.name,
-	      children: [],
-	      isImplicit: true
-	    });
-	  }
 
 	  return plane.rootElement;
 	};
@@ -5761,9 +4869,17 @@
 	 * @return {Object|djs.model.Root} new root element
 	 */
 	Canvas.prototype.setRootElement = function(element, override) {
-	  var activePlane = this.getActivePlane();
+	  var activePlane = this._activePlane;
 
-	  return this.setRootElementForPlane(element, activePlane, override);
+	  if (activePlane) {
+	    return this.setRootElementForPlane(element, activePlane, override);
+	  } else {
+	    var basePlane = this.createPlane(BASE_LAYER, element);
+
+	    this.setActivePlane(basePlane);
+
+	    return basePlane.rootElement;
+	  }
 	};
 
 
@@ -5813,7 +4929,7 @@
 
 	    eventBus.fire('root.added', { element: element, gfx: gfx });
 
-	    // Associate SVG with root element when active
+	    // associate SVG with root element when active
 	    if (plane === this._activePlane) {
 	      this._elementRegistry.updateGraphics(element, this._svg, true);
 	    }
@@ -5947,7 +5063,7 @@
 	  graphicsFactory.remove(element);
 
 	  // unset parent <-> child relationship
-	  remove$1(element.parent && element.parent.children, element);
+	  remove(element.parent && element.parent.children, element);
 	  element.parent = null;
 
 	  eventBus.fire(type + '.removed', { element: element });
@@ -6236,7 +5352,7 @@
 	      zoom = this.zoom(),
 	      dx, dy;
 
-	  // Shrink viewboxBounds with padding
+	  // shrink viewboxBounds with padding
 	  viewboxBounds.y += padding.top / zoom;
 	  viewboxBounds.x += padding.left / zoom;
 	  viewboxBounds.width -= (padding.right + padding.left) / zoom;
@@ -6497,10 +5613,10 @@
 	  this._validateId(id);
 
 	  // associate dom node with element
-	  attr$1(gfx, ELEMENT_ID, id);
+	  attr(gfx, ELEMENT_ID, id);
 
 	  if (secondaryGfx) {
-	    attr$1(secondaryGfx, ELEMENT_ID, id);
+	    attr(secondaryGfx, ELEMENT_ID, id);
 	  }
 
 	  this._elements[id] = { element: element, gfx: gfx, secondaryGfx: secondaryGfx };
@@ -6519,10 +5635,10 @@
 	  if (container) {
 
 	    // unset element id on gfx
-	    attr$1(container.gfx, ELEMENT_ID, '');
+	    attr(container.gfx, ELEMENT_ID, '');
 
 	    if (container.secondaryGfx) {
-	      attr$1(container.secondaryGfx, ELEMENT_ID, '');
+	      attr(container.secondaryGfx, ELEMENT_ID, '');
 	    }
 
 	    delete elements[id];
@@ -6576,7 +5692,9 @@
 	    container.gfx = gfx;
 	  }
 
-	  attr$1(gfx, ELEMENT_ID, id);
+	  attr(gfx, ELEMENT_ID, id);
+
+	  return gfx;
 	};
 
 	/**
@@ -6598,7 +5716,7 @@
 	  if (typeof filter === 'string') {
 	    id = filter;
 	  } else {
-	    id = filter && attr$1(filter, ELEMENT_ID);
+	    id = filter && attr(filter, ELEMENT_ID);
 	  }
 
 	  var container = this._elements[id];
@@ -7429,7 +6547,7 @@
 	 */
 	EventBus.prototype.on = function(events, priority, callback, that) {
 
-	  events = isArray$1(events) ? events : [ events ];
+	  events = isArray$2(events) ? events : [ events ];
 
 	  if (isFunction(priority)) {
 	    that = callback;
@@ -7514,7 +6632,7 @@
 	 */
 	EventBus.prototype.off = function(events, callback) {
 
-	  events = isArray$1(events) ? events : [ events ];
+	  events = isArray$2(events) ? events : [ events ];
 
 	  var self = this;
 
@@ -7899,519 +7017,6 @@
 	}
 
 	/**
-	 * Set attribute `name` to `val`, or get attr `name`.
-	 *
-	 * @param {Element} el
-	 * @param {String} name
-	 * @param {String} [val]
-	 * @api public
-	 */
-	function attr(el, name, val) {
-	  // get
-	  if (arguments.length == 2) {
-	    return el.getAttribute(name);
-	  }
-
-	  // remove
-	  if (val === null) {
-	    return el.removeAttribute(name);
-	  }
-
-	  // set
-	  el.setAttribute(name, val);
-
-	  return el;
-	}
-
-	var indexOf = [].indexOf;
-
-	var indexof = function(arr, obj){
-	  if (indexOf) return arr.indexOf(obj);
-	  for (var i = 0; i < arr.length; ++i) {
-	    if (arr[i] === obj) return i;
-	  }
-	  return -1;
-	};
-
-	/**
-	 * Taken from https://github.com/component/classes
-	 *
-	 * Without the component bits.
-	 */
-
-	/**
-	 * Whitespace regexp.
-	 */
-
-	var re = /\s+/;
-
-	/**
-	 * toString reference.
-	 */
-
-	var toString = Object.prototype.toString;
-
-	/**
-	 * Wrap `el` in a `ClassList`.
-	 *
-	 * @param {Element} el
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	function classes(el) {
-	  return new ClassList(el);
-	}
-
-	/**
-	 * Initialize a new ClassList for `el`.
-	 *
-	 * @param {Element} el
-	 * @api private
-	 */
-
-	function ClassList(el) {
-	  if (!el || !el.nodeType) {
-	    throw new Error('A DOM element reference is required');
-	  }
-	  this.el = el;
-	  this.list = el.classList;
-	}
-
-	/**
-	 * Add class `name` if not already present.
-	 *
-	 * @param {String} name
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	ClassList.prototype.add = function (name) {
-	  // classList
-	  if (this.list) {
-	    this.list.add(name);
-	    return this;
-	  }
-
-	  // fallback
-	  var arr = this.array();
-	  var i = indexof(arr, name);
-	  if (!~i) arr.push(name);
-	  this.el.className = arr.join(' ');
-	  return this;
-	};
-
-	/**
-	 * Remove class `name` when present, or
-	 * pass a regular expression to remove
-	 * any which match.
-	 *
-	 * @param {String|RegExp} name
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	ClassList.prototype.remove = function (name) {
-	  if ('[object RegExp]' == toString.call(name)) {
-	    return this.removeMatching(name);
-	  }
-
-	  // classList
-	  if (this.list) {
-	    this.list.remove(name);
-	    return this;
-	  }
-
-	  // fallback
-	  var arr = this.array();
-	  var i = indexof(arr, name);
-	  if (~i) arr.splice(i, 1);
-	  this.el.className = arr.join(' ');
-	  return this;
-	};
-
-	/**
-	 * Remove all classes matching `re`.
-	 *
-	 * @param {RegExp} re
-	 * @return {ClassList}
-	 * @api private
-	 */
-
-	ClassList.prototype.removeMatching = function (re) {
-	  var arr = this.array();
-	  for (var i = 0; i < arr.length; i++) {
-	    if (re.test(arr[i])) {
-	      this.remove(arr[i]);
-	    }
-	  }
-	  return this;
-	};
-
-	/**
-	 * Toggle class `name`, can force state via `force`.
-	 *
-	 * For browsers that support classList, but do not support `force` yet,
-	 * the mistake will be detected and corrected.
-	 *
-	 * @param {String} name
-	 * @param {Boolean} force
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	ClassList.prototype.toggle = function (name, force) {
-	  // classList
-	  if (this.list) {
-	    if ('undefined' !== typeof force) {
-	      if (force !== this.list.toggle(name, force)) {
-	        this.list.toggle(name); // toggle again to correct
-	      }
-	    } else {
-	      this.list.toggle(name);
-	    }
-	    return this;
-	  }
-
-	  // fallback
-	  if ('undefined' !== typeof force) {
-	    if (!force) {
-	      this.remove(name);
-	    } else {
-	      this.add(name);
-	    }
-	  } else {
-	    if (this.has(name)) {
-	      this.remove(name);
-	    } else {
-	      this.add(name);
-	    }
-	  }
-
-	  return this;
-	};
-
-	/**
-	 * Return an array of classes.
-	 *
-	 * @return {Array}
-	 * @api public
-	 */
-
-	ClassList.prototype.array = function () {
-	  var className = this.el.getAttribute('class') || '';
-	  var str = className.replace(/^\s+|\s+$/g, '');
-	  var arr = str.split(re);
-	  if ('' === arr[0]) arr.shift();
-	  return arr;
-	};
-
-	/**
-	 * Check if class `name` is present.
-	 *
-	 * @param {String} name
-	 * @return {ClassList}
-	 * @api public
-	 */
-
-	ClassList.prototype.has = ClassList.prototype.contains = function (name) {
-	  return this.list ? this.list.contains(name) : !!~indexof(this.array(), name);
-	};
-
-	/**
-	 * Remove all children from the given element.
-	 */
-	function clear(el) {
-
-	  var c;
-
-	  while (el.childNodes.length) {
-	    c = el.childNodes[0];
-	    el.removeChild(c);
-	  }
-
-	  return el;
-	}
-
-	var proto = typeof Element !== 'undefined' ? Element.prototype : {};
-	var vendor = proto.matches
-	  || proto.matchesSelector
-	  || proto.webkitMatchesSelector
-	  || proto.mozMatchesSelector
-	  || proto.msMatchesSelector
-	  || proto.oMatchesSelector;
-
-	var matchesSelector = match;
-
-	/**
-	 * Match `el` to `selector`.
-	 *
-	 * @param {Element} el
-	 * @param {String} selector
-	 * @return {Boolean}
-	 * @api public
-	 */
-
-	function match(el, selector) {
-	  if (!el || el.nodeType !== 1) return false;
-	  if (vendor) return vendor.call(el, selector);
-	  var nodes = el.parentNode.querySelectorAll(selector);
-	  for (var i = 0; i < nodes.length; i++) {
-	    if (nodes[i] == el) return true;
-	  }
-	  return false;
-	}
-
-	/**
-	 * Closest
-	 *
-	 * @param {Element} el
-	 * @param {String} selector
-	 * @param {Boolean} checkYourSelf (optional)
-	 */
-	function closest (element, selector, checkYourSelf) {
-	  var currentElem = checkYourSelf ? element : element.parentNode;
-
-	  while (currentElem && currentElem.nodeType !== document.DOCUMENT_NODE && currentElem.nodeType !== document.DOCUMENT_FRAGMENT_NODE) {
-
-	    if (matchesSelector(currentElem, selector)) {
-	      return currentElem;
-	    }
-
-	    currentElem = currentElem.parentNode;
-	  }
-
-	  return matchesSelector(currentElem, selector) ? currentElem : null;
-	}
-
-	var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
-	    unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
-	    prefix$6 = bind !== 'addEventListener' ? 'on' : '';
-
-	/**
-	 * Bind `el` event `type` to `fn`.
-	 *
-	 * @param {Element} el
-	 * @param {String} type
-	 * @param {Function} fn
-	 * @param {Boolean} capture
-	 * @return {Function}
-	 * @api public
-	 */
-
-	var bind_1 = function(el, type, fn, capture){
-	  el[bind](prefix$6 + type, fn, capture || false);
-	  return fn;
-	};
-
-	/**
-	 * Unbind `el` event `type`'s callback `fn`.
-	 *
-	 * @param {Element} el
-	 * @param {String} type
-	 * @param {Function} fn
-	 * @param {Boolean} capture
-	 * @return {Function}
-	 * @api public
-	 */
-
-	var unbind_1 = function(el, type, fn, capture){
-	  el[unbind](prefix$6 + type, fn, capture || false);
-	  return fn;
-	};
-
-	var componentEvent = {
-		bind: bind_1,
-		unbind: unbind_1
-	};
-
-	/**
-	 * Module dependencies.
-	 */
-
-	/**
-	 * Delegate event `type` to `selector`
-	 * and invoke `fn(e)`. A callback function
-	 * is returned which may be passed to `.unbind()`.
-	 *
-	 * @param {Element} el
-	 * @param {String} selector
-	 * @param {String} type
-	 * @param {Function} fn
-	 * @param {Boolean} capture
-	 * @return {Function}
-	 * @api public
-	 */
-
-	// Some events don't bubble, so we want to bind to the capture phase instead
-	// when delegating.
-	var forceCaptureEvents = ['focus', 'blur'];
-
-	function bind$1(el, selector, type, fn, capture) {
-	  if (forceCaptureEvents.indexOf(type) !== -1) {
-	    capture = true;
-	  }
-
-	  return componentEvent.bind(el, type, function (e) {
-	    var target = e.target || e.srcElement;
-	    e.delegateTarget = closest(target, selector, true);
-	    if (e.delegateTarget) {
-	      fn.call(el, e);
-	    }
-	  }, capture);
-	}
-
-	/**
-	 * Unbind event `type`'s callback `fn`.
-	 *
-	 * @param {Element} el
-	 * @param {String} type
-	 * @param {Function} fn
-	 * @param {Boolean} capture
-	 * @api public
-	 */
-	function unbind$1(el, type, fn, capture) {
-	  if (forceCaptureEvents.indexOf(type) !== -1) {
-	    capture = true;
-	  }
-
-	  return componentEvent.unbind(el, type, fn, capture);
-	}
-
-	var delegate = {
-	  bind: bind$1,
-	  unbind: unbind$1
-	};
-
-	/**
-	 * Expose `parse`.
-	 */
-
-	var domify = parse;
-
-	/**
-	 * Tests for browser support.
-	 */
-
-	var innerHTMLBug = false;
-	var bugTestDiv;
-	if (typeof document !== 'undefined') {
-	  bugTestDiv = document.createElement('div');
-	  // Setup
-	  bugTestDiv.innerHTML = '  <link/><table></table><a href="/a">a</a><input type="checkbox"/>';
-	  // Make sure that link elements get serialized correctly by innerHTML
-	  // This requires a wrapper element in IE
-	  innerHTMLBug = !bugTestDiv.getElementsByTagName('link').length;
-	  bugTestDiv = undefined;
-	}
-
-	/**
-	 * Wrap map from jquery.
-	 */
-
-	var map = {
-	  legend: [1, '<fieldset>', '</fieldset>'],
-	  tr: [2, '<table><tbody>', '</tbody></table>'],
-	  col: [2, '<table><tbody></tbody><colgroup>', '</colgroup></table>'],
-	  // for script/link/style tags to work in IE6-8, you have to wrap
-	  // in a div with a non-whitespace character in front, ha!
-	  _default: innerHTMLBug ? [1, 'X<div>', '</div>'] : [0, '', '']
-	};
-
-	map.td =
-	map.th = [3, '<table><tbody><tr>', '</tr></tbody></table>'];
-
-	map.option =
-	map.optgroup = [1, '<select multiple="multiple">', '</select>'];
-
-	map.thead =
-	map.tbody =
-	map.colgroup =
-	map.caption =
-	map.tfoot = [1, '<table>', '</table>'];
-
-	map.polyline =
-	map.ellipse =
-	map.polygon =
-	map.circle =
-	map.text =
-	map.line =
-	map.path =
-	map.rect =
-	map.g = [1, '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">','</svg>'];
-
-	/**
-	 * Parse `html` and return a DOM Node instance, which could be a TextNode,
-	 * HTML DOM Node of some kind (<div> for example), or a DocumentFragment
-	 * instance, depending on the contents of the `html` string.
-	 *
-	 * @param {String} html - HTML string to "domify"
-	 * @param {Document} doc - The `document` instance to create the Node for
-	 * @return {DOMNode} the TextNode, DOM Node, or DocumentFragment instance
-	 * @api private
-	 */
-
-	function parse(html, doc) {
-	  if ('string' != typeof html) throw new TypeError('String expected');
-
-	  // default to the global `document` object
-	  if (!doc) doc = document;
-
-	  // tag name
-	  var m = /<([\w:]+)/.exec(html);
-	  if (!m) return doc.createTextNode(html);
-
-	  html = html.replace(/^\s+|\s+$/g, ''); // Remove leading/trailing whitespace
-
-	  var tag = m[1];
-
-	  // body support
-	  if (tag == 'body') {
-	    var el = doc.createElement('html');
-	    el.innerHTML = html;
-	    return el.removeChild(el.lastChild);
-	  }
-
-	  // wrap map
-	  var wrap = map[tag] || map._default;
-	  var depth = wrap[0];
-	  var prefix = wrap[1];
-	  var suffix = wrap[2];
-	  var el = doc.createElement('div');
-	  el.innerHTML = prefix + html + suffix;
-	  while (depth--) el = el.lastChild;
-
-	  // one element
-	  if (el.firstChild == el.lastChild) {
-	    return el.removeChild(el.firstChild);
-	  }
-
-	  // several elements
-	  var fragment = doc.createDocumentFragment();
-	  while (el.firstChild) {
-	    fragment.appendChild(el.removeChild(el.firstChild));
-	  }
-
-	  return fragment;
-	}
-
-	function query(selector, el) {
-	  el = el || document;
-
-	  return el.querySelector(selector);
-	}
-
-	function all(selector, el) {
-	  el = el || document;
-
-	  return el.querySelectorAll(selector);
-	}
-
-	function remove(el) {
-	  el.parentNode && el.parentNode.removeChild(el);
-	}
-
-	/**
 	 * A factory that creates graphical elements
 	 *
 	 * @param {EventBus} eventBus
@@ -8438,7 +7043,7 @@
 	    childrenGfx = getChildren$1(gfx);
 	    if (!childrenGfx) {
 	      childrenGfx = create$1('g');
-	      classes$1(childrenGfx).add('djs-children');
+	      classes(childrenGfx).add('djs-children');
 
 	      append(gfx.parentNode, childrenGfx);
 	    }
@@ -8454,7 +7059,7 @@
 	GraphicsFactory.prototype._clear = function(gfx) {
 	  var visual = getVisual(gfx);
 
-	  clear(visual);
+	  clear$1(visual);
 
 	  return visual;
 	};
@@ -8490,7 +7095,7 @@
 	    type, childrenGfx, parentIndex, isFrame
 	) {
 	  var outerGfx = create$1('g');
-	  classes$1(outerGfx).add('djs-group');
+	  classes(outerGfx).add('djs-group');
 
 	  // insert node at position
 	  if (typeof parentIndex !== 'undefined') {
@@ -8500,18 +7105,18 @@
 	  }
 
 	  var gfx = create$1('g');
-	  classes$1(gfx).add('djs-element');
-	  classes$1(gfx).add('djs-' + type);
+	  classes(gfx).add('djs-element');
+	  classes(gfx).add('djs-' + type);
 
 	  if (isFrame) {
-	    classes$1(gfx).add('djs-frame');
+	    classes(gfx).add('djs-frame');
 	  }
 
 	  append(outerGfx, gfx);
 
 	  // create visual
 	  var visual = create$1('g');
-	  classes$1(visual).add('djs-visual');
+	  classes(visual).add('djs-visual');
 
 	  append(gfx, visual);
 
@@ -8529,7 +7134,7 @@
 	      elementRegistry = this._elementRegistry,
 	      parents;
 
-	  parents = reduce$1(elements, function(map, e) {
+	  parents = reduce(elements, function(map, e) {
 
 	    if (e.parent) {
 	      map[e.parent.id] = e.parent;
@@ -8540,7 +7145,7 @@
 
 	  // update all parents of changed and reorganized their children
 	  // in the correct order (as indicated in our model)
-	  forEach$1(parents, function(parent) {
+	  forEach(parents, function(parent) {
 
 	    var children = parent.children;
 
@@ -8550,7 +7155,7 @@
 
 	    var childrenGfx = self._getChildrenContainer(parent);
 
-	    forEach$1(children.slice().reverse(), function(child) {
+	    forEach(children.slice().reverse(), function(child) {
 	      var childGfx = elementRegistry.getGraphics(child);
 
 	      prependTo(childGfx.parentNode, childrenGfx);
@@ -8605,9 +7210,9 @@
 	  }
 
 	  if (element.hidden) {
-	    attr$1(gfx, 'display', 'none');
+	    attr(gfx, 'display', 'none');
 	  } else {
-	    attr$1(gfx, 'display', 'block');
+	    attr(gfx, 'display', 'block');
 	  }
 	};
 
@@ -8615,7 +7220,7 @@
 	  var gfx = this._elementRegistry.getGraphics(element);
 
 	  // remove
-	  remove$2(gfx.parentNode);
+	  remove$1(gfx.parentNode);
 	};
 
 
@@ -8875,7 +7480,7 @@
 	      prototype = Object.create(Base.prototype);
 
 	  // initialize default values
-	  forEach$2(descriptor.properties, function(p) {
+	  forEach(descriptor.properties, function(p) {
 	    if (!p.isMany && p.default !== undefined) {
 	      prototype[p.name] = p.default;
 	    }
@@ -8894,7 +7499,7 @@
 	    props.define(this, '$attrs', { value: {} });
 	    props.define(this, '$parent', { writable: true });
 
-	    forEach$2(attrs, bind$4(function(val, key) {
+	    forEach(attrs, bind$2(function(val, key) {
 	      this.set(key, val);
 	    }, this));
 	  }
@@ -9008,7 +7613,7 @@
 
 
 	DescriptorBuilder.prototype.build = function() {
-	  return pick$1(this, [
+	  return pick(this, [
 	    'ns',
 	    'name',
 	    'allTypes',
@@ -9183,10 +7788,10 @@
 	    return;
 	  }
 
-	  forEach$2(t.properties, bind$4(function(p) {
+	  forEach(t.properties, bind$2(function(p) {
 
 	    // clone property to allow extensions
-	    p = assign$1({}, p, {
+	    p = assign({}, p, {
 	      name: p.ns.localName,
 	      inherited: inherited
 	    });
@@ -9230,7 +7835,7 @@
 
 	  this.properties = properties;
 
-	  forEach$2(packages, bind$4(this.registerPackage, this));
+	  forEach(packages, bind$2(this.registerPackage, this));
 	}
 
 
@@ -9246,7 +7851,7 @@
 	Registry.prototype.registerPackage = function(pkg) {
 
 	  // copy package
-	  pkg = assign$1({}, pkg);
+	  pkg = assign({}, pkg);
 
 	  var pkgMap = this.packageMap;
 
@@ -9254,7 +7859,7 @@
 	  ensureAvailable(pkgMap, pkg, 'uri');
 
 	  // register types
-	  forEach$2(pkg.types, bind$4(function(descriptor) {
+	  forEach(pkg.types, bind$2(function(descriptor) {
 	    this.registerType(descriptor, pkg);
 	  }, this));
 
@@ -9268,11 +7873,11 @@
 	 */
 	Registry.prototype.registerType = function(type, pkg) {
 
-	  type = assign$1({}, type, {
+	  type = assign({}, type, {
 	    superClass: (type.superClass || []).slice(),
 	    extends: (type.extends || []).slice(),
 	    properties: (type.properties || []).slice(),
-	    meta: assign$1((type.meta || {}))
+	    meta: assign((type.meta || {}))
 	  });
 
 	  var ns = parseName(type.name, pkg.prefix),
@@ -9280,7 +7885,7 @@
 	      propertiesByName = {};
 
 	  // parse properties
-	  forEach$2(type.properties, bind$4(function(p) {
+	  forEach(type.properties, bind$2(function(p) {
 
 	    // namespace property names
 	    var propertyNs = parseName(p.name, ns.prefix),
@@ -9291,7 +7896,7 @@
 	      p.type = parseName(p.type, propertyNs.prefix).name;
 	    }
 
-	    assign$1(p, {
+	    assign(p, {
 	      ns: propertyNs,
 	      name: propertyName
 	    });
@@ -9300,13 +7905,13 @@
 	  }, this));
 
 	  // update ns + name
-	  assign$1(type, {
+	  assign(type, {
 	    ns: ns,
 	    name: name,
 	    propertiesByName: propertiesByName
 	  });
 
-	  forEach$2(type.extends, bind$4(function(extendsName) {
+	  forEach(type.extends, bind$2(function(extendsName) {
 	    var extended = this.typeMap[extendsName];
 
 	    extended.traits = extended.traits || [];
@@ -9360,12 +7965,12 @@
 	    throw new Error('unknown type <' + nsName.name + '>');
 	  }
 
-	  forEach$2(type.superClass, trait ? traverseTrait : traverseSuper);
+	  forEach(type.superClass, trait ? traverseTrait : traverseSuper);
 
 	  // call iterator with (type, inherited=!trait)
 	  iterator(type, !trait);
 
-	  forEach$2(type.traits, traverseTrait);
+	  forEach(type.traits, traverseTrait);
 	};
 
 
@@ -9602,7 +8207,7 @@
 
 	  var cache = this.typeCache;
 
-	  var name = isString$1(descriptor) ? descriptor : descriptor.ns.name;
+	  var name = isString(descriptor) ? descriptor : descriptor.ns.name;
 
 	  var type = cache[name];
 
@@ -9668,8 +8273,8 @@
 	  this.properties.define(element, '$parent', { enumerable: false, writable: true });
 	  this.properties.define(element, '$instanceOf', { enumerable: false, writable: true });
 
-	  forEach$2(properties, function(a, key) {
-	    if (isObject$1(a) && a.value !== undefined) {
+	  forEach(properties, function(a, key) {
+	    if (isObject(a) && a.value !== undefined) {
 	      element[a.name] = a.value;
 	    } else {
 	      element[key] = a;
@@ -10909,7 +9514,7 @@
 	   * @property {Boolean} lax
 	   */
 
-	  assign$1(this, options);
+	  assign(this, options);
 
 	  this.elementsById = {};
 	  this.references = [];
@@ -11130,7 +9735,7 @@
 	      model = this.model,
 	      propNameNs;
 
-	  forEach$2(attributes, function(value, name) {
+	  forEach(attributes, function(value, name) {
 
 	    var prop = descriptor.propertiesByName[name],
 	        values;
@@ -11148,7 +9753,7 @@
 	        // IDREFS: parse references as whitespace-separated list
 	        values = value.split(' ');
 
-	        forEach$2(values, function(v) {
+	        forEach(values, function(v) {
 	          context.addReference({
 	            element: instance,
 	            property: prop.ns.name,
@@ -11215,7 +9820,7 @@
 
 	        elementType = model.getType(elementTypeName);
 
-	        return assign$1({}, property, {
+	        return assign({}, property, {
 	          effectiveType: getModdleDescriptor(elementType).name
 	        });
 	      }
@@ -11232,19 +9837,19 @@
 	    elementType = model.getType(elementTypeName);
 
 	    // search for collection members later
-	    property = find$1(descriptor.properties, function(p) {
+	    property = find(descriptor.properties, function(p) {
 	      return !p.isVirtual && !p.isReference && !p.isAttribute && elementType.hasType(p.type);
 	    });
 
 	    if (property) {
-	      return assign$1({}, property, {
+	      return assign({}, property, {
 	        effectiveType: getModdleDescriptor(elementType).name
 	      });
 	    }
 	  } else {
 
 	    // parse unknown element (maybe extension)
-	    property = find$1(descriptor.properties, function(p) {
+	    property = find(descriptor.properties, function(p) {
 	      return !p.isReference && !p.isAttribute && p.type === 'Element';
 	    });
 
@@ -11312,7 +9917,7 @@
 	    }
 
 	    if (propertyDesc.isReference) {
-	      assign$1(newElement, {
+	      assign(newElement, {
 	        element: element
 	      });
 
@@ -11421,7 +10026,7 @@
 	    };
 	  }
 
-	  assign$1(this, { lax: false }, options);
+	  assign(this, { lax: false }, options);
 	}
 
 	/**
@@ -11476,7 +10081,7 @@
 	  var model = this.model,
 	      lax = this.lax;
 
-	  var context = new Context(assign$1({}, options, { rootHandler: rootHandler })),
+	  var context = new Context(assign({}, options, { rootHandler: rootHandler })),
 	      parser = new Parser({ proxy: true }),
 	      stack = createStack();
 
@@ -11849,7 +10454,7 @@
 	}
 
 	function nsName(ns) {
-	  if (isString$1(ns)) {
+	  if (isString(ns)) {
 	    return ns;
 	  } else {
 	    return (ns.prefix ? ns.prefix + ':' : '') + ns.localName;
@@ -11871,20 +10476,20 @@
 
 	function getElementNs(ns, descriptor) {
 	  if (descriptor.isGeneric) {
-	    return assign$1({ localName: descriptor.ns.localName }, ns);
+	    return assign({ localName: descriptor.ns.localName }, ns);
 	  } else {
-	    return assign$1({ localName: nameToAlias(descriptor.ns.localName, descriptor.$pkg) }, ns);
+	    return assign({ localName: nameToAlias(descriptor.ns.localName, descriptor.$pkg) }, ns);
 	  }
 	}
 
 	function getPropertyNs(ns, descriptor) {
-	  return assign$1({ localName: descriptor.ns.localName }, ns);
+	  return assign({ localName: descriptor.ns.localName }, ns);
 	}
 
 	function getSerializableProperties(element) {
 	  var descriptor = element.$descriptor;
 
-	  return filter$1(descriptor.properties, function(p) {
+	  return filter(descriptor.properties, function(p) {
 	    var name = p.name;
 
 	    if (p.isVirtual) {
@@ -11892,7 +10497,7 @@
 	    }
 
 	    // do not serialize defaults
-	    if (!has$1(element, name)) {
+	    if (!has(element, name)) {
 	      return false;
 	    }
 
@@ -11931,7 +10536,7 @@
 	function escape(str, charPattern, replaceMap) {
 
 	  // ensure we are handling strings here
-	  str = isString$1(str) ? str : '' + str;
+	  str = isString(str) ? str : '' + str;
 
 	  return str.replace(charPattern, function(s) {
 	    return '&' + replaceMap[s] + ';';
@@ -11953,11 +10558,11 @@
 	}
 
 	function filterAttributes(props) {
-	  return filter$1(props, function(p) { return p.isAttr; });
+	  return filter(props, function(p) { return p.isAttr; });
 	}
 
 	function filterContained(props) {
-	  return filter$1(props, function(p) { return !p.isAttr; });
+	  return filter(props, function(p) { return !p.isAttr; });
 	}
 
 
@@ -12089,7 +10694,7 @@
 
 	  var ns;
 
-	  if (isString$1(element)) {
+	  if (isString(element)) {
 	    ns = parseName(element);
 	  } else {
 	    ns = element.ns;
@@ -12110,7 +10715,7 @@
 	  if (this.isLocalNs(effectiveNs)) {
 	    return { localName: ns.localName };
 	  } else {
-	    return assign$1({ localName: ns.localName }, effectiveNs);
+	    return assign({ localName: ns.localName }, effectiveNs);
 	  }
 	};
 
@@ -12121,7 +10726,7 @@
 
 	  var attributes = [];
 
-	  forEach$2(element, function(val, key) {
+	  forEach(element, function(val, key) {
 
 	    var nonNsAttr;
 
@@ -12129,7 +10734,7 @@
 	      body.push(new BodySerializer().build({ type: 'String' }, val));
 	    } else
 	    if (key === '$children') {
-	      forEach$2(val, function(child) {
+	      forEach(val, function(child) {
 	        body.push(new ElementSerializer(self).build(child));
 	      });
 	    } else
@@ -12199,7 +10804,7 @@
 	  // parse namespace attributes first
 	  // and log them. push non namespace attributes to a list
 	  // and process them later
-	  forEach$2(genericAttrs, function(value, name) {
+	  forEach(genericAttrs, function(value, name) {
 
 	    var nonNsAttr = self.parseNsAttribute(element, name, value);
 
@@ -12215,7 +10820,7 @@
 
 	  var self = this;
 
-	  forEach$2(attributes, function(attr) {
+	  forEach(attributes, function(attr) {
 
 	    // do not serialize xsi:type attribute
 	    // it is set manually based on the actual implementation type
@@ -12240,7 +10845,7 @@
 	      body = this.body,
 	      element = this.element;
 
-	  forEach$2(properties, function(p) {
+	  forEach(properties, function(p) {
 	    var value = element.get(p.name),
 	        isReference = p.isReference,
 	        isMany = p.isMany;
@@ -12253,12 +10858,12 @@
 	      body.push(new BodySerializer().build(p, value[0]));
 	    } else
 	    if (isSimple(p.type)) {
-	      forEach$2(value, function(v) {
+	      forEach(value, function(v) {
 	        body.push(new ValueSerializer(self.addTagName(self.nsPropertyTagName(p))).build(p, v));
 	      });
 	    } else
 	    if (isReference) {
-	      forEach$2(value, function(v) {
+	      forEach(value, function(v) {
 	        body.push(new ReferenceSerializer(self.addTagName(self.nsPropertyTagName(p))).build(v));
 	      });
 	    } else {
@@ -12268,7 +10873,7 @@
 	      var asType = serializeAsType(p),
 	          asProperty = serializeAsProperty(p);
 
-	      forEach$2(value, function(v) {
+	      forEach(value, function(v) {
 	        var serializer;
 
 	        if (asType) {
@@ -12376,7 +10981,7 @@
 	  var self = this,
 	      element = this.element;
 
-	  forEach$2(properties, function(p) {
+	  forEach(properties, function(p) {
 
 	    var value = element.get(p.name);
 
@@ -12387,7 +10992,7 @@
 	      }
 	      else {
 	        var values = [];
-	        forEach$2(value, function(v) {
+	        forEach(value, function(v) {
 	          values.push(v.id);
 	        });
 
@@ -12412,7 +11017,7 @@
 	ElementSerializer.prototype.addAttribute = function(name, value) {
 	  var attrs = this.attrs;
 
-	  if (isString$1(value)) {
+	  if (isString(value)) {
 	    value = escapeAttr(value);
 	  }
 
@@ -12427,7 +11032,7 @@
 	    attrs = getNsAttrs(namespaces).concat(attrs);
 	  }
 
-	  forEach$2(attrs, function(a) {
+	  forEach(attrs, function(a) {
 	    writer
 	      .append(' ')
 	      .append(nsName(a.name)).append('="').append(a.value).append('"');
@@ -12454,7 +11059,7 @@
 	        .indent();
 	    }
 
-	    forEach$2(this.body, function(b) {
+	    forEach(this.body, function(b) {
 	      b.serializeTo(writer);
 	    });
 
@@ -12564,7 +11169,7 @@
 	 */
 	function Writer(options) {
 
-	  options = assign$1({ format: false, preamble: true }, options || {});
+	  options = assign({ format: false, preamble: true }, options || {});
 
 	  function toXML(tree, writer) {
 	    var internalWriter = writer || new SavingWriter();
@@ -12631,12 +11236,12 @@
 	 */
 	BpmnModdle.prototype.fromXML = function(xmlStr, typeName, options) {
 
-	  if (!isString$1(typeName)) {
+	  if (!isString(typeName)) {
 	    options = typeName;
 	    typeName = 'bpmn:Definitions';
 	  }
 
-	  var reader = new Reader(assign$1({ model: this, lax: true }, options));
+	  var reader = new Reader(assign({ model: this, lax: true }, options));
 	  var rootHandler = reader.handler(typeName);
 
 	  return reader.fromXML(xmlStr, rootHandler);
@@ -16323,7 +14928,7 @@
 	};
 
 	function simple(additionalPackages, options) {
-	  var pks = assign$1({}, packages, additionalPackages);
+	  var pks = assign({}, packages, additionalPackages);
 
 	  return new BpmnModdle(pks, options);
 	}
@@ -16336,6 +14941,75 @@
 	  return '<' + e.$type + (e.id ? ' id="' + e.id : '') + '" />';
 	}
 
+	// TODO(nikku): remove with future bpmn-js version
+
+	/**
+	 * Wraps APIs to check:
+	 *
+	 * 1) If a callback is passed -> Warn users about callback deprecation.
+	 * 2) If Promise class is implemented in current environment.
+	 *
+	 * @private
+	 */
+	function wrapForCompatibility(api) {
+
+	  return function() {
+
+	    if (!window.Promise) {
+	      throw new Error('Promises is not supported in this environment. Please polyfill Promise.');
+	    }
+
+	    var argLen = arguments.length;
+	    if (argLen >= 1 && isFunction(arguments[argLen - 1])) {
+
+	      var callback = arguments[argLen - 1];
+
+	      console.warn(new Error(
+	        'Passing callbacks to ' + api.name + ' is deprecated and will be removed in a future major release. ' +
+	        'Please switch to promises: https://bpmn.io/l/moving-to-promises.html'
+	      ));
+
+	      var argsWithoutCallback = Array.prototype.slice.call(arguments, 0, -1);
+
+	      api.apply(this, argsWithoutCallback).then(function(result) {
+
+	        var firstKey = Object.keys(result)[0];
+
+	        // The APIs we are wrapping all resolve a single item depending on the API.
+	        // For instance, importXML resolves { warnings } and saveXML returns { xml }.
+	        // That's why we can call the callback with the first item of result.
+	        return callback(null, result[firstKey]);
+
+	        // Passing a second paramter instead of catch because we don't want to
+	        // catch errors thrown by callback().
+	      }, function(err) {
+
+	        return callback(err, err.warnings);
+	      });
+	    } else {
+
+	      return api.apply(this, arguments);
+	    }
+	  };
+	}
+
+
+	// TODO(nikku): remove with future bpmn-js version
+
+	var DI_ERROR_MESSAGE = 'Tried to access di from the businessObject. The di is available through the diagram element only. For more information, see https://github.com/bpmn-io/bpmn-js/issues/1472';
+
+	function ensureCompatDiRef(businessObject) {
+
+	  // bpmnElement can have multiple independent DIs
+	  if (!has(businessObject, 'di')) {
+	    Object.defineProperty(businessObject, 'di', {
+	      get: function() {
+	        throw new Error(DI_ERROR_MESSAGE);
+	      }
+	    });
+	  }
+	}
+
 	/**
 	 * Returns true if an element has the given meta-model type
 	 *
@@ -16344,7 +15018,7 @@
 	 *
 	 * @return {boolean}
 	 */
-	function is$3(element, type) {
+	function is$2(element, type) {
 	  return element.$instanceOf(type);
 	}
 
@@ -16354,8 +15028,8 @@
 	 * correctly specify one.
 	 */
 	function findDisplayCandidate(definitions) {
-	  return find$1(definitions.rootElements, function(e) {
-	    return is$3(e, 'bpmn:Process') || is$3(e, 'bpmn:Collaboration');
+	  return find(definitions.rootElements, function(e) {
+	    return is$2(e, 'bpmn:Process') || is$2(e, 'bpmn:Collaboration');
 	  });
 	}
 
@@ -16399,11 +15073,11 @@
 	    }
 
 	    // call handler
-	    return handler.element({ element: element, di: diMap[element.id] }, ctx);
+	    return handler.element(element, diMap[element.id], ctx);
 	  }
 
 	  function visitRoot(element, diagram) {
-	    return handler.root({ element: element, di: diMap[element.id] }, diagram);
+	    return handler.root(element, diMap[element.id], diagram);
 	  }
 
 	  function visitIfDi(element, ctx) {
@@ -16441,6 +15115,8 @@
 	        );
 	      } else {
 	        diMap[bpmnElement.id] = di;
+
+	        ensureCompatDiRef(bpmnElement);
 	      }
 	    } else {
 	      logError(
@@ -16459,7 +15135,7 @@
 	  function handlePlane(plane) {
 	    registerDi(plane);
 
-	    forEach$2(plane.planeElement, handlePlaneElement);
+	    forEach(plane.planeElement, handlePlaneElement);
 	  }
 
 	  function handlePlaneElement(planeElement) {
@@ -16478,7 +15154,6 @@
 	   * @throws {Error} if no diagram to display could be found
 	   */
 	  function handleDefinitions(definitions, diagram) {
-	    console.log(handledElements);
 
 	    // make sure we walk the correct bpmnElement
 
@@ -16538,10 +15213,10 @@
 
 	    var ctx = visitRoot(rootElement, plane);
 
-	    if (is$3(rootElement, 'bpmn:Process') || is$3(rootElement, 'bpmn:SubProcess')) {
+	    if (is$2(rootElement, 'bpmn:Process') || is$2(rootElement, 'bpmn:SubProcess')) {
 	      handleProcess(rootElement, ctx);
-	    } else if (is$3(rootElement, 'bpmn:Collaboration')) {
-	      handleCollaboration(rootElement);
+	    } else if (is$2(rootElement, 'bpmn:Collaboration')) {
+	      handleCollaboration(rootElement, ctx);
 
 	      // force drawing of everything not yet drawn that is part of the target DI
 	      handleUnhandledProcesses(definitions.rootElements, ctx);
@@ -16585,8 +15260,8 @@
 	    // walk through all processes that have not yet been drawn and draw them
 	    // if they contain lanes with DI information.
 	    // we do this to pass the free-floating lane test cases in the MIWG test suite
-	    var processes = filter$1(rootElements, function(e) {
-	      return !isHandled(e) && is$3(e, 'bpmn:Process') && e.laneSets;
+	    var processes = filter(rootElements, function(e) {
+	      return !isHandled(e) && is$2(e, 'bpmn:Process') && e.laneSets;
 	    });
 
 	    processes.forEach(contextual(handleProcess, ctx));
@@ -16597,7 +15272,7 @@
 	  }
 
 	  function handleMessageFlows(messageFlows, context) {
-	    forEach$2(messageFlows, contextual(handleMessageFlow, context));
+	    forEach(messageFlows, contextual(handleMessageFlow, context));
 	  }
 
 	  function handleDataAssociation(association, context) {
@@ -16623,8 +15298,8 @@
 
 	  function handleArtifacts(artifacts, context) {
 
-	    forEach$2(artifacts, function(e) {
-	      if (is$3(e, 'bpmn:Association')) {
+	    forEach(artifacts, function(e) {
+	      if (is$2(e, 'bpmn:Association')) {
 	        deferred.push(function() {
 	          handleArtifact(e, context);
 	        });
@@ -16640,8 +15315,8 @@
 	      return;
 	    }
 
-	    forEach$2(ioSpecification.dataInputs, contextual(handleDataInput, context));
-	    forEach$2(ioSpecification.dataOutputs, contextual(handleDataOutput, context));
+	    forEach(ioSpecification.dataInputs, contextual(handleDataInput, context));
+	    forEach(ioSpecification.dataOutputs, contextual(handleDataOutput, context));
 	  }
 
 	  function handleSubProcess(subProcess, context) {
@@ -16652,11 +15327,11 @@
 	  function handleFlowNode(flowNode, context) {
 	    var childCtx = visitIfDi(flowNode, context);
 
-	    if (is$3(flowNode, 'bpmn:SubProcess')) {
+	    if (is$2(flowNode, 'bpmn:SubProcess')) {
 	      handleSubProcess(flowNode, childCtx || context);
 	    }
 
-	    if (is$3(flowNode, 'bpmn:Activity')) {
+	    if (is$2(flowNode, 'bpmn:Activity')) {
 	      handleIoSpecification(flowNode.ioSpecification, context);
 	    }
 
@@ -16668,8 +15343,8 @@
 	    //   * bpmn:CatchEvent
 	    //
 	    deferred.push(function() {
-	      forEach$2(flowNode.dataInputAssociations, contextual(handleDataAssociation, context));
-	      forEach$2(flowNode.dataOutputAssociations, contextual(handleDataAssociation, context));
+	      forEach(flowNode.dataInputAssociations, contextual(handleDataAssociation, context));
+	      forEach(flowNode.dataOutputAssociations, contextual(handleDataAssociation, context));
 	    });
 	  }
 
@@ -16696,11 +15371,11 @@
 	  }
 
 	  function handleLaneSet(laneSet, context) {
-	    forEach$2(laneSet.lanes, contextual(handleLane, context));
+	    forEach(laneSet.lanes, contextual(handleLane, context));
 	  }
 
 	  function handleLaneSets(laneSets, context) {
-	    forEach$2(laneSets, contextual(handleLaneSet, context));
+	    forEach(laneSets, contextual(handleLaneSet, context));
 	  }
 
 	  function handleFlowElementsContainer(container, context) {
@@ -16712,20 +15387,20 @@
 	  }
 
 	  function handleFlowElements(flowElements, context) {
-	    forEach$2(flowElements, function(e) {
-	      if (is$3(e, 'bpmn:SequenceFlow')) {
+	    forEach(flowElements, function(e) {
+	      if (is$2(e, 'bpmn:SequenceFlow')) {
 	        deferred.push(function() {
 	          handleSequenceFlow(e, context);
 	        });
-	      } else if (is$3(e, 'bpmn:BoundaryEvent')) {
+	      } else if (is$2(e, 'bpmn:BoundaryEvent')) {
 	        deferred.unshift(function() {
 	          handleFlowNode(e, context);
 	        });
-	      } else if (is$3(e, 'bpmn:FlowNode')) {
+	      } else if (is$2(e, 'bpmn:FlowNode')) {
 	        handleFlowNode(e, context);
-	      } else if (is$3(e, 'bpmn:DataObject')) ; else if (is$3(e, 'bpmn:DataStoreReference')) {
+	      } else if (is$2(e, 'bpmn:DataObject')) ; else if (is$2(e, 'bpmn:DataStoreReference')) {
 	        handleDataElement(e, context);
-	      } else if (is$3(e, 'bpmn:DataObjectReference')) {
+	      } else if (is$2(e, 'bpmn:DataObjectReference')) {
 	        handleDataElement(e, context);
 	      } else {
 	        logError(
@@ -16748,15 +15423,15 @@
 	    }
 	  }
 
-	  function handleCollaboration(collaboration) {
+	  function handleCollaboration(collaboration, context) {
 
-	    forEach$2(collaboration.participants, contextual(handleParticipant));
+	    forEach(collaboration.participants, contextual(handleParticipant, context));
 
-	    handleArtifacts(collaboration.artifacts);
+	    handleArtifacts(collaboration.artifacts, context);
 
 	    // handle message flows latest in the process
 	    deferred.push(function() {
-	      handleMessageFlows(collaboration.messageFlows);
+	      handleMessageFlows(collaboration.messageFlows, context);
 	    });
 	  }
 
@@ -16764,7 +15439,7 @@
 	  function wireFlowNodeRefs(lane) {
 
 	    // wire the virtual flowNodeRefs <-> relationship
-	    forEach$2(lane.flowNodeRef, function(flowNode) {
+	    forEach(lane.flowNodeRef, function(flowNode) {
 	      var lanes = flowNode.get('lanes');
 
 	      if (lanes) {
@@ -16832,12 +15507,12 @@
 
 	    var visitor = {
 
-	      root: function(element) {
-	        return importer.add(element);
+	      root: function(element, di) {
+	        return importer.add(element, di);
 	      },
 
-	      element: function(element, parentShape) {
-	        return importer.add(element, parentShape);
+	      element: function(element, di, parentShape) {
+	        return importer.add(element, di, parentShape);
 	      },
 
 	      error: function(message, context) {
@@ -16849,8 +15524,7 @@
 
 	    // traverse BPMN 2.0 document model,
 	    // starting at definitions
-
-	    if (!bpmnDiagram) {
+	    if (!bpmnDiagram && definitions.diagrams) {
 	      for (var i = 0; i < definitions.diagrams.length; i++) {
 	        walker.handleDefinitions(definitions, definitions.diagrams[i]);
 	      }
@@ -16858,7 +15532,8 @@
 	      walker.handleDefinitions(definitions, bpmnDiagram);
 	    }
 
-	    canvas.setActivePlane((bpmnDiagram || definitions.diagrams[0]).plane.bpmnElement.id);
+	    var mainDiagram = bpmnDiagram || definitions.diagrams[0];
+	    canvas.setActivePlane(mainDiagram.plane.bpmnElement.id);
 	  }
 
 	  return new Promise(function(resolve, reject) {
@@ -16884,58 +15559,6 @@
 	      return reject(e);
 	    }
 	  });
-	}
-
-	// TODO(nikku): remove with future bpmn-js version
-
-	/**
-	 * Wraps APIs to check:
-	 *
-	 * 1) If a callback is passed -> Warn users about callback deprecation.
-	 * 2) If Promise class is implemented in current environment.
-	 *
-	 * @private
-	 */
-	function wrapForCompatibility(api) {
-
-	  return function() {
-
-	    if (!window.Promise) {
-	      throw new Error('Promises is not supported in this environment. Please polyfill Promise.');
-	    }
-
-	    var argLen = arguments.length;
-	    if (argLen >= 1 && isFunction$1(arguments[argLen - 1])) {
-
-	      var callback = arguments[argLen - 1];
-
-	      console.warn(new Error(
-	        'Passing callbacks to ' + api.name + ' is deprecated and will be removed in a future major release. ' +
-	        'Please switch to promises: https://bpmn.io/l/moving-to-promises.html'
-	      ));
-
-	      var argsWithoutCallback = Array.prototype.slice.call(arguments, 0, -1);
-
-	      api.apply(this, argsWithoutCallback).then(function(result) {
-
-	        var firstKey = Object.keys(result)[0];
-
-	        // The APIs we are wrapping all resolve a single item depending on the API.
-	        // For instance, importXML resolves { warnings } and saveXML returns { xml }.
-	        // That's why we can call the callback with the first item of result.
-	        return callback(null, result[firstKey]);
-
-	        // Passing a second paramter instead of catch because we don't want to
-	        // catch errors thrown by callback().
-	      }, function(err) {
-
-	        return callback(err, err.warnings);
-	      });
-	    } else {
-
-	      return api.apply(this, arguments);
-	    }
-	  };
 	}
 
 	/**
@@ -17008,9 +15631,9 @@
 	function open() {
 
 	  if (!lightbox) {
-	    lightbox = domify$1(LIGHTBOX_MARKUP);
+	    lightbox = domify(LIGHTBOX_MARKUP);
 
-	    delegate$1.bind(lightbox, '.backdrop', 'click', function(event) {
+	    delegate.bind(lightbox, '.backdrop', 'click', function(event) {
 	      document.body.removeChild(lightbox);
 	    });
 	  }
@@ -17041,7 +15664,7 @@
 	 */
 	function BaseViewer(options) {
 
-	  options = assign$1({}, DEFAULT_OPTIONS, options);
+	  options = assign({}, DEFAULT_OPTIONS, options);
 
 	  this._moddle = this._createModdle(options);
 
@@ -17056,7 +15679,7 @@
 	  this._init(this._container, this._moddle, options);
 	}
 
-	inherits$2(BaseViewer, Diagram);
+	inherits$1(BaseViewer, Diagram);
 
 	/**
 	* The importXML result.
@@ -17429,7 +16052,7 @@
 	      var canvas = self.get('canvas');
 
 	      var contentNode = canvas.getDefaultLayer(),
-	          defsNode = query$1('defs', canvas._svg);
+	          defsNode = query('defs', canvas._svg);
 
 	      var contents = innerSVG(contentNode),
 	          defs = defsNode ? '<defs>' + innerSVG(defsNode) + '</defs>' : '';
@@ -17531,7 +16154,7 @@
 	  Diagram.prototype.destroy.call(this);
 
 	  // dom detach
-	  remove$4(this._container);
+	  remove$2(this._container);
 	};
 
 	/**
@@ -17574,7 +16197,7 @@
 	  }
 
 	  if (typeof parentNode === 'string') {
-	    parentNode = query$1(parentNode);
+	    parentNode = query(parentNode);
 	  }
 
 	  parentNode.appendChild(this._container);
@@ -17615,8 +16238,8 @@
 
 	  var diagramModules = [].concat(staticModules, baseModules, additionalModules);
 
-	  var diagramOptions = assign$1(omit$1(options, [ 'additionalModules' ]), {
-	    canvas: assign$1({}, options.canvas, { container: container }),
+	  var diagramOptions = assign(omit(options, [ 'additionalModules' ]), {
+	    canvas: assign({}, options.canvas, { container: container }),
 	    modules: diagramModules
 	  });
 
@@ -17642,9 +16265,9 @@
 
 	BaseViewer.prototype._createContainer = function(options) {
 
-	  var container = domify$1('<div class="bjs-container"></div>');
+	  var container = domify('<div class="bjs-container"></div>');
 
-	  assign$1(container.style, {
+	  assign(container.style, {
 	    width: ensureUnit(options.width),
 	    height: ensureUnit(options.height),
 	    position: options.position
@@ -17654,7 +16277,7 @@
 	};
 
 	BaseViewer.prototype._createModdle = function(options) {
-	  var moddleOptions = assign$1({}, this._moddleExtensions, options.moddleExtensions);
+	  var moddleOptions = assign({}, this._moddleExtensions, options.moddleExtensions);
 
 	  return new simple(moddleOptions);
 	};
@@ -17696,7 +16319,7 @@
 	 * Ensure the passed argument is a proper unit (defaulting to px)
 	 */
 	function ensureUnit(val) {
-	  return val + (isNumber$1(val) ? 'px' : '');
+	  return val + (isNumber(val) ? 'px' : '');
 	}
 
 
@@ -17713,7 +16336,7 @@
 	    return null;
 	  }
 
-	  return find$1(definitions.diagrams, function(element) {
+	  return find(definitions.diagrams, function(element) {
 	    return element.id === diagramId;
 	  }) || null;
 	}
@@ -17738,11 +16361,11 @@
 	      img +
 	    '</a>';
 
-	  var linkElement = domify$1(linkMarkup);
+	  var linkElement = domify(linkMarkup);
 
 	  container.appendChild(linkElement);
 
-	  componentEvent$1.bind(linkElement, 'click', function(event) {
+	  componentEvent.bind(linkElement, 'click', function(event) {
 	    open();
 
 	    event.preventDefault();
@@ -17779,7 +16402,7 @@
 	  }, this);
 	}
 
-	inherits$2(BaseModeler, BaseViewer);
+	inherits$1(BaseModeler, BaseViewer);
 
 
 	/**
@@ -17827,8 +16450,8 @@
 	 *
 	 * @return {boolean}
 	 */
-	function is$2(element, type) {
-	  var bo = getBusinessObject$1(element);
+	function is$1(element, type) {
+	  var bo = getBusinessObject(element);
 
 	  return bo && (typeof bo.$instanceOf === 'function') && bo.$instanceOf(type);
 	}
@@ -17841,65 +16464,59 @@
 	 *
 	 * @return {ModdleElement}
 	 */
-	function getBusinessObject$1(element) {
+	function getBusinessObject(element) {
 	  return (element && element.businessObject) || element;
 	}
 
 	/**
 	 * Return the di object for a given element.
 	 *
-	 * @param  {djs.model.Base|ModdleElement} element
+	 * @param  {djs.model.Base} element
 	 *
 	 * @return {ModdleElement}
 	 */
-	function getDi$1(element) {
+	function getDi(element) {
 	  return element && element.di;
 	}
 
-	var ModelUtil = /*#__PURE__*/Object.freeze({
-		__proto__: null,
-		is: is$2,
-		getBusinessObject: getBusinessObject$1,
-		getDi: getDi$1
-	});
-
 	function isExpanded(element, di) {
-	  di = di || getDi$1(element);
 
-	  if (di && is$2(di, 'bpmndi:BPMNPlane')) {
-	    return true;
-	  }
-
-	  if (is$2(element, 'bpmn:CallActivity')) {
+	  if (is$1(element, 'bpmn:CallActivity')) {
 	    return false;
 	  }
 
-	  if (is$2(element, 'bpmn:SubProcess')) {
+	  if (is$1(element, 'bpmn:SubProcess')) {
+	    di = di || getDi(element);
+
+	    if (di && is$1(di, 'bpmndi:BPMNPlane')) {
+	      return true;
+	    }
+
 	    return di && !!di.isExpanded;
 	  }
 
-	  if (is$2(element, 'bpmn:Participant')) {
-	    return !!getBusinessObject$1(element).processRef;
+	  if (is$1(element, 'bpmn:Participant')) {
+	    return !!getBusinessObject(element).processRef;
 	  }
 
 	  return true;
 	}
 
 	function isInterrupting(element) {
-	  return element && getBusinessObject$1(element).isInterrupting !== false;
+	  return element && getBusinessObject(element).isInterrupting !== false;
 	}
 
 	function isEventSubProcess(element) {
-	  return element && !!getBusinessObject$1(element).triggeredByEvent;
+	  return element && !!getBusinessObject(element).triggeredByEvent;
 	}
 
 	function hasEventDefinition$2(element, eventType) {
-	  var bo = getBusinessObject$1(element),
+	  var bo = getBusinessObject(element),
 	      hasEventDefinition = false;
 
 	  if (bo.eventDefinitions) {
-	    forEach$2(bo.eventDefinitions, function(event) {
-	      if (is$2(event, eventType)) {
+	    forEach(bo.eventDefinitions, function(event) {
+	      if (is$1(event, eventType)) {
 	        hasEventDefinition = true;
 	      }
 	    });
@@ -17922,22 +16539,22 @@
 
 	function getLabelAttr(semantic) {
 	  if (
-	    is$2(semantic, 'bpmn:FlowElement') ||
-	    is$2(semantic, 'bpmn:Participant') ||
-	    is$2(semantic, 'bpmn:Lane') ||
-	    is$2(semantic, 'bpmn:SequenceFlow') ||
-	    is$2(semantic, 'bpmn:MessageFlow') ||
-	    is$2(semantic, 'bpmn:DataInput') ||
-	    is$2(semantic, 'bpmn:DataOutput')
+	    is$1(semantic, 'bpmn:FlowElement') ||
+	    is$1(semantic, 'bpmn:Participant') ||
+	    is$1(semantic, 'bpmn:Lane') ||
+	    is$1(semantic, 'bpmn:SequenceFlow') ||
+	    is$1(semantic, 'bpmn:MessageFlow') ||
+	    is$1(semantic, 'bpmn:DataInput') ||
+	    is$1(semantic, 'bpmn:DataOutput')
 	  ) {
 	    return 'name';
 	  }
 
-	  if (is$2(semantic, 'bpmn:TextAnnotation')) {
+	  if (is$1(semantic, 'bpmn:TextAnnotation')) {
 	    return 'text';
 	  }
 
-	  if (is$2(semantic, 'bpmn:Group')) {
+	  if (is$1(semantic, 'bpmn:Group')) {
 	    return 'categoryValueRef';
 	  }
 	}
@@ -17996,7 +16613,7 @@
 	function isTypedEvent(event, eventDefinitionType, filter) {
 
 	  function matches(definition, filter) {
-	    return every$1(filter, function(val, key) {
+	    return every(filter, function(val, key) {
 
 	      // we want a == conversion here, to be able to catch
 	      // undefined == false and friends
@@ -18005,7 +16622,7 @@
 	    });
 	  }
 
-	  return some$1(event.eventDefinitions, function(definition) {
+	  return some(event.eventDefinitions, function(definition) {
 	    return definition.$type === eventDefinitionType && matches(event, filter);
 	  });
 	}
@@ -18018,10 +16635,6 @@
 	  var dataObject = element.dataObjectRef;
 
 	  return element.isCollection || (dataObject && dataObject.isCollection);
-	}
-
-	function getDi(element) {
-	  return element.di;
 	}
 
 	function getSemantic(element) {
@@ -18157,7 +16770,7 @@
 	  var computeStyle = styles.computeStyle;
 
 	  function addMarker(id, options) {
-	    var attrs = assign$1({
+	    var attrs = assign({
 	      fill: 'black',
 	      strokeWidth: 1,
 	      strokeLinecap: 'round',
@@ -18174,13 +16787,13 @@
 	      attrs.strokeDasharray = [10000, 1];
 	    }
 
-	    var marker = create$2('marker');
+	    var marker = create$1('marker');
 
-	    attr$2(options.element, attrs);
+	    attr(options.element, attrs);
 
-	    append$1(marker, options.element);
+	    append(marker, options.element);
 
-	    attr$2(marker, {
+	    attr(marker, {
 	      id: id,
 	      viewBox: '0 0 20 20',
 	      refX: ref.x,
@@ -18190,15 +16803,15 @@
 	      orient: 'auto'
 	    });
 
-	    var defs = query$1('defs', canvas._svg);
+	    var defs = query('defs', canvas._svg);
 
 	    if (!defs) {
-	      defs = create$2('defs');
+	      defs = create$1('defs');
 
-	      append$1(canvas._svg, defs);
+	      append(canvas._svg, defs);
 	    }
 
-	    append$1(defs, marker);
+	    append(defs, marker);
 
 	    markers[id] = marker;
 	  }
@@ -18222,8 +16835,8 @@
 	  function createMarker(id, type, fill, stroke) {
 
 	    if (type === 'sequenceflow-end') {
-	      var sequenceflowEnd = create$2('path');
-	      attr$2(sequenceflowEnd, { d: 'M 1 5 L 11 10 L 1 15 Z' });
+	      var sequenceflowEnd = create$1('path');
+	      attr(sequenceflowEnd, { d: 'M 1 5 L 11 10 L 1 15 Z' });
 
 	      addMarker(id, {
 	        element: sequenceflowEnd,
@@ -18237,8 +16850,8 @@
 	    }
 
 	    if (type === 'messageflow-start') {
-	      var messageflowStart = create$2('circle');
-	      attr$2(messageflowStart, { cx: 6, cy: 6, r: 3.5 });
+	      var messageflowStart = create$1('circle');
+	      attr(messageflowStart, { cx: 6, cy: 6, r: 3.5 });
 
 	      addMarker(id, {
 	        element: messageflowStart,
@@ -18251,8 +16864,8 @@
 	    }
 
 	    if (type === 'messageflow-end') {
-	      var messageflowEnd = create$2('path');
-	      attr$2(messageflowEnd, { d: 'm 1 5 l 0 -3 l 7 3 l -7 3 z' });
+	      var messageflowEnd = create$1('path');
+	      attr(messageflowEnd, { d: 'm 1 5 l 0 -3 l 7 3 l -7 3 z' });
 
 	      addMarker(id, {
 	        element: messageflowEnd,
@@ -18266,8 +16879,8 @@
 	    }
 
 	    if (type === 'association-start') {
-	      var associationStart = create$2('path');
-	      attr$2(associationStart, { d: 'M 11 5 L 1 10 L 11 15' });
+	      var associationStart = create$1('path');
+	      attr(associationStart, { d: 'M 11 5 L 1 10 L 11 15' });
 
 	      addMarker(id, {
 	        element: associationStart,
@@ -18282,8 +16895,8 @@
 	    }
 
 	    if (type === 'association-end') {
-	      var associationEnd = create$2('path');
-	      attr$2(associationEnd, { d: 'M 1 5 L 11 10 L 1 15' });
+	      var associationEnd = create$1('path');
+	      attr(associationEnd, { d: 'M 1 5 L 11 10 L 1 15' });
 
 	      addMarker(id, {
 	        element: associationEnd,
@@ -18298,8 +16911,8 @@
 	    }
 
 	    if (type === 'conditional-flow-marker') {
-	      var conditionalflowMarker = create$2('path');
-	      attr$2(conditionalflowMarker, { d: 'M 0 10 L 8 6 L 16 10 L 8 14 Z' });
+	      var conditionalflowMarker = create$1('path');
+	      attr(conditionalflowMarker, { d: 'M 0 10 L 8 6 L 16 10 L 8 14 Z' });
 
 	      addMarker(id, {
 	        element: conditionalflowMarker,
@@ -18313,8 +16926,8 @@
 	    }
 
 	    if (type === 'conditional-default-flow-marker') {
-	      var conditionaldefaultflowMarker = create$2('path');
-	      attr$2(conditionaldefaultflowMarker, { d: 'M 6 4 L 10 16' });
+	      var conditionaldefaultflowMarker = create$1('path');
+	      attr(conditionaldefaultflowMarker, { d: 'M 6 4 L 10 16' });
 
 	      addMarker(id, {
 	        element: conditionaldefaultflowMarker,
@@ -18329,7 +16942,7 @@
 
 	  function drawCircle(parentGfx, width, height, offset, attrs) {
 
-	    if (isObject$1(offset)) {
+	    if (isObject(offset)) {
 	      attrs = offset;
 	      offset = 0;
 	    }
@@ -18349,22 +16962,22 @@
 	    var cx = width / 2,
 	        cy = height / 2;
 
-	    var circle = create$2('circle');
-	    attr$2(circle, {
+	    var circle = create$1('circle');
+	    attr(circle, {
 	      cx: cx,
 	      cy: cy,
 	      r: Math.round((width + height) / 4 - offset)
 	    });
-	    attr$2(circle, attrs);
+	    attr(circle, attrs);
 
-	    append$1(parentGfx, circle);
+	    append(parentGfx, circle);
 
 	    return circle;
 	  }
 
 	  function drawRect(parentGfx, width, height, r, offset, attrs) {
 
-	    if (isObject$1(offset)) {
+	    if (isObject(offset)) {
 	      attrs = offset;
 	      offset = 0;
 	    }
@@ -18377,8 +16990,8 @@
 	      fill: 'white'
 	    });
 
-	    var rect = create$2('rect');
-	    attr$2(rect, {
+	    var rect = create$1('rect');
+	    attr(rect, {
 	      x: offset,
 	      y: offset,
 	      width: width - offset * 2,
@@ -18386,9 +16999,9 @@
 	      rx: r,
 	      ry: r
 	    });
-	    attr$2(rect, attrs);
+	    attr(rect, attrs);
 
-	    append$1(parentGfx, rect);
+	    append(parentGfx, rect);
 
 	    return rect;
 	  }
@@ -18410,13 +17023,13 @@
 	      fill: 'white'
 	    });
 
-	    var polygon = create$2('polygon');
-	    attr$2(polygon, {
+	    var polygon = create$1('polygon');
+	    attr(polygon, {
 	      points: pointsString
 	    });
-	    attr$2(polygon, attrs);
+	    attr(polygon, attrs);
 
-	    append$1(parentGfx, polygon);
+	    append(parentGfx, polygon);
 
 	    return polygon;
 	  }
@@ -18430,7 +17043,7 @@
 
 	    var line = createLine(waypoints, attrs);
 
-	    append$1(parentGfx, line);
+	    append(parentGfx, line);
 
 	    return line;
 	  }
@@ -18442,22 +17055,22 @@
 	      stroke: 'black'
 	    });
 
-	    var path = create$2('path');
-	    attr$2(path, { d: d });
-	    attr$2(path, attrs);
+	    var path = create$1('path');
+	    attr(path, { d: d });
+	    attr(path, attrs);
 
-	    append$1(parentGfx, path);
+	    append(parentGfx, path);
 
 	    return path;
 	  }
 
 	  function drawMarker(type, parentGfx, path, attrs) {
-	    return drawPath(parentGfx, path, assign$1({ 'data-marker': type }, attrs));
+	    return drawPath(parentGfx, path, assign({ 'data-marker': type }, attrs));
 	  }
 
 	  function as(type) {
-	    return function(parentGfx, element) {
-	      return handlers[type](parentGfx, element);
+	    return function(parentGfx, element, attrs) {
+	      return handlers[type](parentGfx, element, attrs);
 	    };
 	  }
 
@@ -18465,58 +17078,58 @@
 	    return handlers[type];
 	  }
 
-	  function renderEventContent(element, parentGfx) {
+	  function renderEventContent(element, parentGfx, attrs) {
 
 	    var event = getSemantic(element);
 	    var isThrowing = isThrowEvent(event);
 
 	    if (event.eventDefinitions && event.eventDefinitions.length>1) {
 	      if (event.parallelMultiple) {
-	        return renderer('bpmn:ParallelMultipleEventDefinition')(parentGfx, element, isThrowing);
+	        return renderer('bpmn:ParallelMultipleEventDefinition')(parentGfx, element, attrs, isThrowing);
 	      }
 	      else {
-	        return renderer('bpmn:MultipleEventDefinition')(parentGfx, element, isThrowing);
+	        return renderer('bpmn:MultipleEventDefinition')(parentGfx, element, attrs, isThrowing);
 	      }
 	    }
 
 	    if (isTypedEvent(event, 'bpmn:MessageEventDefinition')) {
-	      return renderer('bpmn:MessageEventDefinition')(parentGfx, element, isThrowing);
+	      return renderer('bpmn:MessageEventDefinition')(parentGfx, element, attrs, isThrowing);
 	    }
 
 	    if (isTypedEvent(event, 'bpmn:TimerEventDefinition')) {
-	      return renderer('bpmn:TimerEventDefinition')(parentGfx, element, isThrowing);
+	      return renderer('bpmn:TimerEventDefinition')(parentGfx, element, attrs, isThrowing);
 	    }
 
 	    if (isTypedEvent(event, 'bpmn:ConditionalEventDefinition')) {
-	      return renderer('bpmn:ConditionalEventDefinition')(parentGfx, element);
+	      return renderer('bpmn:ConditionalEventDefinition')(parentGfx, element, attrs);
 	    }
 
 	    if (isTypedEvent(event, 'bpmn:SignalEventDefinition')) {
-	      return renderer('bpmn:SignalEventDefinition')(parentGfx, element, isThrowing);
+	      return renderer('bpmn:SignalEventDefinition')(parentGfx, element, attrs, isThrowing);
 	    }
 
 	    if (isTypedEvent(event, 'bpmn:EscalationEventDefinition')) {
-	      return renderer('bpmn:EscalationEventDefinition')(parentGfx, element, isThrowing);
+	      return renderer('bpmn:EscalationEventDefinition')(parentGfx, element, attrs, isThrowing);
 	    }
 
 	    if (isTypedEvent(event, 'bpmn:LinkEventDefinition')) {
-	      return renderer('bpmn:LinkEventDefinition')(parentGfx, element, isThrowing);
+	      return renderer('bpmn:LinkEventDefinition')(parentGfx, element, attrs, isThrowing);
 	    }
 
 	    if (isTypedEvent(event, 'bpmn:ErrorEventDefinition')) {
-	      return renderer('bpmn:ErrorEventDefinition')(parentGfx, element, isThrowing);
+	      return renderer('bpmn:ErrorEventDefinition')(parentGfx, element, attrs, isThrowing);
 	    }
 
 	    if (isTypedEvent(event, 'bpmn:CancelEventDefinition')) {
-	      return renderer('bpmn:CancelEventDefinition')(parentGfx, element, isThrowing);
+	      return renderer('bpmn:CancelEventDefinition')(parentGfx, element, attrs, isThrowing);
 	    }
 
 	    if (isTypedEvent(event, 'bpmn:CompensateEventDefinition')) {
-	      return renderer('bpmn:CompensateEventDefinition')(parentGfx, element, isThrowing);
+	      return renderer('bpmn:CompensateEventDefinition')(parentGfx, element, attrs, isThrowing);
 	    }
 
 	    if (isTypedEvent(event, 'bpmn:TerminateEventDefinition')) {
-	      return renderer('bpmn:TerminateEventDefinition')(parentGfx, element, isThrowing);
+	      return renderer('bpmn:TerminateEventDefinition')(parentGfx, element, attrs, isThrowing);
 	    }
 
 	    return null;
@@ -18524,7 +17137,7 @@
 
 	  function renderLabel(parentGfx, label, options) {
 
-	    options = assign$1({
+	    options = assign({
 	      size: {
 	        width: 100
 	      }
@@ -18532,27 +17145,27 @@
 
 	    var text = textRenderer.createText(label || '', options);
 
-	    classes$2(text).add('djs-label');
+	    classes(text).add('djs-label');
 
-	    append$1(parentGfx, text);
+	    append(parentGfx, text);
 
 	    return text;
 	  }
 
-	  function renderEmbeddedLabel(parentGfx, element, align) {
+	  function renderEmbeddedLabel(parentGfx, element, align, attrs) {
 	    var semantic = getSemantic(element);
 
 	    return renderLabel(parentGfx, semantic.name, {
 	      box: element,
 	      align: align,
 	      padding: 5,
-	      style: {
+	      style: assign({
 	        fill: getLabelColor(element, defaultLabelColor, defaultStrokeColor)
-	      }
+	      }, attrs)
 	    });
 	  }
 
-	  function renderExternalLabel(parentGfx, element) {
+	  function renderExternalLabel(parentGfx, element, attrs) {
 
 	    var box = {
 	      width: 90,
@@ -18564,26 +17177,27 @@
 	    return renderLabel(parentGfx, getLabel(element), {
 	      box: box,
 	      fitBox: true,
-	      style: assign$1(
+	      style: assign(
 	        {},
 	        textRenderer.getExternalStyle(),
 	        {
 	          fill: getLabelColor(element, defaultLabelColor, defaultStrokeColor)
-	        }
+	        },
+	        attrs
 	      )
 	    });
 	  }
 
-	  function renderLaneLabel(parentGfx, text, element) {
+	  function renderLaneLabel(parentGfx, text, element, attrs) {
 	    var textBox = renderLabel(parentGfx, text, {
 	      box: {
 	        height: 30,
 	        width: element.height
 	      },
 	      align: 'center-middle',
-	      style: {
+	      style: assign({
 	        fill: getLabelColor(element, defaultLabelColor, defaultStrokeColor)
-	      }
+	      }, attrs)
 	    });
 
 	    var top = -1 * element.height;
@@ -18610,11 +17224,11 @@
 
 	      return drawCircle(parentGfx, element.width, element.height, attrs);
 	    },
-	    'bpmn:StartEvent': function(parentGfx, element) {
-	      var attrs = {
+	    'bpmn:StartEvent': function(parentGfx, element, attrs) {
+	      attrs = assign({
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      };
+	      }, attrs);
 
 	      var semantic = getSemantic(element);
 
@@ -18633,7 +17247,7 @@
 
 	      return circle;
 	    },
-	    'bpmn:MessageEventDefinition': function(parentGfx, element, isThrowing) {
+	    'bpmn:MessageEventDefinition': function(parentGfx, element, attrs, isThrowing) {
 	      var pathData = pathMap.getScaledPath('EVENT_MESSAGE', {
 	        xScaleFactor: 0.9,
 	        yScaleFactor: 0.9,
@@ -18648,20 +17262,24 @@
 	      var fill = isThrowing ? getStrokeColor$1(element, defaultStrokeColor) : getFillColor(element, defaultFillColor);
 	      var stroke = isThrowing ? getFillColor(element, defaultFillColor) : getStrokeColor$1(element, defaultStrokeColor);
 
-	      var messagePath = drawPath(parentGfx, pathData, {
+	      attrs = assign({
 	        strokeWidth: 1,
 	        fill: fill,
 	        stroke: stroke
-	      });
+	      }, attrs);
+
+	      var messagePath = drawPath(parentGfx, pathData, attrs);
 
 	      return messagePath;
 	    },
-	    'bpmn:TimerEventDefinition': function(parentGfx, element) {
-	      var circle = drawCircle(parentGfx, element.width, element.height, 0.2 * element.height, {
+	    'bpmn:TimerEventDefinition': function(parentGfx, element, attrs) {
+	      var outerAttrs = assign({
 	        strokeWidth: 2,
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+
+	      var circle = drawCircle(parentGfx, element.width, element.height, 0.2 * element.height, outerAttrs);
 
 	      var pathData = pathMap.getScaledPath('EVENT_TIMER_WH', {
 	        xScaleFactor: 0.75,
@@ -18674,11 +17292,13 @@
 	        }
 	      });
 
-	      drawPath(parentGfx, pathData, {
+	      var innerAttrs = assign({
 	        strokeWidth: 2,
 	        strokeLinecap: 'square',
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+
+	      drawPath(parentGfx, pathData, innerAttrs);
 
 	      for (var i = 0;i < 12; i++) {
 
@@ -18696,17 +17316,25 @@
 	        var width = element.width / 2;
 	        var height = element.height / 2;
 
-	        drawPath(parentGfx, linePathData, {
+	        var lineAttrs = assign({
 	          strokeWidth: 1,
 	          strokeLinecap: 'square',
 	          transform: 'rotate(' + (i * 30) + ',' + height + ',' + width + ')',
 	          stroke: getStrokeColor$1(element, defaultStrokeColor)
-	        });
+	        }, attrs);
+
+	        drawPath(parentGfx, linePathData, lineAttrs);
 	      }
 
 	      return circle;
 	    },
-	    'bpmn:EscalationEventDefinition': function(parentGfx, event, isThrowing) {
+	    'bpmn:EscalationEventDefinition': function(parentGfx, event, attrs, isThrowing) {
+	      attrs = assign({
+	        strokeWidth: 1,
+	        fill: fill,
+	        stroke: getStrokeColor$1(event, defaultStrokeColor)
+	      }, attrs);
+
 	      var pathData = pathMap.getScaledPath('EVENT_ESCALATION', {
 	        xScaleFactor: 1,
 	        yScaleFactor: 1,
@@ -18720,13 +17348,14 @@
 
 	      var fill = isThrowing ? getStrokeColor$1(event, defaultStrokeColor) : 'none';
 
-	      return drawPath(parentGfx, pathData, {
-	        strokeWidth: 1,
-	        fill: fill,
-	        stroke: getStrokeColor$1(event, defaultStrokeColor)
-	      });
+	      return drawPath(parentGfx, pathData, attrs);
 	    },
-	    'bpmn:ConditionalEventDefinition': function(parentGfx, event) {
+	    'bpmn:ConditionalEventDefinition': function(parentGfx, event, attrs) {
+	      attrs = assign({
+	        strokeWidth: 1,
+	        stroke: getStrokeColor$1(event, defaultStrokeColor)
+	      }, attrs);
+
 	      var pathData = pathMap.getScaledPath('EVENT_CONDITIONAL', {
 	        xScaleFactor: 1,
 	        yScaleFactor: 1,
@@ -18738,12 +17367,9 @@
 	        }
 	      });
 
-	      return drawPath(parentGfx, pathData, {
-	        strokeWidth: 1,
-	        stroke: getStrokeColor$1(event, defaultStrokeColor)
-	      });
+	      return drawPath(parentGfx, pathData, attrs);
 	    },
-	    'bpmn:LinkEventDefinition': function(parentGfx, event, isThrowing) {
+	    'bpmn:LinkEventDefinition': function(parentGfx, event, attrs, isThrowing) {
 	      var pathData = pathMap.getScaledPath('EVENT_LINK', {
 	        xScaleFactor: 1,
 	        yScaleFactor: 1,
@@ -18757,13 +17383,15 @@
 
 	      var fill = isThrowing ? getStrokeColor$1(event, defaultStrokeColor) : 'none';
 
-	      return drawPath(parentGfx, pathData, {
+	      attrs = assign({
 	        strokeWidth: 1,
 	        fill: fill,
 	        stroke: getStrokeColor$1(event, defaultStrokeColor)
-	      });
+	      }, attrs);
+
+	      return drawPath(parentGfx, pathData, attrs);
 	    },
-	    'bpmn:ErrorEventDefinition': function(parentGfx, event, isThrowing) {
+	    'bpmn:ErrorEventDefinition': function(parentGfx, event, attrs, isThrowing) {
 	      var pathData = pathMap.getScaledPath('EVENT_ERROR', {
 	        xScaleFactor: 1.1,
 	        yScaleFactor: 1.1,
@@ -18777,13 +17405,15 @@
 
 	      var fill = isThrowing ? getStrokeColor$1(event, defaultStrokeColor) : 'none';
 
-	      return drawPath(parentGfx, pathData, {
+	      attrs = assign({
 	        strokeWidth: 1,
 	        fill: fill,
 	        stroke: getStrokeColor$1(event, defaultStrokeColor)
-	      });
+	      }, attrs);
+
+	      return drawPath(parentGfx, pathData, attrs);
 	    },
-	    'bpmn:CancelEventDefinition': function(parentGfx, event, isThrowing) {
+	    'bpmn:CancelEventDefinition': function(parentGfx, event, attrs, isThrowing) {
 	      var pathData = pathMap.getScaledPath('EVENT_CANCEL_45', {
 	        xScaleFactor: 1.0,
 	        yScaleFactor: 1.0,
@@ -18797,17 +17427,19 @@
 
 	      var fill = isThrowing ? getStrokeColor$1(event, defaultStrokeColor) : 'none';
 
-	      var path = drawPath(parentGfx, pathData, {
+	      attrs = assign({
 	        strokeWidth: 1,
 	        fill: fill,
 	        stroke: getStrokeColor$1(event, defaultStrokeColor)
-	      });
+	      }, attrs);
+
+	      var path = drawPath(parentGfx, pathData, attrs);
 
 	      rotate(path, 45);
 
 	      return path;
 	    },
-	    'bpmn:CompensateEventDefinition': function(parentGfx, event, isThrowing) {
+	    'bpmn:CompensateEventDefinition': function(parentGfx, event, attrs, isThrowing) {
 	      var pathData = pathMap.getScaledPath('EVENT_COMPENSATION', {
 	        xScaleFactor: 1,
 	        yScaleFactor: 1,
@@ -18821,13 +17453,15 @@
 
 	      var fill = isThrowing ? getStrokeColor$1(event, defaultStrokeColor) : 'none';
 
-	      return drawPath(parentGfx, pathData, {
+	      attrs = assign({
 	        strokeWidth: 1,
 	        fill: fill,
 	        stroke: getStrokeColor$1(event, defaultStrokeColor)
-	      });
+	      }, attrs);
+
+	      return drawPath(parentGfx, pathData, attrs);
 	    },
-	    'bpmn:SignalEventDefinition': function(parentGfx, event, isThrowing) {
+	    'bpmn:SignalEventDefinition': function(parentGfx, event, attrs, isThrowing) {
 	      var pathData = pathMap.getScaledPath('EVENT_SIGNAL', {
 	        xScaleFactor: 0.9,
 	        yScaleFactor: 0.9,
@@ -18841,13 +17475,15 @@
 
 	      var fill = isThrowing ? getStrokeColor$1(event, defaultStrokeColor) : 'none';
 
-	      return drawPath(parentGfx, pathData, {
+	      attrs = assign({
 	        strokeWidth: 1,
 	        fill: fill,
 	        stroke: getStrokeColor$1(event, defaultStrokeColor)
-	      });
+	      }, attrs);
+
+	      return drawPath(parentGfx, pathData, attrs);
 	    },
-	    'bpmn:MultipleEventDefinition': function(parentGfx, event, isThrowing) {
+	    'bpmn:MultipleEventDefinition': function(parentGfx, event, attrs, isThrowing) {
 	      var pathData = pathMap.getScaledPath('EVENT_MULTIPLE', {
 	        xScaleFactor: 1.1,
 	        yScaleFactor: 1.1,
@@ -18861,12 +17497,14 @@
 
 	      var fill = isThrowing ? getStrokeColor$1(event, defaultStrokeColor) : 'none';
 
-	      return drawPath(parentGfx, pathData, {
+	      attrs = assign({
 	        strokeWidth: 1,
 	        fill: fill
-	      });
+	      }, attrs);
+
+	      return drawPath(parentGfx, pathData, attrs);
 	    },
-	    'bpmn:ParallelMultipleEventDefinition': function(parentGfx, event) {
+	    'bpmn:ParallelMultipleEventDefinition': function(parentGfx, event, attrs) {
 	      var pathData = pathMap.getScaledPath('EVENT_PARALLEL_MULTIPLE', {
 	        xScaleFactor: 1.2,
 	        yScaleFactor: 1.2,
@@ -18878,47 +17516,54 @@
 	        }
 	      });
 
-	      return drawPath(parentGfx, pathData, {
+	      attrs = assign({
 	        strokeWidth: 1,
 	        fill: getStrokeColor$1(event, defaultStrokeColor),
 	        stroke: getStrokeColor$1(event, defaultStrokeColor)
-	      });
+	      }, attrs);
+
+
+	      return drawPath(parentGfx, pathData, attrs);
 	    },
-	    'bpmn:EndEvent': function(parentGfx, element) {
-	      var circle = renderer('bpmn:Event')(parentGfx, element, {
+	    'bpmn:EndEvent': function(parentGfx, element, attrs) {
+	      var outerAttrs = assign({
 	        strokeWidth: 4,
 	        fill: getFillColor(element, defaultFillColor),
-	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	        stroke: getStrokeColor$1(element, defaultStrokeColor),
+	      }, attrs);
 
-	      renderEventContent(element, parentGfx);
+	      var circle = renderer('bpmn:Event')(parentGfx, element, outerAttrs);
 
-	      return circle;
-	    },
-	    'bpmn:TerminateEventDefinition': function(parentGfx, element) {
-	      var circle = drawCircle(parentGfx, element.width, element.height, 8, {
-	        strokeWidth: 4,
-	        fill: getStrokeColor$1(element, defaultStrokeColor),
-	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      renderEventContent(element, parentGfx, attrs);
 
 	      return circle;
 	    },
-	    'bpmn:IntermediateEvent': function(parentGfx, element) {
-	      var outer = renderer('bpmn:Event')(parentGfx, element, {
+	    'bpmn:TerminateEventDefinition': function(parentGfx, element, attrs) {
+	      attrs = assign({
+	        fill: getFillColor(element, defaultFillColor),
+	        stroke: getStrokeColor$1(element, defaultStrokeColor),
+	        strokeWidth: 4
+	      }, attrs);
+
+	      var circle = drawCircle(parentGfx, element.width, element.height, 8, attrs);
+
+	      return circle;
+	    },
+	    'bpmn:IntermediateEvent': function(parentGfx, element, attrs) {
+	      var outerAttrs = assign({
 	        strokeWidth: 1,
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+
+	      var outer = renderer('bpmn:Event')(parentGfx, element, outerAttrs);
 
 	      /* inner */
-	      drawCircle(parentGfx, element.width, element.height, INNER_OUTER_DIST, {
-	        strokeWidth: 1,
+	      drawCircle(parentGfx, element.width, element.height, INNER_OUTER_DIST, assign({}, outerAttrs, {
 	        fill: getFillColor(element, 'none'),
-	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }));
 
-	      renderEventContent(element, parentGfx);
+	      renderEventContent(element, parentGfx, attrs);
 
 	      return outer;
 	    },
@@ -18936,21 +17581,21 @@
 	      return drawRect(parentGfx, element.width, element.height, TASK_BORDER_RADIUS, attrs);
 	    },
 
-	    'bpmn:Task': function(parentGfx, element) {
-	      var attrs = {
+	    'bpmn:Task': function(parentGfx, element, attrs) {
+	      attrs = assign({
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      };
+	      }, attrs);
 
 	      var rect = renderer('bpmn:Activity')(parentGfx, element, attrs);
 
 	      renderEmbeddedLabel(parentGfx, element, 'center-middle');
-	      attachTaskMarkers(parentGfx, element);
+	      attachTaskMarkers(parentGfx, element, attrs);
 
 	      return rect;
 	    },
-	    'bpmn:ServiceTask': function(parentGfx, element) {
-	      var task = renderer('bpmn:Task')(parentGfx, element);
+	    'bpmn:ServiceTask': function(parentGfx, element, attrs) {
+	      var task = renderer('bpmn:Task')(parentGfx, element, attrs);
 
 	      var pathDataBG = pathMap.getScaledPath('TASK_TYPE_SERVICE', {
 	        abspos: {
@@ -18959,11 +17604,12 @@
 	        }
 	      });
 
-	      /* service bg */ drawPath(parentGfx, pathDataBG, {
+	      var serviceAttrs = assign({
 	        strokeWidth: 1,
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+	      /* service bg */ drawPath(parentGfx, pathDataBG, serviceAttrs);
 
 	      var fillPathData = pathMap.getScaledPath('TASK_TYPE_SERVICE_FILL', {
 	        abspos: {
@@ -18972,10 +17618,11 @@
 	        }
 	      });
 
-	      /* service fill */ drawPath(parentGfx, fillPathData, {
+	      var fillAttrs = assign({
 	        strokeWidth: 0,
 	        fill: getFillColor(element, defaultFillColor)
-	      });
+	      }, attrs);
+	      /* service fill */ drawPath(parentGfx, fillPathData, fillAttrs);
 
 	      var pathData = pathMap.getScaledPath('TASK_TYPE_SERVICE', {
 	        abspos: {
@@ -18984,16 +17631,12 @@
 	        }
 	      });
 
-	      /* service */ drawPath(parentGfx, pathData, {
-	        strokeWidth: 1,
-	        fill: getFillColor(element, defaultFillColor),
-	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      /* service */ drawPath(parentGfx, pathData, serviceAttrs);
 
 	      return task;
 	    },
-	    'bpmn:UserTask': function(parentGfx, element) {
-	      var task = renderer('bpmn:Task')(parentGfx, element);
+	    'bpmn:UserTask': function(parentGfx, element, attrs) {
+	      var task = renderer('bpmn:Task')(parentGfx, element, attrs);
 
 	      var x = 15;
 	      var y = 12;
@@ -19005,11 +17648,12 @@
 	        }
 	      });
 
-	      /* user path */ drawPath(parentGfx, pathData, {
+	      var userAttrs = assign({
 	        strokeWidth: 0.5,
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+	      /* user path */ drawPath(parentGfx, pathData, userAttrs);
 
 	      var pathData2 = pathMap.getScaledPath('TASK_TYPE_USER_2', {
 	        abspos: {
@@ -19018,11 +17662,7 @@
 	        }
 	      });
 
-	      /* user2 path */ drawPath(parentGfx, pathData2, {
-	        strokeWidth: 0.5,
-	        fill: getFillColor(element, defaultFillColor),
-	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      /* user2 path */ drawPath(parentGfx, pathData2, userAttrs);
 
 	      var pathData3 = pathMap.getScaledPath('TASK_TYPE_USER_3', {
 	        abspos: {
@@ -19031,16 +17671,12 @@
 	        }
 	      });
 
-	      /* user3 path */ drawPath(parentGfx, pathData3, {
-	        strokeWidth: 0.5,
-	        fill: getStrokeColor$1(element, defaultStrokeColor),
-	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      /* user3 path */ drawPath(parentGfx, pathData3, userAttrs);
 
 	      return task;
 	    },
-	    'bpmn:ManualTask': function(parentGfx, element) {
-	      var task = renderer('bpmn:Task')(parentGfx, element);
+	    'bpmn:ManualTask': function(parentGfx, element, attrs) {
+	      var task = renderer('bpmn:Task')(parentGfx, element, attrs);
 
 	      var pathData = pathMap.getScaledPath('TASK_TYPE_MANUAL', {
 	        abspos: {
@@ -19049,16 +17685,17 @@
 	        }
 	      });
 
-	      /* manual path */ drawPath(parentGfx, pathData, {
+	      var manualAttrs = assign({
 	        strokeWidth: 0.5, // 0.25,
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+	      /* manual path */ drawPath(parentGfx, pathData, manualAttrs);
 
 	      return task;
 	    },
-	    'bpmn:SendTask': function(parentGfx, element) {
-	      var task = renderer('bpmn:Task')(parentGfx, element);
+	    'bpmn:SendTask': function(parentGfx, element, attrs) {
+	      var task = renderer('bpmn:Task')(parentGfx, element, attrs);
 
 	      var pathData = pathMap.getScaledPath('TASK_TYPE_SEND', {
 	        xScaleFactor: 1,
@@ -19071,22 +17708,25 @@
 	        }
 	      });
 
-	      /* send path */ drawPath(parentGfx, pathData, {
+	      /* send path */
+	      var pathAttrs = assign({
 	        strokeWidth: 1,
 	        fill: getStrokeColor$1(element, defaultStrokeColor),
 	        stroke: getFillColor(element, defaultFillColor)
-	      });
+	      }, attrs);
+
+	      drawPath(parentGfx, pathData, pathAttrs);
 
 	      return task;
 	    },
-	    'bpmn:ReceiveTask' : function(parentGfx, element) {
+	    'bpmn:ReceiveTask' : function(parentGfx, element, attrs) {
 	      var semantic = getSemantic(element);
 
-	      var task = renderer('bpmn:Task')(parentGfx, element);
+	      var task = renderer('bpmn:Task')(parentGfx, element, attrs);
 	      var pathData;
 
 	      if (semantic.instantiate) {
-	        drawCircle(parentGfx, 28, 28, 20 * 0.22, { strokeWidth: 1 });
+	        drawCircle(parentGfx, 28, 28, 20 * 0.22, assign({ strokeWidth: 1 }, attrs));
 
 	        pathData = pathMap.getScaledPath('TASK_TYPE_INSTANTIATING_SEND', {
 	          abspos: {
@@ -19108,16 +17748,18 @@
 	        });
 	      }
 
-	      /* receive path */ drawPath(parentGfx, pathData, {
+	      var receiveAttrs = assign({
 	        strokeWidth: 1,
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+
+	      /* receive path */ drawPath(parentGfx, pathData, receiveAttrs);
 
 	      return task;
 	    },
-	    'bpmn:ScriptTask': function(parentGfx, element) {
-	      var task = renderer('bpmn:Task')(parentGfx, element);
+	    'bpmn:ScriptTask': function(parentGfx, element, attrs) {
+	      var task = renderer('bpmn:Task')(parentGfx, element, attrs);
 
 	      var pathData = pathMap.getScaledPath('TASK_TYPE_SCRIPT', {
 	        abspos: {
@@ -19126,15 +17768,16 @@
 	        }
 	      });
 
-	      /* script path */ drawPath(parentGfx, pathData, {
+	      var scriptAttrs = assign({
 	        strokeWidth: 1,
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+	      /* script path */ drawPath(parentGfx, pathData, scriptAttrs);
 
 	      return task;
 	    },
-	    'bpmn:BusinessRuleTask': function(parentGfx, element) {
-	      var task = renderer('bpmn:Task')(parentGfx, element);
+	    'bpmn:BusinessRuleTask': function(parentGfx, element, attrs) {
+	      var task = renderer('bpmn:Task')(parentGfx, element, attrs);
 
 	      var headerPathData = pathMap.getScaledPath('TASK_TYPE_BUSINESS_RULE_HEADER', {
 	        abspos: {
@@ -19143,12 +17786,12 @@
 	        }
 	      });
 
-	      var businessHeaderPath = drawPath(parentGfx, headerPathData);
-	      attr$2(businessHeaderPath, {
+	      var headerAttrs = assign({
 	        strokeWidth: 1,
 	        fill: getFillColor(element, '#aaaaaa'),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+	      drawPath(parentGfx, headerPathData, headerAttrs);
 
 	      var headerData = pathMap.getScaledPath('TASK_TYPE_BUSINESS_RULE_MAIN', {
 	        abspos: {
@@ -19157,16 +17800,16 @@
 	        }
 	      });
 
-	      var businessPath = drawPath(parentGfx, headerData);
-	      attr$2(businessPath, {
+	      var businessAttrs = assign({
 	        strokeWidth: 1,
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+	      drawPath(parentGfx, headerData, businessAttrs);
 
 	      return task;
 	    },
 	    'bpmn:SubProcess': function(parentGfx, element, attrs) {
-	      attrs = assign$1({
+	      attrs = assign({
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
 	      }, attrs);
@@ -19176,7 +17819,7 @@
 	      var expanded = isExpanded(element);
 
 	      if (isEventSubProcess(element)) {
-	        attr$2(rect, {
+	        attr(rect, {
 	          strokeDasharray: '1,2'
 	        });
 	      }
@@ -19184,41 +17827,42 @@
 	      renderEmbeddedLabel(parentGfx, element, expanded ? 'center-top' : 'center-middle');
 
 	      if (expanded) {
-	        attachTaskMarkers(parentGfx, element);
+	        attachTaskMarkers(parentGfx, element, attrs);
 	      } else {
-	        attachTaskMarkers(parentGfx, element, ['SubProcessMarker']);
+	        attachTaskMarkers(parentGfx, element, attrs, ['SubProcessMarker']);
 	      }
 
 	      return rect;
 	    },
-	    'bpmn:AdHocSubProcess': function(parentGfx, element) {
-	      return renderer('bpmn:SubProcess')(parentGfx, element);
+	    'bpmn:AdHocSubProcess': function(parentGfx, element, attrs) {
+	      return renderer('bpmn:SubProcess')(parentGfx, element, attrs);
 	    },
-	    'bpmn:Transaction': function(parentGfx, element) {
-	      var outer = renderer('bpmn:SubProcess')(parentGfx, element);
+	    'bpmn:Transaction': function(parentGfx, element, attrs) {
+	      var outer = renderer('bpmn:SubProcess')(parentGfx, element, attrs);
 
 	      var innerAttrs = styles.style([ 'no-fill', 'no-events' ], {
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
 	      });
 
-	      /* inner path */ drawRect(parentGfx, element.width, element.height, TASK_BORDER_RADIUS - 2, INNER_OUTER_DIST, innerAttrs);
+	      /* inner path */ drawRect(parentGfx, element.width, element.height, TASK_BORDER_RADIUS - 2, INNER_OUTER_DIST, assign(innerAttrs, attrs));
 
 	      return outer;
 	    },
-	    'bpmn:CallActivity': function(parentGfx, element) {
-	      return renderer('bpmn:SubProcess')(parentGfx, element, {
+	    'bpmn:CallActivity': function(parentGfx, element, attrs) {
+	      attrs = assign({
 	        strokeWidth: 5
-	      });
-	    },
-	    'bpmn:Participant': function(parentGfx, element) {
+	      }, attrs);
 
-	      var attrs = {
+	      return renderer('bpmn:SubProcess')(parentGfx, element, attrs);
+	    },
+	    'bpmn:Participant': function(parentGfx, element, attrs) {
+	      var outerAttrs = assign({
 	        fillOpacity: DEFAULT_FILL_OPACITY,
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      };
+	      }, attrs);
 
-	      var lane = renderer('bpmn:Lane')(parentGfx, element, attrs);
+	      var lane = renderer('bpmn:Lane')(parentGfx, element, outerAttrs);
 
 	      var expandedPool = isExpanded(element);
 
@@ -19226,9 +17870,9 @@
 	        drawLine(parentGfx, [
 	          { x: 30, y: 0 },
 	          { x: 30, y: element.height }
-	        ], {
+	        ], assign({
 	          stroke: getStrokeColor$1(element, defaultStrokeColor)
-	        });
+	        }, attrs));
 	        var text = getSemantic(element).name;
 	        renderLaneLabel(parentGfx, text, element);
 	      } else {
@@ -19246,13 +17890,13 @@
 	      var participantMultiplicity = !!(getSemantic(element).participantMultiplicity);
 
 	      if (participantMultiplicity) {
-	        renderer('ParticipantMultiplicityMarker')(parentGfx, element);
+	        renderer('ParticipantMultiplicityMarker')(parentGfx, element, attrs);
 	      }
 
 	      return lane;
 	    },
 	    'bpmn:Lane': function(parentGfx, element, attrs) {
-	      var rect = drawRect(parentGfx, element.width, element.height, 0, assign$1({
+	      var rect = drawRect(parentGfx, element.width, element.height, 0, assign({
 	        fill: getFillColor(element, defaultFillColor),
 	        fillOpacity: HIGH_FILL_OPACITY,
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
@@ -19267,20 +17911,23 @@
 
 	      return rect;
 	    },
-	    'bpmn:InclusiveGateway': function(parentGfx, element) {
-	      var diamond = renderer('bpmn:Gateway')(parentGfx, element);
+	    'bpmn:InclusiveGateway': function(parentGfx, element, attrs) {
+	      var diamond = renderer('bpmn:Gateway')(parentGfx, element, attrs);
 
-	      /* circle path */
-	      drawCircle(parentGfx, element.width, element.height, element.height * 0.24, {
+
+	      var circleAttrs = assign({
 	        strokeWidth: 2.5,
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+
+	      /* circle path */
+	      drawCircle(parentGfx, element.width, element.height, element.height * 0.24, circleAttrs);
 
 	      return diamond;
 	    },
-	    'bpmn:ExclusiveGateway': function(parentGfx, element) {
-	      var diamond = renderer('bpmn:Gateway')(parentGfx, element);
+	    'bpmn:ExclusiveGateway': function(parentGfx, element, attrs) {
+	      var diamond = renderer('bpmn:Gateway')(parentGfx, element, attrs);
 
 	      var pathData = pathMap.getScaledPath('GATEWAY_EXCLUSIVE', {
 	        xScaleFactor: 0.4,
@@ -19294,17 +17941,17 @@
 	      });
 
 	      if ((getDi(element).isMarkerVisible)) {
-	        drawPath(parentGfx, pathData, {
+	        drawPath(parentGfx, pathData, assign({
 	          strokeWidth: 1,
 	          fill: getStrokeColor$1(element, defaultStrokeColor),
 	          stroke: getStrokeColor$1(element, defaultStrokeColor)
-	        });
+	        }, attrs));
 	      }
 
 	      return diamond;
 	    },
-	    'bpmn:ComplexGateway': function(parentGfx, element) {
-	      var diamond = renderer('bpmn:Gateway')(parentGfx, element);
+	    'bpmn:ComplexGateway': function(parentGfx, element, attrs) {
+	      var diamond = renderer('bpmn:Gateway')(parentGfx, element, attrs);
 
 	      var pathData = pathMap.getScaledPath('GATEWAY_COMPLEX', {
 	        xScaleFactor: 0.5,
@@ -19317,16 +17964,17 @@
 	        }
 	      });
 
-	      /* complex path */ drawPath(parentGfx, pathData, {
+	      var innerAttrs = assign({
 	        strokeWidth: 1,
 	        fill: getStrokeColor$1(element, defaultStrokeColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+	      /* complex path */ drawPath(parentGfx, pathData, innerAttrs);
 
 	      return diamond;
 	    },
-	    'bpmn:ParallelGateway': function(parentGfx, element) {
-	      var diamond = renderer('bpmn:Gateway')(parentGfx, element);
+	    'bpmn:ParallelGateway': function(parentGfx, element, attrs) {
+	      var diamond = renderer('bpmn:Gateway')(parentGfx, element, attrs);
 
 	      var pathData = pathMap.getScaledPath('GATEWAY_PARALLEL', {
 	        xScaleFactor: 0.6,
@@ -19339,25 +17987,27 @@
 	        }
 	      });
 
-	      /* parallel path */ drawPath(parentGfx, pathData, {
+	      var innerAttrs = assign({
 	        strokeWidth: 1,
 	        fill: getStrokeColor$1(element, defaultStrokeColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+	      /* parallel path */ drawPath(parentGfx, pathData, innerAttrs);
 
 	      return diamond;
 	    },
-	    'bpmn:EventBasedGateway': function(parentGfx, element) {
+	    'bpmn:EventBasedGateway': function(parentGfx, element, attrs) {
 
 	      var semantic = getSemantic(element);
 
-	      var diamond = renderer('bpmn:Gateway')(parentGfx, element);
+	      var diamond = renderer('bpmn:Gateway')(parentGfx, element, attrs);
 
-	      /* outer circle path */ drawCircle(parentGfx, element.width, element.height, element.height * 0.20, {
+	      var outerAttrs = assign({
 	        strokeWidth: 1,
 	        fill: 'none',
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+	      /* outer circle path */ drawCircle(parentGfx, element.width, element.height, element.height * 0.20, outerAttrs);
 
 	      var type = semantic.eventGatewayType;
 	      var instantiate = !!semantic.instantiate;
@@ -19375,13 +18025,12 @@
 	          }
 	        });
 
-	        var attrs = {
+	        var innerAttrs = assign({
 	          strokeWidth: 2,
 	          fill: getFillColor(element, 'none'),
 	          stroke: getStrokeColor$1(element, defaultStrokeColor)
-	        };
-
-	        /* event path */ drawPath(parentGfx, pathData, attrs);
+	        }, attrs);
+	        /* event path */ drawPath(parentGfx, pathData, innerAttrs);
 	      }
 
 	      if (type === 'Parallel') {
@@ -19397,20 +18046,20 @@
 	          }
 	        });
 
-	        var parallelPath = drawPath(parentGfx, pathData);
-	        attr$2(parallelPath, {
+	        var parallelPath = drawPath(parentGfx, pathData, attrs);
+	        attr(parallelPath, {
 	          strokeWidth: 1,
 	          fill: 'none'
 	        });
 	      } else if (type === 'Exclusive') {
 
 	        if (!instantiate) {
-	          var innerCircle = drawCircle(parentGfx, element.width, element.height, element.height * 0.26);
-	          attr$2(innerCircle, {
+	          var innerCircleAttrs = assign({
 	            strokeWidth: 1,
 	            fill: 'none',
 	            stroke: getStrokeColor$1(element, defaultStrokeColor)
-	          });
+	          }, attrs);
+	          drawCircle(parentGfx, element.width, element.height, element.height * 0.26, innerCircleAttrs);
 	        }
 
 	        drawEvent();
@@ -19419,26 +18068,28 @@
 
 	      return diamond;
 	    },
-	    'bpmn:Gateway': function(parentGfx, element) {
-	      var attrs = {
+	    'bpmn:Gateway': function(parentGfx, element, attrs) {
+	      attrs = assign({
 	        fill: getFillColor(element, defaultFillColor),
 	        fillOpacity: DEFAULT_FILL_OPACITY,
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      };
+	      }, attrs);
 
 	      return drawDiamond(parentGfx, element.width, element.height, attrs);
 	    },
-	    'bpmn:SequenceFlow': function(parentGfx, element) {
+	    'bpmn:SequenceFlow': function(parentGfx, element, attrs) {
+	      attrs = attrs || {};
+
 	      var pathData = createPathFromConnection(element);
 
-	      var fill = getFillColor(element, defaultFillColor),
-	          stroke = getStrokeColor$1(element, defaultStrokeColor);
+	      var fill = attrs.fill || getFillColor(element, defaultFillColor),
+	          stroke = attrs.stroke || getStrokeColor$1(element, defaultStrokeColor);
 
-	      var attrs = {
+	      attrs = assign({
 	        strokeLinejoin: 'round',
 	        markerEnd: marker('sequenceflow-end', fill, stroke),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      };
+	      }, attrs || {});
 
 	      var path = drawPath(parentGfx, pathData, attrs);
 
@@ -19451,7 +18102,7 @@
 
 	        // conditional flow marker
 	        if (sequenceFlow.conditionExpression && source.$instanceOf('bpmn:Activity')) {
-	          attr$2(path, {
+	          attr(path, {
 	            markerStart: marker('conditional-flow-marker', fill, stroke)
 	          });
 	        }
@@ -19459,7 +18110,7 @@
 	        // default marker
 	        if (source.default && (source.$instanceOf('bpmn:Gateway') || source.$instanceOf('bpmn:Activity')) &&
 	            source.default === sequenceFlow) {
-	          attr$2(path, {
+	          attr(path, {
 	            markerStart: marker('conditional-default-flow-marker', fill, stroke)
 	          });
 	        }
@@ -19474,7 +18125,7 @@
 	      var fill = getFillColor(element, defaultFillColor),
 	          stroke = getStrokeColor$1(element, defaultStrokeColor);
 
-	      attrs = assign$1({
+	      attrs = assign({
 	        strokeDasharray: '0.5, 5',
 	        strokeLinecap: 'round',
 	        strokeLinejoin: 'round',
@@ -19492,41 +18143,52 @@
 
 	      return drawLine(parentGfx, element.waypoints, attrs);
 	    },
-	    'bpmn:DataInputAssociation': function(parentGfx, element) {
-	      var fill = getFillColor(element, defaultFillColor),
-	          stroke = getStrokeColor$1(element, defaultStrokeColor);
+	    'bpmn:DataInputAssociation': function(parentGfx, element, attrs) {
+	      attrs = attrs || {};
 
-	      return renderer('bpmn:Association')(parentGfx, element, {
-	        markerEnd: marker('association-end', fill, stroke)
-	      });
-	    },
-	    'bpmn:DataOutputAssociation': function(parentGfx, element) {
-	      var fill = getFillColor(element, defaultFillColor),
-	          stroke = getStrokeColor$1(element, defaultStrokeColor);
+	      var fill = attrs.fill || getFillColor(element, defaultFillColor),
+	          stroke = attrs.stroke || getStrokeColor$1(element, defaultStrokeColor);
 
-	      return renderer('bpmn:Association')(parentGfx, element, {
+	      attrs = assign({
 	        markerEnd: marker('association-end', fill, stroke)
-	      });
+	      }, attrs);
+
+	      return renderer('bpmn:Association')(parentGfx, element, attrs);
 	    },
-	    'bpmn:MessageFlow': function(parentGfx, element) {
+	    'bpmn:DataOutputAssociation': function(parentGfx, element, attrs) {
+	      attrs = attrs || {};
+
+	      var fill = attrs.fill || getFillColor(element, defaultFillColor),
+	          stroke = attrs.stroke || getStrokeColor$1(element, defaultStrokeColor);
+
+
+	      attrs = assign({
+	        markerEnd: marker('association-end', fill, stroke)
+	      }, attrs);
+
+	      return renderer('bpmn:Association')(parentGfx, element, attrs);
+	    },
+	    'bpmn:MessageFlow': function(parentGfx, element, attrs) {
+	      attrs = attrs || {};
 
 	      var semantic = getSemantic(element),
 	          di = getDi(element);
 
-	      var fill = getFillColor(element, defaultFillColor),
-	          stroke = getStrokeColor$1(element, defaultStrokeColor);
+	      var fill = attrs.fill || getFillColor(element, defaultFillColor),
+	          stroke = attrs.stroke || getStrokeColor$1(element, defaultStrokeColor);
 
 	      var pathData = createPathFromConnection(element);
 
-	      var attrs = {
+
+	      attrs = assign({
 	        markerEnd: marker('messageflow-end', fill, stroke),
 	        markerStart: marker('messageflow-start', fill, stroke),
 	        strokeDasharray: '10, 12',
 	        strokeLinecap: 'round',
 	        strokeLinejoin: 'round',
 	        strokeWidth: '1.5px',
-	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      };
+	        stroke: stroke
+	      }, attrs);
 
 	      var path = drawPath(parentGfx, pathData, attrs);
 
@@ -19573,7 +18235,7 @@
 
 	      return path;
 	    },
-	    'bpmn:DataObject': function(parentGfx, element) {
+	    'bpmn:DataObject': function(parentGfx, element, attrs) {
 	      var pathData = pathMap.getScaledPath('DATA_OBJECT_PATH', {
 	        xScaleFactor: 1,
 	        yScaleFactor: 1,
@@ -19585,46 +18247,56 @@
 	        }
 	      });
 
-	      var elementObject = drawPath(parentGfx, pathData, {
+	      var outerAttrs = assign({
 	        fill: getFillColor(element, defaultFillColor),
 	        fillOpacity: DEFAULT_FILL_OPACITY,
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+	      var elementObject = drawPath(parentGfx, pathData, outerAttrs);
 
 	      var semantic = getSemantic(element);
 
 	      if (isCollection(semantic)) {
-	        renderDataItemCollection(parentGfx, element);
+	        renderDataItemCollection(parentGfx, element, attrs);
 	      }
 
 	      return elementObject;
 	    },
 	    'bpmn:DataObjectReference': as('bpmn:DataObject'),
-	    'bpmn:DataInput': function(parentGfx, element) {
+	    'bpmn:DataInput': function(parentGfx, element, attrs) {
 
 	      var arrowPathData = pathMap.getRawPath('DATA_ARROW');
 
 	      // page
-	      var elementObject = renderer('bpmn:DataObject')(parentGfx, element);
+	      var elementObject = renderer('bpmn:DataObject')(parentGfx, element, attrs);
 
-	      /* input arrow path */ drawPath(parentGfx, arrowPathData, { strokeWidth: 1 });
+	      var innerAttrs = assign({ strokeWidth: 1 }, attrs);
+	      /* input arrow path */ drawPath(parentGfx, arrowPathData, innerAttrs);
 
 	      return elementObject;
 	    },
-	    'bpmn:DataOutput': function(parentGfx, element) {
+	    'bpmn:DataOutput': function(parentGfx, element, attrs) {
 	      var arrowPathData = pathMap.getRawPath('DATA_ARROW');
 
 	      // page
-	      var elementObject = renderer('bpmn:DataObject')(parentGfx, element);
+	      var elementObject = renderer('bpmn:DataObject')(parentGfx, element, attrs);
 
-	      /* output arrow path */ drawPath(parentGfx, arrowPathData, {
+	      var arrowAttrs = assign({
 	        strokeWidth: 1,
 	        fill: 'black'
-	      });
+	      }, attrs);
+	      /* output arrow path */ drawPath(parentGfx, arrowPathData, arrowAttrs);
 
 	      return elementObject;
 	    },
-	    'bpmn:DataStoreReference': function(parentGfx, element) {
+	    'bpmn:DataStoreReference': function(parentGfx, element, attrs) {
+	      attrs = assign({
+	        strokeWidth: 2,
+	        fill: getFillColor(element, defaultFillColor),
+	        fillOpacity: DEFAULT_FILL_OPACITY,
+	        stroke: getStrokeColor$1(element, defaultStrokeColor)
+	      }, attrs);
+
 	      var DATA_STORE_PATH = pathMap.getScaledPath('DATA_STORE', {
 	        xScaleFactor: 1,
 	        yScaleFactor: 1,
@@ -19636,25 +18308,20 @@
 	        }
 	      });
 
-	      var elementStore = drawPath(parentGfx, DATA_STORE_PATH, {
-	        strokeWidth: 2,
-	        fill: getFillColor(element, defaultFillColor),
-	        fillOpacity: DEFAULT_FILL_OPACITY,
-	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      var elementStore = drawPath(parentGfx, DATA_STORE_PATH, attrs);
 
 	      return elementStore;
 	    },
-	    'bpmn:BoundaryEvent': function(parentGfx, element) {
+	    'bpmn:BoundaryEvent': function(parentGfx, element, attrs) {
 
 	      var semantic = getSemantic(element),
 	          cancel = semantic.cancelActivity;
 
-	      var attrs = {
+	      attrs = assign({
 	        strokeWidth: 1,
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      };
+	      }, attrs);
 
 	      if (!cancel) {
 	        attrs.strokeDasharray = '6';
@@ -19662,12 +18329,12 @@
 	      }
 
 	      // apply fillOpacity
-	      var outerAttrs = assign$1({}, attrs, {
+	      var outerAttrs = assign({}, attrs, {
 	        fillOpacity: 1
 	      });
 
 	      // apply no-fill
-	      var innerAttrs = assign$1({}, attrs, {
+	      var innerAttrs = assign({}, attrs, {
 	        fill: 'none'
 	      });
 
@@ -19675,30 +18342,32 @@
 
 	      /* inner path */ drawCircle(parentGfx, element.width, element.height, INNER_OUTER_DIST, innerAttrs);
 
-	      renderEventContent(element, parentGfx);
+	      renderEventContent(element, parentGfx, attrs);
 
 	      return outer;
 	    },
-	    'bpmn:Group': function(parentGfx, element) {
+	    'bpmn:Group': function(parentGfx, element, attrs) {
 
-	      var group = drawRect(parentGfx, element.width, element.height, TASK_BORDER_RADIUS, {
+	      attrs = assign({
 	        stroke: getStrokeColor$1(element, defaultStrokeColor),
 	        strokeWidth: 1,
 	        strokeDasharray: '8,3,1,3',
 	        fill: 'none',
 	        pointerEvents: 'none'
-	      });
+	      }, attrs);
+
+	      var group = drawRect(parentGfx, element.width, element.height, TASK_BORDER_RADIUS, attrs);
 
 	      return group;
 	    },
 	    'label': function(parentGfx, element) {
 	      return renderExternalLabel(parentGfx, element);
 	    },
-	    'bpmn:TextAnnotation': function(parentGfx, element) {
-	      var style = {
+	    'bpmn:TextAnnotation': function(parentGfx, element, attrs) {
+	      var style = assign({}, attrs, {
 	        'fill': 'none',
 	        'stroke': 'none'
-	      };
+	      });
 
 	      var textElement = drawRect(parentGfx, element.width, element.height, 0, 0, style);
 
@@ -19713,9 +18382,10 @@
 	        }
 	      });
 
-	      drawPath(parentGfx, textPathData, {
+	      var pathAttrs = assign({
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+	      drawPath(parentGfx, textPathData, pathAttrs);
 
 	      var text = getSemantic(element).text || '';
 	      renderLabel(parentGfx, text, {
@@ -19729,7 +18399,13 @@
 
 	      return textElement;
 	    },
-	    'ParticipantMultiplicityMarker': function(parentGfx, element) {
+	    'ParticipantMultiplicityMarker': function(parentGfx, element, attrs) {
+	      attrs = assign({
+	        strokeWidth: 2,
+	        fill: getFillColor(element, defaultFillColor),
+	        stroke: getStrokeColor$1(element, defaultStrokeColor)
+	      }, attrs);
+
 	      var markerPath = pathMap.getScaledPath('MARKER_PARALLEL', {
 	        xScaleFactor: 1,
 	        yScaleFactor: 1,
@@ -19741,18 +18417,15 @@
 	        }
 	      });
 
-	      drawMarker('participant-multiplicity', parentGfx, markerPath, {
-	        strokeWidth: 2,
-	        fill: getFillColor(element, defaultFillColor),
-	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      drawMarker('participant-multiplicity', parentGfx, markerPath, attrs);
 	    },
-	    'SubProcessMarker': function(parentGfx, element) {
-	      var markerRect = drawRect(parentGfx, 14, 14, 0, {
-	        strokeWidth: 1,
+	    'SubProcessMarker': function(parentGfx, element, attrs) {
+	      attrs = assign({
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      }, attrs);
+
+	      var markerRect = drawRect(parentGfx, 14, 14, 0, assign({ strokeWidth: 1 }, attrs));
 
 	      // Process marker is placed in the middle of the box
 	      // therefore fixed values can be used here
@@ -19769,12 +18442,14 @@
 	        }
 	      });
 
-	      drawMarker('sub-process', parentGfx, markerPath, {
+	      drawMarker('sub-process', parentGfx, markerPath, attrs);
+	    },
+	    'ParallelMarker': function(parentGfx, element, attrs, position) {
+	      attrs = assign({
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
-	    },
-	    'ParallelMarker': function(parentGfx, element, position) {
+	      }, attrs);
+
 	      var markerPath = pathMap.getScaledPath('MARKER_PARALLEL', {
 	        xScaleFactor: 1,
 	        yScaleFactor: 1,
@@ -19786,12 +18461,13 @@
 	        }
 	      });
 
-	      drawMarker('parallel', parentGfx, markerPath, {
+	      drawMarker('parallel', parentGfx, markerPath, attrs);
+	    },
+	    'SequentialMarker': function(parentGfx, element, attrs, position) {
+	      attrs = assign({
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
-	    },
-	    'SequentialMarker': function(parentGfx, element, position) {
+	      }, attrs);
 	      var markerPath = pathMap.getScaledPath('MARKER_SEQUENTIAL', {
 	        xScaleFactor: 1,
 	        yScaleFactor: 1,
@@ -19803,12 +18479,15 @@
 	        }
 	      });
 
-	      drawMarker('sequential', parentGfx, markerPath, {
+	      drawMarker('sequential', parentGfx, markerPath, attrs);
+	    },
+	    'CompensationMarker': function(parentGfx, element, attrs, position) {
+	      attrs = assign({
+	        strokeWidth: 1,
 	        fill: getFillColor(element, defaultFillColor),
 	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
-	    },
-	    'CompensationMarker': function(parentGfx, element, position) {
+	      }, attrs);
+
 	      var markerMath = pathMap.getScaledPath('MARKER_COMPENSATION', {
 	        xScaleFactor: 1,
 	        yScaleFactor: 1,
@@ -19820,13 +18499,17 @@
 	        }
 	      });
 
-	      drawMarker('compensation', parentGfx, markerMath, {
+	      drawMarker('compensation', parentGfx, markerMath, attrs);
+	    },
+	    'LoopMarker': function(parentGfx, element, attrs, position) {
+	      attrs = assign({
 	        strokeWidth: 1,
 	        fill: getFillColor(element, defaultFillColor),
-	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
-	    },
-	    'LoopMarker': function(parentGfx, element, position) {
+	        stroke: getStrokeColor$1(element, defaultStrokeColor),
+	        strokeLinecap: 'round',
+	        strokeMiterlimit: 0.5
+	      }, attrs);
+
 	      var markerPath = pathMap.getScaledPath('MARKER_LOOP', {
 	        xScaleFactor: 1,
 	        yScaleFactor: 1,
@@ -19838,15 +18521,15 @@
 	        }
 	      });
 
-	      drawMarker('loop', parentGfx, markerPath, {
-	        strokeWidth: 1,
-	        fill: getFillColor(element, defaultFillColor),
-	        stroke: getStrokeColor$1(element, defaultStrokeColor),
-	        strokeLinecap: 'round',
-	        strokeMiterlimit: 0.5
-	      });
+	      drawMarker('loop', parentGfx, markerPath, attrs);
 	    },
-	    'AdhocMarker': function(parentGfx, element, position) {
+	    'AdhocMarker': function(parentGfx, element, attrs, position) {
+	      attrs = assign({
+	        strokeWidth: 1,
+	        fill: getStrokeColor$1(element, defaultStrokeColor),
+	        stroke: getStrokeColor$1(element, defaultStrokeColor)
+	      }, attrs);
+
 	      var markerPath = pathMap.getScaledPath('MARKER_ADHOC', {
 	        xScaleFactor: 1,
 	        yScaleFactor: 1,
@@ -19858,15 +18541,11 @@
 	        }
 	      });
 
-	      drawMarker('adhoc', parentGfx, markerPath, {
-	        strokeWidth: 1,
-	        fill: getStrokeColor$1(element, defaultStrokeColor),
-	        stroke: getStrokeColor$1(element, defaultStrokeColor)
-	      });
+	      drawMarker('adhoc', parentGfx, markerPath, attrs);
 	    }
 	  };
 
-	  function attachTaskMarkers(parentGfx, element, taskMarkers) {
+	  function attachTaskMarkers(parentGfx, element, attrs, taskMarkers) {
 	    var obj = getSemantic(element);
 
 	    var subprocess = taskMarkers && taskMarkers.indexOf('SubProcessMarker') !== -1;
@@ -19890,16 +18569,16 @@
 	      };
 	    }
 
-	    forEach$2(taskMarkers, function(marker) {
-	      renderer(marker)(parentGfx, element, position);
+	    forEach(taskMarkers, function(marker) {
+	      renderer(marker)(parentGfx, element, attrs, position);
 	    });
 
 	    if (obj.isForCompensation) {
-	      renderer('CompensationMarker')(parentGfx, element, position);
+	      renderer('CompensationMarker')(parentGfx, element, attrs, position);
 	    }
 
 	    if (obj.$type === 'bpmn:AdHocSubProcess') {
-	      renderer('AdhocMarker')(parentGfx, element, position);
+	      renderer('AdhocMarker')(parentGfx, element, attrs, position);
 	    }
 
 	    var loopCharacteristics = obj.loopCharacteristics,
@@ -19908,20 +18587,23 @@
 	    if (loopCharacteristics) {
 
 	      if (isSequential === undefined) {
-	        renderer('LoopMarker')(parentGfx, element, position);
+	        renderer('LoopMarker')(parentGfx, element, attrs, position);
 	      }
 
 	      if (isSequential === false) {
-	        renderer('ParallelMarker')(parentGfx, element, position);
+	        renderer('ParallelMarker')(parentGfx, element, attrs, position);
 	      }
 
 	      if (isSequential === true) {
-	        renderer('SequentialMarker')(parentGfx, element, position);
+	        renderer('SequentialMarker')(parentGfx, element, attrs, position);
 	      }
 	    }
 	  }
 
-	  function renderDataItemCollection(parentGfx, element) {
+	  function renderDataItemCollection(parentGfx, element, attrs) {
+	    attrs = assign({
+	      strokeWidth: 2
+	    }, attrs);
 
 	    var yPosition = (element.height - 18) / element.height;
 
@@ -19936,9 +18618,7 @@
 	      }
 	    });
 
-	    /* collection path */ drawPath(parentGfx, pathData, {
-	      strokeWidth: 2
-	    });
+	    /* collection path */ drawPath(parentGfx, pathData, attrs);
 	  }
 
 
@@ -19948,7 +18628,7 @@
 	}
 
 
-	inherits$2(BpmnRenderer, BaseRenderer);
+	inherits$1(BpmnRenderer, BaseRenderer);
 
 	BpmnRenderer.$inject = [
 	  'config.bpmnRenderer',
@@ -19961,36 +18641,36 @@
 
 
 	BpmnRenderer.prototype.canRender = function(element) {
-	  return is$2(element, 'bpmn:BaseElement');
+	  return is$1(element, 'bpmn:BaseElement');
 	};
 
-	BpmnRenderer.prototype.drawShape = function(parentGfx, element) {
+	BpmnRenderer.prototype.drawShape = function(parentGfx, element, attrs) {
 	  var type = element.type;
 	  var h = this.handlers[type];
 
 	  /* jshint -W040 */
-	  return h(parentGfx, element);
+	  return h(parentGfx, element, attrs);
 	};
 
-	BpmnRenderer.prototype.drawConnection = function(parentGfx, element) {
+	BpmnRenderer.prototype.drawConnection = function(parentGfx, element, attrs) {
 	  var type = element.type;
 	  var h = this.handlers[type];
 
 	  /* jshint -W040 */
-	  return h(parentGfx, element);
+	  return h(parentGfx, element, attrs);
 	};
 
 	BpmnRenderer.prototype.getShapePath = function(element) {
 
-	  if (is$2(element, 'bpmn:Event')) {
+	  if (is$1(element, 'bpmn:Event')) {
 	    return getCirclePath(element);
 	  }
 
-	  if (is$2(element, 'bpmn:Activity')) {
+	  if (is$1(element, 'bpmn:Activity')) {
 	    return getRoundRectPath(element, TASK_BORDER_RADIUS);
 	  }
 
-	  if (is$2(element, 'bpmn:Gateway')) {
+	  if (is$1(element, 'bpmn:Gateway')) {
 	    return getDiamondPath(element);
 	  }
 
@@ -20178,7 +18858,7 @@
 	  if (!helperSvg) {
 	    helperSvg = create$1('svg');
 
-	    attr$1(helperSvg, {
+	    attr(helperSvg, {
 	      id: 'helper-svg',
 	      width: 0,
 	      height: 0,
@@ -20269,8 +18949,8 @@
 
 	  // ensure correct rendering by attaching helper text node to invisible SVG
 	  var helperText = create$1('text');
-	  attr$1(helperText, { x: 0, y: 0 });
-	  attr$1(helperText, style);
+	  attr(helperText, { x: 0, y: 0 });
+	  attr(helperText, style);
 
 	  var helperSvg = getHelperSvg();
 
@@ -20284,11 +18964,11 @@
 	    padding.top = padding.bottom = 0;
 	  }
 
-	  var totalHeight = reduce$1(layouted, function(sum, line, idx) {
+	  var totalHeight = reduce(layouted, function(sum, line, idx) {
 	    return sum + (lineHeight || line.height);
 	  }, 0) + padding.top + padding.bottom;
 
-	  var maxLineWidth = reduce$1(layouted, function(sum, line, idx) {
+	  var maxLineWidth = reduce(layouted, function(sum, line, idx) {
 	    return line.width > sum ? line.width : sum;
 	  }, 0);
 
@@ -20305,11 +18985,11 @@
 
 	  var textElement = create$1('text');
 
-	  attr$1(textElement, style);
+	  attr(textElement, style);
 
 	  // layout each line taking into account that parent
 	  // shape might resize to fit text size
-	  forEach$1(layouted, function(line) {
+	  forEach(layouted, function(line) {
 
 	    var x;
 
@@ -20333,14 +19013,14 @@
 	    }
 
 	    var tspan = create$1('tspan');
-	    attr$1(tspan, { x: x, y: y });
+	    attr(tspan, { x: x, y: y });
 
 	    tspan.textContent = line.text;
 
 	    append(textElement, tspan);
 	  });
 
-	  remove$2(helperText);
+	  remove$1(helperText);
 
 	  var dimensions = {
 	    width: maxLineWidth,
@@ -20368,7 +19048,7 @@
 
 	function TextRenderer(config) {
 
-	  var defaultStyle = assign$1({
+	  var defaultStyle = assign({
 	    fontFamily: 'Arial, sans-serif',
 	    fontSize: DEFAULT_FONT_SIZE,
 	    fontWeight: 'normal',
@@ -20377,7 +19057,7 @@
 
 	  var fontSize = parseInt(defaultStyle.fontSize, 10) - 1;
 
-	  var externalStyle = assign$1({}, defaultStyle, {
+	  var externalStyle = assign({}, defaultStyle, {
 	    fontSize: fontSize
 	  }, config && config.externalStyle || {});
 
@@ -20919,8 +19599,8 @@
 
 	// helpers //////////////////////
 
-	// copied from https://github.com/adobe-webplatform/Snap.svg/blob/master/src/svg.js
-	var tokenRegex = /\{([^}]+)\}/g,
+	// copied and adjusted from https://github.com/adobe-webplatform/Snap.svg/blob/master/src/svg.js
+	var tokenRegex = /\{([^{}]+)\}/g,
 	    objNotationRegex = /(?:(?:^|\.)(.+?)(?=\[|\.|$|\()|\[('|")(.+?)\2\])(\(\))?/g; // matches .xxxxx or ["xxxxx"] to run over object properties
 
 	function replacer(all, key, obj) {
@@ -20998,15 +19678,15 @@
 	 * @return {boolean} true if has label
 	 */
 	function isLabelExternal(semantic) {
-	  return is$2(semantic, 'bpmn:Event') ||
-	         is$2(semantic, 'bpmn:Gateway') ||
-	         is$2(semantic, 'bpmn:DataStoreReference') ||
-	         is$2(semantic, 'bpmn:DataObjectReference') ||
-	         is$2(semantic, 'bpmn:DataInput') ||
-	         is$2(semantic, 'bpmn:DataOutput') ||
-	         is$2(semantic, 'bpmn:SequenceFlow') ||
-	         is$2(semantic, 'bpmn:MessageFlow') ||
-	         is$2(semantic, 'bpmn:Group');
+	  return is$1(semantic, 'bpmn:Event') ||
+	         is$1(semantic, 'bpmn:Gateway') ||
+	         is$1(semantic, 'bpmn:DataStoreReference') ||
+	         is$1(semantic, 'bpmn:DataObjectReference') ||
+	         is$1(semantic, 'bpmn:DataInput') ||
+	         is$1(semantic, 'bpmn:DataOutput') ||
+	         is$1(semantic, 'bpmn:SequenceFlow') ||
+	         is$1(semantic, 'bpmn:MessageFlow') ||
+	         is$1(semantic, 'bpmn:Group');
 	}
 
 	/**
@@ -21076,7 +19756,7 @@
 
 	  if (element.waypoints) {
 	    return getFlowLabelPosition(element.waypoints);
-	  } else if (is$2(element, 'bpmn:Group')) {
+	  } else if (is$1(element, 'bpmn:Group')) {
 	    return {
 	      x: element.x + element.width / 2,
 	      y: element.y + DEFAULT_LABEL_SIZE.height / 2
@@ -21123,7 +19803,7 @@
 	    size = DEFAULT_LABEL_SIZE;
 	  }
 
-	  return assign$1({
+	  return assign({
 	    x: mid.x - size.width / 2,
 	    y: mid.y - size.height / 2
 	  }, size);
@@ -21133,8 +19813,15 @@
 	  return element && !!element.labelTarget;
 	}
 
+	/**
+	 * @param {ModdleElement} semantic
+	 * @param {ModdleElement} di
+	 * @param {Object} [attrs=null]
+	 *
+	 * @return {Object}
+	 */
 	function elementData(semantic, di, attrs) {
-	  return assign$1({
+	  return assign({
 	    id: semantic.id,
 	    type: semantic.$type,
 	    businessObject: semantic,
@@ -21200,35 +19887,34 @@
 	 * Add bpmn element (semantic) to the canvas onto the
 	 * specified parent shape.
 	 */
-	BpmnImporter.prototype.add = function(context, parentElement) {
+	BpmnImporter.prototype.add = function(semantic, di, parentElement) {
 	  var element,
 	      translate = this._translate,
-	      hidden,
-	      semantic = context.element,
-	      di = context.di;
+	      hidden;
 
 	  var parentIndex;
 
 	  // ROOT ELEMENT
 	  // handle the special case that we deal with a
-	  // invisible root element (process or collaboration)
-	  if (is$2(di, 'bpmndi:BPMNPlane')) {
+	  // invisible root element (process, subprocess or collaboration)
+	  if (is$1(di, 'bpmndi:BPMNPlane')) {
 
 	    // add a virtual element (not being drawn)
 	    element = this._elementFactory.createRoot(elementData(semantic, di));
 
-	    if (this._elementRegistry.get(element.id)) {
-	      element.id = element.id + '_layer';
+	    if (is$1(semantic, 'bpmn:SubProcess')) {
+	      element.id += '_plane';
 	    }
 
-	    this._canvas.setRootElementForPlane(element, semantic.id);
+	    this._canvas.createPlane(semantic.id, element);
 	  }
 
 	  // SHAPE
-	  else if (is$2(di, 'bpmndi:BPMNShape')) {
+	  else if (is$1(di, 'bpmndi:BPMNShape')) {
 
 	    var collapsed = !isExpanded(semantic, di),
 	        isFrame = isFrameElement(semantic);
+
 	    hidden = parentElement && (parentElement.hidden || parentElement.collapsed);
 
 	    var bounds = di.bounds;
@@ -21243,20 +19929,20 @@
 	      isFrame: isFrame
 	    }));
 
-	    if (is$2(semantic, 'bpmn:BoundaryEvent')) {
+	    if (is$1(semantic, 'bpmn:BoundaryEvent')) {
 	      this._attachBoundary(semantic, element);
 	    }
 
 	    // insert lanes behind other flow nodes (cf. #727)
-	    if (is$2(semantic, 'bpmn:Lane')) {
+	    if (is$1(semantic, 'bpmn:Lane')) {
 	      parentIndex = 0;
 	    }
 
-	    if (is$2(semantic, 'bpmn:DataStoreReference')) {
+	    if (is$1(semantic, 'bpmn:DataStoreReference')) {
 
 	      // check whether data store is inside our outside of its semantic parent
 	      if (!isPointInsideBBox$1(parentElement, getMid(bounds))) {
-	        parentElement = this._canvas.getRootElement();
+	        parentElement = this._canvas.findPlane(parentElement).rootElement;
 	      }
 	    }
 
@@ -21264,7 +19950,7 @@
 	  }
 
 	  // CONNECTION
-	  else if (is$2(di, 'bpmndi:BPMNEdge')) {
+	  else if (is$1(di, 'bpmndi:BPMNEdge')) {
 
 	    var source = this._getSource(semantic),
 	        target = this._getTarget(semantic);
@@ -21278,17 +19964,17 @@
 	      waypoints: getWaypoints(di, source, target)
 	    }));
 
-	    if (is$2(semantic, 'bpmn:DataAssociation')) {
+	    if (is$1(semantic, 'bpmn:DataAssociation')) {
 
 	      // render always on top; this ensures DataAssociations
 	      // are rendered correctly across different "hacks" people
 	      // love to model such as cross participant / sub process
 	      // associations
-	      parentElement = null;
+	      parentElement = this._canvas.findPlane(parentElement).rootElement;
 	    }
 
 	    // insert sequence flows behind other flow nodes (cf. #727)
-	    if (is$2(semantic, 'bpmn:SequenceFlow')) {
+	    if (is$1(semantic, 'bpmn:SequenceFlow')) {
 	      parentIndex = 0;
 	    }
 
@@ -21449,7 +20135,7 @@
 	}
 
 	function isFrameElement(semantic) {
-	  return is$2(semantic, 'bpmn:Group');
+	  return is$1(semantic, 'bpmn:Group');
 	}
 
 	var ImportModule = {
@@ -21710,13 +20396,13 @@
 	  }
 
 	  function registerEvents(svg) {
-	    forEach$1(bindings, function(val, key) {
+	    forEach(bindings, function(val, key) {
 	      registerEvent(svg, key, val);
 	    });
 	  }
 
 	  function unregisterEvents(svg) {
-	    forEach$1(bindings, function(val, key) {
+	    forEach(bindings, function(val, key) {
 	      unregisterEvent(svg, key, val);
 	    });
 	  }
@@ -21803,7 +20489,7 @@
 	      throw new Error('invalid hit type <' + type + '>');
 	    }
 
-	    attr$1(hit, attrs);
+	    attr(hit, attrs);
 
 	    return hit;
 	  }
@@ -21823,7 +20509,7 @@
 	  this.removeHits = function(gfx) {
 	    var hits = all('.djs-hit', gfx);
 
-	    forEach$1(hits, remove$2);
+	    forEach(hits, remove$1);
 	  };
 
 	  /**
@@ -21891,7 +20577,7 @@
 
 	    applyStyle(hit, type);
 
-	    attr$1(hit, attrs);
+	    attr(hit, attrs);
 
 	    appendHit(gfx, hit);
 
@@ -21917,7 +20603,7 @@
 	    if (element.waypoints) {
 	      updateLine(hit, element.waypoints);
 	    } else {
-	      attr$1(hit, {
+	      attr(hit, {
 	        width: element.width,
 	        height: element.height
 	      });
@@ -22051,7 +20737,7 @@
 	  function createOutline(gfx, bounds) {
 	    var outline = create$1('rect');
 
-	    attr$1(outline, assign({
+	    attr(outline, assign({
 	      x: 10,
 	      y: 10,
 	      width: 100,
@@ -22102,7 +20788,7 @@
 	 */
 	Outline.prototype.updateShapeOutline = function(outline, element) {
 
-	  attr$1(outline, {
+	  attr(outline, {
 	    x: -this.offset,
 	    y: -this.offset,
 	    width: element.width + this.offset * 2,
@@ -22123,7 +20809,7 @@
 
 	  var bbox = getBBox(connection);
 
-	  attr$1(outline, {
+	  attr(outline, {
 	    x: bbox.x - this.offset,
 	    y: bbox.y - this.offset,
 	    width: bbox.width + this.offset * 2,
@@ -22209,7 +20895,7 @@
 	  var selectedElements = this._selectedElements,
 	      oldSelection = selectedElements.slice();
 
-	  if (!isArray$1(elements)) {
+	  if (!isArray$2(elements)) {
 	    elements = elements ? [ elements ] : [];
 	  }
 
@@ -22224,7 +20910,7 @@
 	  // selection may be cleared by passing an empty array or null
 	  // to the method
 	  if (add) {
-	    forEach$1(elements, function(element) {
+	    forEach(elements, function(element) {
 	      if (selectedElements.indexOf(element) !== -1) {
 
 	        // already selected
@@ -22289,13 +20975,13 @@
 	    var oldSelection = event.oldSelection,
 	        newSelection = event.newSelection;
 
-	    forEach$1(oldSelection, function(e) {
+	    forEach(oldSelection, function(e) {
 	      if (newSelection.indexOf(e) === -1) {
 	        deselect(e);
 	      }
 	    });
 
-	    forEach$1(newSelection, function(e) {
+	    forEach(newSelection, function(e) {
 	      if (oldSelection.indexOf(e) === -1) {
 	        select(e);
 	      }
@@ -22327,7 +21013,7 @@
 	        return;
 	      }
 
-	      if (isArray$1(autoSelect)) {
+	      if (isArray$2(autoSelect)) {
 	        selection.select(autoSelect);
 	      } else {
 
@@ -22696,19 +21382,19 @@
 
 	  var overlays = this.get(filter) || [];
 
-	  if (!isArray$1(overlays)) {
+	  if (!isArray$2(overlays)) {
 	    overlays = [ overlays ];
 	  }
 
 	  var self = this;
 
-	  forEach$1(overlays, function(overlay) {
+	  forEach(overlays, function(overlay) {
 
 	    var container = self._getOverlayContainer(overlay.element, true);
 
 	    if (overlay) {
-	      remove(overlay.html);
-	      remove(overlay.htmlContainer);
+	      remove$2(overlay.html);
+	      remove$2(overlay.htmlContainer);
 
 	      delete overlay.htmlContainer;
 	      delete overlay.element;
@@ -22741,7 +21427,7 @@
 
 	  this._overlayContainers = [];
 
-	  clear(this._overlayRoot);
+	  clear$1(this._overlayRoot);
 	};
 
 	Overlays.prototype._updateOverlayContainer = function(container) {
@@ -22762,7 +21448,7 @@
 
 	  setPosition$1(html, x, y);
 
-	  attr(container.html, 'data-container-id', element.id);
+	  attr$1(container.html, 'data-container-id', element.id);
 	};
 
 
@@ -22886,7 +21572,7 @@
 	  htmlContainer.appendChild(html);
 
 	  if (overlay.type) {
-	    classes(htmlContainer).add('djs-overlay-' + overlay.type);
+	    classes$1(htmlContainer).add('djs-overlay-' + overlay.type);
 	  }
 
 	  var plane = this._canvas.findPlane(element);
@@ -22910,21 +21596,25 @@
 
 	Overlays.prototype._updateOverlayVisibilty = function(overlay, viewbox) {
 	  var show = overlay.show,
+	      plane = overlay.plane,
 	      minZoom = show && show.minZoom,
 	      maxZoom = show && show.maxZoom,
 	      htmlContainer = overlay.htmlContainer,
+	      activePlane = this._canvas.getActivePlane(),
 	      visible = true;
 
-	  if (show) {
+	  if (plane !== activePlane) {
+	    visible = false;
+	  } else if (show) {
 	    if (
 	      (isDefined(minZoom) && minZoom > viewbox.scale) ||
 	      (isDefined(maxZoom) && maxZoom < viewbox.scale)
 	    ) {
 	      visible = false;
 	    }
-
-	    setVisible$1(htmlContainer, visible);
 	  }
+
+	  setVisible$1(htmlContainer, visible);
 
 	  this._updateOverlayScale(overlay, viewbox);
 	};
@@ -22969,7 +21659,7 @@
 
 	  var self = this;
 
-	  forEach$1(this._overlays, function(overlay) {
+	  forEach(this._overlays, function(overlay) {
 	    self._updateOverlayVisibilty(overlay, viewbox);
 	  });
 	};
@@ -23006,14 +21696,14 @@
 	    var element = e.element;
 	    var overlays = self.get({ element: element });
 
-	    forEach$1(overlays, function(o) {
+	    forEach(overlays, function(o) {
 	      self.remove(o.id);
 	    });
 
 	    var container = self._getOverlayContainer(element);
 
 	    if (container) {
-	      remove(container.html);
+	      remove$2(container.html);
 	      var i = self._overlayContainers.indexOf(container);
 	      if (i !== -1) {
 	        self._overlayContainers.splice(i, 1);
@@ -23030,7 +21720,7 @@
 	    var container = self._getOverlayContainer(element, true);
 
 	    if (container) {
-	      forEach$1(container.overlays, function(overlay) {
+	      forEach(container.overlays, function(overlay) {
 	        self._updateOverlay(overlay);
 	      });
 
@@ -23044,13 +21734,13 @@
 	  eventBus.on('element.marker.update', function(e) {
 	    var container = self._getOverlayContainer(e.element, true);
 	    if (container) {
-	      classes(container.html)[e.add ? 'add' : 'remove'](e.marker);
+	      classes$1(container.html)[e.add ? 'add' : 'remove'](e.marker);
 	    }
 	  });
 
 
 	  eventBus.on('plane.set', function(e) {
-	    forEach$1(self._overlays, function(el) {
+	    forEach(self._overlays, function(el) {
 	      setVisible$1(el.htmlContainer, el.plane === e.plane);
 	    });
 	  });
@@ -23094,6 +21784,548 @@
 	var OverlaysModule = {
 	  __init__: [ 'overlays' ],
 	  overlays: [ 'type', Overlays ]
+	};
+
+	/**
+	 * Adds change support to the diagram, including
+	 *
+	 * <ul>
+	 *   <li>redrawing shapes and connections on change</li>
+	 * </ul>
+	 *
+	 * @param {EventBus} eventBus
+	 * @param {Canvas} canvas
+	 * @param {ElementRegistry} elementRegistry
+	 * @param {GraphicsFactory} graphicsFactory
+	 */
+	function ChangeSupport(
+	    eventBus, canvas, elementRegistry,
+	    graphicsFactory) {
+
+
+	  // redraw shapes / connections on change
+
+	  eventBus.on('element.changed', function(event) {
+
+	    var element = event.element;
+
+	    // element might have been deleted and replaced by new element with same ID
+	    // thus check for parent of element except for root element
+	    if (element.parent || element === canvas.getRootElement()) {
+	      event.gfx = elementRegistry.getGraphics(element);
+	    }
+
+	    // shape + gfx may have been deleted
+	    if (!event.gfx) {
+	      return;
+	    }
+
+	    eventBus.fire(getType(element) + '.changed', event);
+	  });
+
+	  eventBus.on('elements.changed', function(event) {
+
+	    var elements = event.elements;
+
+	    elements.forEach(function(e) {
+	      eventBus.fire('element.changed', { element: e });
+	    });
+
+	    graphicsFactory.updateContainments(elements);
+	  });
+
+	  eventBus.on('shape.changed', function(event) {
+	    graphicsFactory.update('shape', event.element, event.gfx);
+	  });
+
+	  eventBus.on('connection.changed', function(event) {
+	    graphicsFactory.update('connection', event.element, event.gfx);
+	  });
+	}
+
+	ChangeSupport.$inject = [
+	  'eventBus',
+	  'canvas',
+	  'elementRegistry',
+	  'graphicsFactory'
+	];
+
+	var ChangeSupportModule = {
+	  __init__: [ 'changeSupport'],
+	  changeSupport: [ 'type', ChangeSupport ]
+	};
+
+	var css_escape = {exports: {}};
+
+	/*! https://mths.be/cssescape v1.5.1 by @mathias | MIT license */
+
+	(function (module, exports) {
+	(function(root, factory) {
+		// https://github.com/umdjs/umd/blob/master/returnExports.js
+		{
+			// For Node.js.
+			module.exports = factory(root);
+		}
+	}(typeof commonjsGlobal != 'undefined' ? commonjsGlobal : commonjsGlobal, function(root) {
+
+		if (root.CSS && root.CSS.escape) {
+			return root.CSS.escape;
+		}
+
+		// https://drafts.csswg.org/cssom/#serialize-an-identifier
+		var cssEscape = function(value) {
+			if (arguments.length == 0) {
+				throw new TypeError('`CSS.escape` requires an argument.');
+			}
+			var string = String(value);
+			var length = string.length;
+			var index = -1;
+			var codeUnit;
+			var result = '';
+			var firstCodeUnit = string.charCodeAt(0);
+			while (++index < length) {
+				codeUnit = string.charCodeAt(index);
+				// Note: there’s no need to special-case astral symbols, surrogate
+				// pairs, or lone surrogates.
+
+				// If the character is NULL (U+0000), then the REPLACEMENT CHARACTER
+				// (U+FFFD).
+				if (codeUnit == 0x0000) {
+					result += '\uFFFD';
+					continue;
+				}
+
+				if (
+					// If the character is in the range [\1-\1F] (U+0001 to U+001F) or is
+					// U+007F, […]
+					(codeUnit >= 0x0001 && codeUnit <= 0x001F) || codeUnit == 0x007F ||
+					// If the character is the first character and is in the range [0-9]
+					// (U+0030 to U+0039), […]
+					(index == 0 && codeUnit >= 0x0030 && codeUnit <= 0x0039) ||
+					// If the character is the second character and is in the range [0-9]
+					// (U+0030 to U+0039) and the first character is a `-` (U+002D), […]
+					(
+						index == 1 &&
+						codeUnit >= 0x0030 && codeUnit <= 0x0039 &&
+						firstCodeUnit == 0x002D
+					)
+				) {
+					// https://drafts.csswg.org/cssom/#escape-a-character-as-code-point
+					result += '\\' + codeUnit.toString(16) + ' ';
+					continue;
+				}
+
+				if (
+					// If the character is the first character and is a `-` (U+002D), and
+					// there is no second character, […]
+					index == 0 &&
+					length == 1 &&
+					codeUnit == 0x002D
+				) {
+					result += '\\' + string.charAt(index);
+					continue;
+				}
+
+				// If the character is not handled by one of the above rules and is
+				// greater than or equal to U+0080, is `-` (U+002D) or `_` (U+005F), or
+				// is in one of the ranges [0-9] (U+0030 to U+0039), [A-Z] (U+0041 to
+				// U+005A), or [a-z] (U+0061 to U+007A), […]
+				if (
+					codeUnit >= 0x0080 ||
+					codeUnit == 0x002D ||
+					codeUnit == 0x005F ||
+					codeUnit >= 0x0030 && codeUnit <= 0x0039 ||
+					codeUnit >= 0x0041 && codeUnit <= 0x005A ||
+					codeUnit >= 0x0061 && codeUnit <= 0x007A
+				) {
+					// the character itself
+					result += string.charAt(index);
+					continue;
+				}
+
+				// Otherwise, the escaped character.
+				// https://drafts.csswg.org/cssom/#escape-a-character
+				result += '\\' + string.charAt(index);
+
+			}
+			return result;
+		};
+
+		if (!root.CSS) {
+			root.CSS = {};
+		}
+
+		root.CSS.escape = cssEscape;
+		return cssEscape;
+
+	}));
+	}(css_escape));
+
+	var cssEscape = css_escape.exports;
+
+	var HTML_ESCAPE_MAP = {
+	  '&': '&amp;',
+	  '<': '&lt;',
+	  '>': '&gt;',
+	  '"': '&quot;',
+	  '\'': '&#39;'
+	};
+
+	function escapeHTML(str) {
+	  str = '' + str;
+
+	  return str && str.replace(/[&<>"']/g, function(match) {
+	    return HTML_ESCAPE_MAP[match];
+	  });
+	}
+
+	var ARROW_DOWN_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.81801948,3.50735931 L10.4996894,9.1896894 L10.5,4 L12,4 L12,12 L4,12 L4,10.5 L9.6896894,10.4996894 L3.75735931,4.56801948 C3.46446609,4.27512627 3.46446609,3.80025253 3.75735931,3.50735931 C4.05025253,3.21446609 4.52512627,3.21446609 4.81801948,3.50735931 Z"/></svg>';
+
+	/**
+	 * Adds Overlays that allow switching planes on collapsed subprocesses.
+	 *
+	 * @param {eventBus} eventBus
+	 * @param {elementRegistry} elementRegistry
+	 * @param {overlays} overlays
+	 * @param {canvas} canvas
+	 */
+	function DrilldownOverlays(eventBus, elementRegistry, overlays, canvas) {
+	  var breadcrumbs = domify('<ul class="bjs-breadcrumbs djs-element-hidden"></ul>');
+	  var container = canvas.getContainer();
+	  container.appendChild(breadcrumbs);
+
+	  function updateBreadcrumbs(plane) {
+	    var subProcess = elementRegistry.get(plane.name);
+	    var parents = getParentChain(subProcess);
+
+	    var path = parents.map(function(el) {
+	      var title = escapeHTML(el.name || el.id);
+	      var link = domify('<li><span class="bjs-crumb"><a title="' + title + '">' + title + '</a></span></li>');
+
+	      link.addEventListener('click', function() {
+	        if (canvas.getPlane(el.id)) {
+	          canvas.setActivePlane(el.id);
+	        } else {
+	          var plane = canvas.findPlane(el.id);
+	          canvas.setActivePlane(plane);
+	        }
+	      });
+
+	      return link;
+	    });
+
+	    breadcrumbs.innerHTML = '';
+
+	    if (path.length > 1) {
+	      breadcrumbs.classList.remove('djs-element-hidden');
+	    } else {
+	      breadcrumbs.classList.add('djs-element-hidden');
+	    }
+
+	    path.forEach(function(el) {
+	      breadcrumbs.appendChild(el);
+	    });
+	  }
+
+	  eventBus.on('plane.set', function(event) {
+	    var plane = event.plane;
+
+	    updateBreadcrumbs(plane);
+	  });
+
+	  function canDrillDown(element) {
+	    return is$1(element, 'bpmn:SubProcess') && canvas.getPlane(element.id);
+	  }
+
+	  function addOverlay(element) {
+	    var html = domify('<button class="bjs-drilldown">' + ARROW_DOWN_SVG + '</button>');
+
+	    html.addEventListener('click', function() {
+	      canvas.setActivePlane(element.id);
+	    });
+
+	    overlays.add(element, 'drilldown', {
+	      position: {
+	        bottom: -7,
+	        right: -8
+	      },
+	      html: html
+	    });
+	  }
+
+	  eventBus.on('import.done', function() {
+	    elementRegistry.filter(canDrillDown).map(addOverlay);
+	  });
+
+
+	  // TODO(nikku): add dedicated overlays spec to test
+	  // interaction with element creation and replace
+	  eventBus.on('element.changed', function(event) {
+
+	    const element = event.element;
+
+	    if (canDrillDown(element)) {
+	      addOverlay(element);
+	    }
+	  });
+	}
+
+	DrilldownOverlays.$inject = [ 'eventBus', 'elementRegistry', 'overlays', 'canvas' ];
+
+
+	// helpers
+	var getParentChain = function(child) {
+	  var bo = getBusinessObject(child);
+
+	  var parents = [];
+
+	  for (var element = bo; element; element = element.$parent) {
+	    if (is$1(element, 'bpmn:SubProcess') || is$1(element, 'bpmn:Process')) {
+	      parents.push(element);
+	    }
+	  }
+
+	  return parents.reverse();
+	};
+
+	/**
+	 * Move collapsed subprocesses into view when drilling down. Zoom and scroll
+	 * are saved in a session.
+	 *
+	 * @param {eventBus} eventBus
+	 * @param {canvas} canvas
+	 */
+	function DrilldownCentering(eventBus, canvas) {
+	  var currentPlane = 'base';
+	  var positionMap = {};
+
+	  eventBus.on('plane.set', function(event) {
+	    var currentViewbox = canvas.viewbox();
+	    positionMap[currentPlane] = {
+	      x: currentViewbox.x,
+	      y: currentViewbox.y,
+	      zoom: currentViewbox.scale
+	    };
+
+	    var planeId = event.plane.name;
+	    var storedViewbox = positionMap[planeId] || { x: 0, y: 0, zoom: 1 };
+
+	    var dx = (currentViewbox.x - storedViewbox.x) * currentViewbox.scale,
+	        dy = (currentViewbox.y - storedViewbox.y) * currentViewbox.scale;
+
+	    if (dx !== 0 || dy !== 0) {
+	      canvas.scroll({
+	        dx: dx,
+	        dy: dy
+	      });
+	    }
+
+	    if (storedViewbox.zoom !== currentViewbox.scale) {
+	      canvas.zoom(storedViewbox.zoom, { x: 0, y: 0 });
+	    }
+
+	    currentPlane = planeId;
+	  });
+	}
+
+	DrilldownCentering.$inject = [ 'eventBus', 'canvas' ];
+
+	var DEFAULT_POSITION = {
+	  x: 180,
+	  y: 160
+	};
+
+	/**
+	 * Hook into `import.render.start` and create new planes for diagrams with
+	 * collapsed subprocesses and all dis on the same plane.
+	 *
+	 * @param {eventBus} eventBus
+	 * @param {moddle} moddle
+	 */
+	function SubprocessCompatibility(eventBus, moddle) {
+	  this._eventBus = eventBus;
+	  this._moddle = moddle;
+
+	  var self = this;
+
+	  eventBus.on('import.render.start', 1500, function(e, context) {
+	    self.handleImport(context.definitions);
+	  });
+	}
+
+	SubprocessCompatibility.prototype.handleImport = function(definitions) {
+	  if (!definitions.diagrams) {
+	    return;
+	  }
+
+	  var self = this;
+	  this._definitions = definitions;
+	  this._processToDiagramMap = {};
+
+	  definitions.diagrams.forEach(function(diagram) {
+	    if (!diagram.plane || !diagram.plane.bpmnElement) {
+	      return;
+	    }
+
+	    self._processToDiagramMap[diagram.plane.bpmnElement.id] = diagram;
+	  });
+
+	  var newDiagrams = [];
+	  definitions.diagrams.forEach(function(diagram) {
+	    var createdDiagrams = self.createNewDiagrams(diagram.plane);
+	    Array.prototype.push.apply(newDiagrams, createdDiagrams);
+	  });
+
+	  newDiagrams.forEach(function(diagram) {
+	    self.movePlaneElementsToOrigin(diagram.plane);
+	  });
+	};
+
+
+	/**
+	 * Moves all DI elements from collapsed subprocesses to a new plane.
+	 *
+	 * @param {Object} plane
+	 * @return {Array} new diagrams created for the collapsed subprocesses
+	 */
+	SubprocessCompatibility.prototype.createNewDiagrams = function(plane) {
+	  var self = this;
+
+	  var collapsedElements = [];
+	  var elementsToMove = [];
+
+	  plane.get('planeElement').forEach(function(diElement) {
+	    var bo = diElement.bpmnElement;
+	    var parent = bo.$parent;
+
+	    if (is$1(bo, 'bpmn:SubProcess') && !diElement.isExpanded) {
+	      collapsedElements.push(bo);
+	    }
+
+	    if (is$1(parent, 'bpmn:SubProcess') && parent !== plane.bpmnElement) {
+
+	      // don't change the array while we iterate over it
+	      elementsToMove.push({ diElement: diElement, parent: parent });
+	    }
+	  });
+
+	  var newDiagrams = [];
+
+	  elementsToMove.forEach(function(element) {
+	    var diElement = element.diElement;
+	    var parent = element.parent;
+
+	    // parent is expanded, get nearest collapsed parent
+	    while (parent && !collapsedElements.includes(parent)) {
+	      parent = parent.$parent;
+	    }
+
+	    // false positive, all parents are expanded
+	    if (!parent) {
+	      return;
+	    }
+
+	    var diagram = self._processToDiagramMap[parent.id];
+	    if (!diagram) {
+	      diagram = self.createDiagram(parent);
+	      self._processToDiagramMap[parent.id] = diagram;
+	      newDiagrams.push(diagram);
+	    }
+
+	    self.moveToDiPlane(diElement, diagram.plane);
+	  });
+
+	  return newDiagrams;
+	};
+
+	SubprocessCompatibility.prototype.movePlaneElementsToOrigin = function(plane) {
+	  var elements = plane.get('planeElement');
+
+	  // get bounding box of all elements
+	  var planeBounds = getPlaneBounds(plane);
+
+	  var offset = {
+	    x: planeBounds.x - DEFAULT_POSITION.x,
+	    y: planeBounds.y - DEFAULT_POSITION.y
+	  };
+
+	  elements.forEach(function(diElement) {
+	    if (diElement.waypoint) {
+	      diElement.waypoint.forEach(function(waypoint) {
+	        waypoint.x = waypoint.x - offset.x;
+	        waypoint.y = waypoint.y - offset.y;
+	      });
+	    } else if (diElement.bounds) {
+	      diElement.bounds.x = diElement.bounds.x - offset.x;
+	      diElement.bounds.y = diElement.bounds.y - offset.y;
+	    }
+	  });
+	};
+
+
+	SubprocessCompatibility.prototype.moveToDiPlane = function(diElement, newPlane) {
+	  var containingDiagram = findRootDiagram(diElement);
+
+	  // remove DI from old Plane and add it to the new one
+	  var parentPlaneElement = containingDiagram.plane.get('planeElement');
+	  parentPlaneElement.splice(parentPlaneElement.indexOf(diElement), 1);
+	  newPlane.get('planeElement').push(diElement);
+	};
+
+
+	SubprocessCompatibility.prototype.createDiagram = function(bo) {
+	  var plane = this._moddle.create('bpmndi:BPMNPlane', { bpmnElement: bo });
+	  var diagram = this._moddle.create('bpmndi:BPMNDiagram', {
+	    plane: plane
+	  });
+	  plane.$parent = diagram;
+	  plane.bpmnElement = bo;
+	  diagram.$parent = this._definitions;
+	  this._definitions.diagrams.push(diagram);
+	  return diagram;
+	};
+
+	SubprocessCompatibility.$inject = [ 'eventBus', 'moddle' ];
+
+
+	// helpers
+
+	function findRootDiagram(element) {
+	  if (is$1(element, 'bpmndi:BPMNDiagram')) {
+	    return element;
+	  } else {
+	    return findRootDiagram(element.$parent);
+	  }
+	}
+
+	function getPlaneBounds(plane) {
+	  var planeTrbl = {
+	    top: Infinity,
+	    right: -Infinity,
+	    bottom: -Infinity,
+	    left: Infinity
+	  };
+
+	  plane.planeElement.forEach(function(element) {
+	    if (!element.bounds) {
+	      return;
+	    }
+
+	    var trbl = asTRBL(element.bounds);
+
+	    planeTrbl.top = Math.min(trbl.top, planeTrbl.top);
+	    planeTrbl.left = Math.min(trbl.left, planeTrbl.left);
+	  });
+
+	  return asBounds(planeTrbl);
+	}
+
+	var DrilldownModdule = {
+	  __depends__: [ OverlaysModule, ChangeSupportModule ],
+	  __init__: [ 'drilldownOverlays', 'drilldownCentering', 'subprocessCompatibility'],
+	  drilldownOverlays: [ 'type', DrilldownOverlays ],
+	  drilldownCentering: [ 'type', DrilldownCentering ],
+	  subprocessCompatibility: [ 'type', SubprocessCompatibility ]
 	};
 
 	/**
@@ -23147,14 +22379,15 @@
 	  BaseViewer.call(this, options);
 	}
 
-	inherits$2(Viewer, BaseViewer);
+	inherits$1(Viewer, BaseViewer);
 
 	// modules the viewer is composed of
 	Viewer.prototype._modules = [
 	  CoreModule,
 	  translate,
 	  SelectionModule,
-	  OverlaysModule
+	  OverlaysModule,
+	  DrilldownModdule
 	];
 
 	// default moddle extensions the viewer is composed of
@@ -23189,7 +22422,7 @@
 	 * @param {KeyboardEvent} event
 	 */
 	function isKey(keys, event) {
-	  keys = isArray$1(keys) ? keys : [ keys ];
+	  keys = isArray$2(keys) ? keys : [ keys ];
 
 	  return keys.indexOf(event.key) !== -1 || keys.indexOf(event.keyCode) !== -1;
 	}
@@ -23204,8 +22437,9 @@
 	var KEYDOWN_EVENT = 'keyboard.keydown',
 	    KEYUP_EVENT = 'keyboard.keyup';
 
-	var DEFAULT_PRIORITY$4 = 1000;
+	var HANDLE_MODIFIER_ATTRIBUTE = 'input-handle-modified-keys';
 
+	var DEFAULT_PRIORITY$4 = 1000;
 
 	/**
 	 * A keyboard abstraction that may be activated and
@@ -23276,10 +22510,9 @@
 	};
 
 	Keyboard.prototype._keyHandler = function(event, type) {
-	  var target = event.target,
-	      eventBusResult;
+	  var eventBusResult;
 
-	  if (isInput(target)) {
+	  if (this._isEventIgnored(event)) {
 	    return;
 	  }
 
@@ -23292,6 +22525,29 @@
 	  if (eventBusResult) {
 	    event.preventDefault();
 	  }
+	};
+
+	Keyboard.prototype._isEventIgnored = function(event) {
+	  return isInput(event.target) && this._isModifiedKeyIgnored(event);
+	};
+
+	Keyboard.prototype._isModifiedKeyIgnored = function(event) {
+	  if (!isCmd(event)) {
+	    return true;
+	  }
+
+	  var allowedModifiers = this._getAllowedModifiers(event.target);
+	  return !allowedModifiers.includes(event.key);
+	};
+
+	Keyboard.prototype._getAllowedModifiers = function(element) {
+	  var modifierContainer = closest(element, '[' + HANDLE_MODIFIER_ATTRIBUTE + ']', true);
+
+	  if (!modifierContainer || (this._node && !this._node.contains(modifierContainer))) {
+	    return [];
+	  }
+
+	  return modifierContainer.getAttribute(HANDLE_MODIFIER_ATTRIBUTE).split(',');
 	};
 
 	Keyboard.prototype.bind = function(node) {
@@ -23673,12 +22929,12 @@
 
 
 	function set(mode) {
-	  var classes$1 = classes(document.body);
+	  var classes = classes$1(document.body);
 
-	  classes$1.removeMatching(CURSOR_CLS_PATTERN);
+	  classes.removeMatching(CURSOR_CLS_PATTERN);
 
 	  if (mode) {
-	    classes$1.add('djs-cursor-' + mode);
+	    classes.add('djs-cursor-' + mode);
 	  }
 	}
 
@@ -24105,7 +23361,7 @@
 	  Viewer.call(this, options);
 	}
 
-	inherits$2(NavigatedViewer, Viewer);
+	inherits$1(NavigatedViewer, Viewer);
 
 
 	NavigatedViewer.prototype._navigationModules = [
@@ -26807,14 +26063,14 @@
 
 	  function stopMouse(event) {
 
-	    forEach$1(mouseEvents, function(e) {
+	    forEach(mouseEvents, function(e) {
 	      componentEvent.bind(node, e, stopEvent, true);
 	    });
 	  }
 
 	  function allowMouse(event) {
 	    setTimeout(function() {
-	      forEach$1(mouseEvents, function(e) {
+	      forEach(mouseEvents, function(e) {
 	        componentEvent.unbind(node, e, stopEvent, true);
 	      });
 	    }, 500);
@@ -27109,24 +26365,24 @@
 	  };
 
 	  var rect1 = create$1('rect');
-	  attr$1(rect1, {
+	  attr(rect1, {
 	    x: -10000,
 	    y: 10000,
 	    width: 10,
 	    height: 10
 	  });
-	  attr$1(rect1, markerStyle);
+	  attr(rect1, markerStyle);
 
 	  append(svg, rect1);
 
 	  var rect2 = create$1('rect');
-	  attr$1(rect2, {
+	  attr(rect2, {
 	    x: 10000,
 	    y: 10000,
 	    width: 10,
 	    height: 10
 	  });
-	  attr$1(rect2, markerStyle);
+	  attr(rect2, markerStyle);
 
 	  append(svg, rect2);
 	};
@@ -27246,7 +26502,7 @@
 
 	    // check if there is a center shared by more than one shape
 	    // if not, just take the middle of the range
-	    forEach$1(sortedElements, function(element) {
+	    forEach(sortedElements, function(element) {
 	      var center = element[axis] + Math.round(element[dimension] / 2);
 
 	      if (centers[center]) {
@@ -27290,7 +26546,7 @@
 	/**
 	 * Executes the alignment of a selection of elements
 	 *
-	 * @param  {Array} elements [description]
+	 * @param  {Array} elements
 	 * @param  {string} type left|right|center|top|bottom|middle
 	 */
 	AlignElements$1.prototype.trigger = function(elements, type) {
@@ -27531,7 +26787,7 @@
 	    return accumulator;
 	  }, {});
 
-	  var distancesGrouped = reduce$1(distances, function(accumulator, currentValue) {
+	  var distancesGrouped = reduce(distances, function(accumulator, currentValue) {
 	    var distance = currentValue.distance,
 	        weight = currentValue.weight;
 
@@ -27731,8 +26987,8 @@
 	 * @return {boolean}
 	 */
 	function isAny(element, types) {
-	  return some$1(types, function(t) {
-	    return is$2(element, t);
+	  return some(types, function(t) {
+	    return is$1(element, t);
 	  });
 	}
 
@@ -27771,7 +27027,7 @@
 	 */
 	function getNewShapePosition(source, element) {
 
-	  if (is$2(element, 'bpmn:TextAnnotation')) {
+	  if (is$1(element, 'bpmn:TextAnnotation')) {
 	    return getTextAnnotationPosition(source, element);
 	  }
 
@@ -27779,7 +27035,7 @@
 	    return getDataElementPosition(source, element);
 	  }
 
-	  if (is$2(element, 'bpmn:FlowNode')) {
+	  if (is$1(element, 'bpmn:FlowNode')) {
 	    return getFlowNodePosition(source, element);
 	  }
 	}
@@ -27795,7 +27051,7 @@
 
 	  var horizontalDistance = getConnectedDistance(source, {
 	    filter: function(connection) {
-	      return is$2(connection, 'bpmn:SequenceFlow');
+	      return is$1(connection, 'bpmn:SequenceFlow');
 	    }
 	  });
 
@@ -27803,7 +27059,7 @@
 	      minDistance = 80,
 	      orientation = 'left';
 
-	  if (is$2(source, 'bpmn:BoundaryEvent')) {
+	  if (is$1(source, 'bpmn:BoundaryEvent')) {
 	    orientation = getOrientation(source, source.host, -25);
 
 	    if (orientation.indexOf('top') !== -1) {
@@ -27979,13 +27235,13 @@
 	    throw new Error('handlerFn must be a function');
 	  }
 
-	  if (!isArray$1(events)) {
+	  if (!isArray$2(events)) {
 	    events = [ events ];
 	  }
 
 	  var eventBus = this._eventBus;
 
-	  forEach$1(events, function(event) {
+	  forEach(events, function(event) {
 
 	    // concat commandStack(.event)?(.hook)?
 	    var fullEvent = [ 'commandStack', event, hook ].filter(function(e) { return e; }).join('.');
@@ -28013,7 +27269,7 @@
 	 * This will generate the CommandInterceptor#(preExecute|...|reverted) methods
 	 * which will in term forward to CommandInterceptor#on.
 	 */
-	forEach$1(hooks, function(hook) {
+	forEach(hooks, function(hook) {
 
 	  /**
 	   * {canExecute|preExecute|preExecuted|execute|executed|postExecute|postExecuted|revert|reverted}
@@ -28088,10 +27344,10 @@
 	      return element.parent.id;
 	    });
 
-	    forEach$1(expandings, function(elements, parentId) {
+	    forEach(expandings, function(elements, parentId) {
 
 	      // optionally filter elements to be considered when resizing
-	      if (isArray$1(autoResize)) {
+	      if (isArray$2(autoResize)) {
 	        elements = elements.filter(function(element) {
 	          return find(autoResize, matchPattern({ id: element.id }));
 	        });
@@ -28321,7 +27577,7 @@
 	  'injector'
 	];
 
-	inherits$2(BpmnAutoResize, AutoResize);
+	inherits$1(BpmnAutoResize, AutoResize);
 
 
 	/**
@@ -28333,7 +27589,7 @@
 	 */
 	BpmnAutoResize.prototype.resize = function(target, newBounds, hints) {
 
-	  if (is$2(target, 'bpmn:Participant')) {
+	  if (is$1(target, 'bpmn:Participant')) {
 	    this._modeling.resizeLane(target, newBounds, null, hints);
 	  } else {
 	    this._modeling.resizeShape(target, newBounds, null, hints);
@@ -28463,7 +27719,7 @@
 	  this._modeling = modeling;
 	}
 
-	inherits$2(BpmnAutoResizeProvider, AutoResizeProvider);
+	inherits$1(BpmnAutoResizeProvider, AutoResizeProvider);
 
 	BpmnAutoResizeProvider.$inject = [
 	  'eventBus',
@@ -28479,19 +27735,22 @@
 	 * @return {boolean}
 	 */
 	BpmnAutoResizeProvider.prototype.canResize = function(elements, target) {
-	  if (
-	    !is$2(target, 'bpmn:Participant') &&
-	    !is$2(target, 'bpmn:Lane') &&
-	    (!is$2(target, 'bpmn:SubProcess') || is$2(getDi$1(target), 'bpmndi:BPMNPlane'))
-	  ) {
+
+	  // do not resize plane elements:
+	  // root elements, collapsed sub-processes
+	  if (is$1(target.di, 'bpmndi:BPMNPlane')) {
+	    return false;
+	  }
+
+	  if (!is$1(target, 'bpmn:Participant') && !is$1(target, 'bpmn:Lane') && !(is$1(target, 'bpmn:SubProcess'))) {
 	    return false;
 	  }
 
 	  var canResize = true;
 
-	  forEach$2(elements, function(element) {
+	  forEach(elements, function(element) {
 
-	    if (is$2(element, 'bpmn:Lane') || element.labelTarget) {
+	    if (is$1(element, 'bpmn:Lane') || element.labelTarget) {
 	      canResize = false;
 	      return;
 	    }
@@ -29553,32 +28812,32 @@
 
 	function addBendpoint(parentGfx, cls) {
 	  var groupGfx = create$1('g');
-	  classes$1(groupGfx).add(BENDPOINT_CLS);
+	  classes(groupGfx).add(BENDPOINT_CLS);
 
 	  append(parentGfx, groupGfx);
 
 	  var visual = create$1('circle');
-	  attr$1(visual, {
+	  attr(visual, {
 	    cx: 0,
 	    cy: 0,
 	    r: 4
 	  });
-	  classes$1(visual).add('djs-visual');
+	  classes(visual).add('djs-visual');
 
 	  append(groupGfx, visual);
 
 	  var hit = create$1('circle');
-	  attr$1(hit, {
+	  attr(hit, {
 	    cx: 0,
 	    cy: 0,
 	    r: 10
 	  });
-	  classes$1(hit).add('djs-hit');
+	  classes(hit).add('djs-hit');
 
 	  append(groupGfx, hit);
 
 	  if (cls) {
-	    classes$1(groupGfx).add(cls);
+	    classes(groupGfx).add(cls);
 	  }
 
 	  return groupGfx;
@@ -29596,24 +28855,24 @@
 	      hitHeight = height + padding;
 
 	  var visual = create$1('rect');
-	  attr$1(visual, {
+	  attr(visual, {
 	    x: -width / 2,
 	    y: -height / 2,
 	    width: width,
 	    height: height
 	  });
-	  classes$1(visual).add('djs-visual');
+	  classes(visual).add('djs-visual');
 
 	  append(draggerGfx, visual);
 
 	  var hit = create$1('rect');
-	  attr$1(hit, {
+	  attr(hit, {
 	    x: -hitWidth / 2,
 	    y: -hitHeight / 2,
 	    width: hitWidth,
 	    height: hitHeight
 	  });
-	  classes$1(hit).add('djs-hit');
+	  classes(hit).add('djs-hit');
 
 	  append(draggerGfx, hit);
 
@@ -29633,8 +28892,8 @@
 
 	  createParallelDragger(groupGfx, segmentStart, segmentEnd, alignment);
 
-	  classes$1(groupGfx).add(SEGMENT_DRAGGER_CLS);
-	  classes$1(groupGfx).add(alignment === 'h' ? 'horizontal' : 'vertical');
+	  classes(groupGfx).add(SEGMENT_DRAGGER_CLS);
+	  classes(groupGfx).add(alignment === 'h' ? 'horizontal' : 'vertical');
 
 	  translate$2(groupGfx, mid.x, mid.y);
 
@@ -29660,130 +28919,6 @@
 	  return alignment === 'h' ?
 	    calculateSegmentMoveRegion(segmentLengthXAxis) :
 	    calculateSegmentMoveRegion(segmentLengthYAxis);
-	}
-
-	var css_escape$1 = {exports: {}};
-
-	/*! https://mths.be/cssescape v1.5.1 by @mathias | MIT license */
-
-	(function (module, exports) {
-	(function(root, factory) {
-		// https://github.com/umdjs/umd/blob/master/returnExports.js
-		{
-			// For Node.js.
-			module.exports = factory(root);
-		}
-	}(typeof commonjsGlobal != 'undefined' ? commonjsGlobal : commonjsGlobal, function(root) {
-
-		if (root.CSS && root.CSS.escape) {
-			return root.CSS.escape;
-		}
-
-		// https://drafts.csswg.org/cssom/#serialize-an-identifier
-		var cssEscape = function(value) {
-			if (arguments.length == 0) {
-				throw new TypeError('`CSS.escape` requires an argument.');
-			}
-			var string = String(value);
-			var length = string.length;
-			var index = -1;
-			var codeUnit;
-			var result = '';
-			var firstCodeUnit = string.charCodeAt(0);
-			while (++index < length) {
-				codeUnit = string.charCodeAt(index);
-				// Note: there’s no need to special-case astral symbols, surrogate
-				// pairs, or lone surrogates.
-
-				// If the character is NULL (U+0000), then the REPLACEMENT CHARACTER
-				// (U+FFFD).
-				if (codeUnit == 0x0000) {
-					result += '\uFFFD';
-					continue;
-				}
-
-				if (
-					// If the character is in the range [\1-\1F] (U+0001 to U+001F) or is
-					// U+007F, […]
-					(codeUnit >= 0x0001 && codeUnit <= 0x001F) || codeUnit == 0x007F ||
-					// If the character is the first character and is in the range [0-9]
-					// (U+0030 to U+0039), […]
-					(index == 0 && codeUnit >= 0x0030 && codeUnit <= 0x0039) ||
-					// If the character is the second character and is in the range [0-9]
-					// (U+0030 to U+0039) and the first character is a `-` (U+002D), […]
-					(
-						index == 1 &&
-						codeUnit >= 0x0030 && codeUnit <= 0x0039 &&
-						firstCodeUnit == 0x002D
-					)
-				) {
-					// https://drafts.csswg.org/cssom/#escape-a-character-as-code-point
-					result += '\\' + codeUnit.toString(16) + ' ';
-					continue;
-				}
-
-				if (
-					// If the character is the first character and is a `-` (U+002D), and
-					// there is no second character, […]
-					index == 0 &&
-					length == 1 &&
-					codeUnit == 0x002D
-				) {
-					result += '\\' + string.charAt(index);
-					continue;
-				}
-
-				// If the character is not handled by one of the above rules and is
-				// greater than or equal to U+0080, is `-` (U+002D) or `_` (U+005F), or
-				// is in one of the ranges [0-9] (U+0030 to U+0039), [A-Z] (U+0041 to
-				// U+005A), or [a-z] (U+0061 to U+007A), […]
-				if (
-					codeUnit >= 0x0080 ||
-					codeUnit == 0x002D ||
-					codeUnit == 0x005F ||
-					codeUnit >= 0x0030 && codeUnit <= 0x0039 ||
-					codeUnit >= 0x0041 && codeUnit <= 0x005A ||
-					codeUnit >= 0x0061 && codeUnit <= 0x007A
-				) {
-					// the character itself
-					result += string.charAt(index);
-					continue;
-				}
-
-				// Otherwise, the escaped character.
-				// https://drafts.csswg.org/cssom/#escape-a-character
-				result += '\\' + string.charAt(index);
-
-			}
-			return result;
-		};
-
-		if (!root.CSS) {
-			root.CSS = {};
-		}
-
-		root.CSS.escape = cssEscape;
-		return cssEscape;
-
-	}));
-	}(css_escape$1));
-
-	var escapeCSS = css_escape$1.exports;
-
-	var HTML_ESCAPE_MAP = {
-	  '&': '&amp;',
-	  '<': '&lt;',
-	  '>': '&gt;',
-	  '"': '&quot;',
-	  '\'': '&#39;'
-	};
-
-	function escapeHTML(str) {
-	  str = '' + str;
-
-	  return str && str.replace(/[&<>"']/g, function(match) {
-	    return HTML_ESCAPE_MAP[match];
-	  });
 	}
 
 	/**
@@ -29883,12 +29018,12 @@
 	  function getBendpointsContainer(element, create) {
 
 	    var layer = canvas.getLayer('overlays'),
-	        gfx = query('.djs-bendpoints[data-element-id="' + escapeCSS(element.id) + '"]', layer);
+	        gfx = query('.djs-bendpoints[data-element-id="' + cssEscape(element.id) + '"]', layer);
 
 	    if (!gfx && create) {
 	      gfx = create$1('g');
-	      attr$1(gfx, { 'data-element-id': element.id });
-	      classes$1(gfx).add('djs-bendpoints');
+	      attr(gfx, { 'data-element-id': element.id });
+	      classes(gfx).add('djs-bendpoints');
 
 	      append(layer, gfx);
 
@@ -29936,7 +29071,7 @@
 	      if (pointsAligned(segmentStart, segmentEnd)) {
 	        segmentDraggerGfx = addSegmentDragger(gfx, segmentStart, segmentEnd);
 
-	        attr$1(segmentDraggerGfx, { 'data-segment-idx': i });
+	        attr(segmentDraggerGfx, { 'data-segment-idx': i });
 
 	        bindInteractionEvents(segmentDraggerGfx, 'mousemove', connection);
 	      }
@@ -29944,14 +29079,14 @@
 	  }
 
 	  function clearBendpoints(gfx) {
-	    forEach$1(all('.' + BENDPOINT_CLS, gfx), function(node) {
-	      remove$2(node);
+	    forEach(all('.' + BENDPOINT_CLS, gfx), function(node) {
+	      remove$1(node);
 	    });
 	  }
 
 	  function clearSegmentDraggers(gfx) {
-	    forEach$1(all('.' + SEGMENT_DRAGGER_CLS, gfx), function(node) {
-	      remove$2(node);
+	    forEach(all('.' + SEGMENT_DRAGGER_CLS, gfx), function(node) {
+	      remove$1(node);
 	    });
 	  }
 
@@ -30034,7 +29169,7 @@
 	    var gfx = getBendpointsContainer(event.element);
 
 	    if (gfx) {
-	      remove$2(gfx);
+	      remove$1(gfx);
 	    }
 	  });
 
@@ -30050,9 +29185,9 @@
 	    bendpointsGfx = addHandles(element);
 
 	    if (event.add) {
-	      classes$1(bendpointsGfx).add(event.marker);
+	      classes(bendpointsGfx).add(event.marker);
 	    } else {
-	      classes$1(bendpointsGfx).remove(event.marker);
+	      classes(bendpointsGfx).remove(event.marker);
 	    }
 	  });
 
@@ -30128,7 +29263,7 @@
 	      var bendpointContainer = getBendpointsContainer(element);
 
 	      if (bendpointContainer) {
-	        attr$1(bendpointContainer, { 'data-element-id': newId });
+	        attr(bendpointContainer, { 'data-element-id': newId });
 	      }
 	    }
 	  });
@@ -30437,7 +29572,7 @@
 	    // add dragger gfx
 	    var draggerGfx = context.draggerGfx = addBendpoint(canvas.getLayer('overlays'));
 
-	    classes$1(draggerGfx).add('djs-dragging');
+	    classes(draggerGfx).add('djs-dragging');
 
 	    canvas.addMarker(connection, MARKER_ELEMENT_HIDDEN);
 	    canvas.addMarker(connection, MARKER_CONNECT_UPDATING$1);
@@ -30566,7 +29701,7 @@
 	    connection.waypoints = waypoints;
 
 	    // remove dragger gfx
-	    remove$2(draggerGfx);
+	    remove$1(draggerGfx);
 
 	    canvas.removeMarker(connection, MARKER_CONNECT_UPDATING$1);
 	    canvas.removeMarker(connection, MARKER_ELEMENT_HIDDEN);
@@ -30813,7 +29948,7 @@
 
 	    // add dragger gfx
 	    context.draggerGfx = addSegmentDragger(layer, context.segmentStart, context.segmentEnd);
-	    classes$1(context.draggerGfx).add('djs-dragging');
+	    classes(context.draggerGfx).add('djs-dragging');
 
 	    canvas.addMarker(connection, MARKER_CONNECT_UPDATING);
 	  });
@@ -30929,7 +30064,7 @@
 
 	    // remove dragger gfx
 	    if (context.draggerGfx) {
-	      remove$2(context.draggerGfx);
+	      remove$1(context.draggerGfx);
 	    }
 
 	    canvas.removeMarker(connection, MARKER_CONNECT_UPDATING);
@@ -31133,7 +30268,7 @@
 
 	  function snapTo(values, value) {
 
-	    if (isArray$1(values)) {
+	    if (isArray$2(values)) {
 	      var i = values.length;
 
 	      while (i--) if (abs$5(values[i] - value) <= TOLERANCE) {
@@ -31198,7 +30333,7 @@
 
 	    context.snapPoints = snapPoints = { horizontal: [] , vertical: [] };
 
-	    forEach$1(referenceWaypoints, function(p) {
+	    forEach(referenceWaypoints, function(p) {
 
 	      // we snap on existing bendpoints only,
 	      // not placeholders that are inserted during add
@@ -31273,7 +30408,7 @@
 
 	    context.snapPoints = snapPoints = { horizontal: [] , vertical: [] };
 
-	    forEach$1(referenceWaypoints, function(p) {
+	    forEach(referenceWaypoints, function(p) {
 
 	      // we snap on existing bendpoints only,
 	      // not placeholders that are inserted during add
@@ -31653,7 +30788,7 @@
 	    connectionPreviewGfx = context.connectionPreviewGfx = this.createConnectionPreviewGfx();
 	  }
 
-	  clear$1(connectionPreviewGfx);
+	  clear(connectionPreviewGfx);
 
 	  if (!getConnection) {
 	    getConnection = context.getConnection = cacheReturnValues(function(canConnect, source, target) {
@@ -31752,7 +30887,7 @@
 	 */
 	ConnectionPreview.prototype.cleanUp = function(context) {
 	  if (context && context.connectionPreviewGfx) {
-	    remove$2(context.connectionPreviewGfx);
+	    remove$1(context.connectionPreviewGfx);
 	  }
 	};
 
@@ -31778,13 +30913,13 @@
 	ConnectionPreview.prototype.createConnectionPreviewGfx = function() {
 	  var gfx = create$1('g');
 
-	  attr$1(gfx, {
+	  attr(gfx, {
 	    pointerEvents: 'none'
 	  });
 
-	  classes$1(gfx).add(MARKER_CONNECTION_PREVIEW);
+	  classes(gfx).add(MARKER_CONNECTION_PREVIEW);
 
-	  append(this._canvas.getActivePlane().layer, gfx);
+	  append(this._canvas.getActiveLayer(), gfx);
 
 	  return gfx;
 	};
@@ -31800,14 +30935,14 @@
 	ConnectionPreview.prototype.createNoopConnection = function(start, end) {
 	  var connection = create$1('polyline');
 
-	  attr$1(connection, {
+	  attr(connection, {
 	    'stroke': '#333',
 	    'strokeDasharray': [ 1 ],
 	    'strokeWidth': 2,
 	    'pointer-events': 'none'
 	  });
 
-	  attr$1(connection, { 'points': [ start.x, start.y, end.x, end.y ] });
+	  attr(connection, { 'points': [ start.x, start.y, end.x, end.y ] });
 
 	  return connection;
 	};
@@ -31899,19 +31034,19 @@
 	function TextBox(options) {
 	  this.container = options.container;
 
-	  this.parent = domify$1(
+	  this.parent = domify(
 	    '<div class="djs-direct-editing-parent">' +
 	      '<div class="djs-direct-editing-content" contenteditable="true"></div>' +
 	    '</div>'
 	  );
 
-	  this.content = query$1('[contenteditable]', this.parent);
+	  this.content = query('[contenteditable]', this.parent);
 
 	  this.keyHandler = options.keyHandler || function() {};
 	  this.resizeHandler = options.resizeHandler || function() {};
 
-	  this.autoResize = bind$4(this.autoResize, this);
-	  this.handlePaste = bind$4(this.handlePaste, this);
+	  this.autoResize = bind$2(this.autoResize, this);
+	  this.handlePaste = bind$2(this.handlePaste, this);
 	}
 
 
@@ -31943,7 +31078,7 @@
 
 	  style = this.style = style || {};
 
-	  var parentStyle = pick$1(style, [
+	  var parentStyle = pick(style, [
 	    'width',
 	    'height',
 	    'maxWidth',
@@ -31962,7 +31097,7 @@
 	    'transform'
 	  ]);
 
-	  assign$1(parent.style, {
+	  assign(parent.style, {
 	    width: bounds.width + 'px',
 	    height: bounds.height + 'px',
 	    maxWidth: bounds.maxWidth + 'px',
@@ -31981,7 +31116,7 @@
 	    outline: 'none'
 	  }, parentStyle);
 
-	  var contentStyle = pick$1(style, [
+	  var contentStyle = pick(style, [
 	    'fontFamily',
 	    'fontSize',
 	    'fontWeight',
@@ -31993,7 +31128,7 @@
 	    'paddingLeft'
 	  ]);
 
-	  assign$1(content.style, {
+	  assign(content.style, {
 	    boxSizing: 'border-box',
 	    width: '100%',
 	    outline: 'none',
@@ -32001,7 +31136,7 @@
 	  }, contentStyle);
 
 	  if (options.centerVertically) {
-	    assign$1(content.style, {
+	    assign(content.style, {
 	      position: 'absolute',
 	      top: '50%',
 	      transform: 'translate(0, -50%)'
@@ -32010,12 +31145,12 @@
 
 	  content.innerText = value;
 
-	  componentEvent$1.bind(content, 'keydown', this.keyHandler);
-	  componentEvent$1.bind(content, 'mousedown', stopPropagation);
-	  componentEvent$1.bind(content, 'paste', self.handlePaste);
+	  componentEvent.bind(content, 'keydown', this.keyHandler);
+	  componentEvent.bind(content, 'mousedown', stopPropagation);
+	  componentEvent.bind(content, 'paste', self.handlePaste);
 
 	  if (options.autoResize) {
-	    componentEvent$1.bind(content, 'input', this.autoResize);
+	    componentEvent.bind(content, 'input', this.autoResize);
 	  }
 
 	  if (options.resizable) {
@@ -32120,7 +31255,7 @@
 	          text +
 	          endContainer.textContent.substring(endOffset);
 	      } else if (index > startContainerChildIndex && index <= endContainerChildIndex) {
-	        remove$4(childNode);
+	        remove$2(childNode);
 	      }
 	    });
 
@@ -32177,7 +31312,7 @@
 	      maxHeight = parseInt(this.style.maxHeight) || Infinity;
 
 	  if (!resizeHandle) {
-	    resizeHandle = this.resizeHandle = domify$1(
+	    resizeHandle = this.resizeHandle = domify(
 	      '<div class="djs-direct-editing-resize-handle"></div>'
 	    );
 
@@ -32195,8 +31330,8 @@
 	      startWidth = bounds.width;
 	      startHeight = bounds.height;
 
-	      componentEvent$1.bind(document, 'mousemove', onMouseMove);
-	      componentEvent$1.bind(document, 'mouseup', onMouseUp);
+	      componentEvent.bind(document, 'mousemove', onMouseMove);
+	      componentEvent.bind(document, 'mouseup', onMouseUp);
 	    };
 
 	    var onMouseMove = function(e) {
@@ -32221,14 +31356,14 @@
 	      preventDefault(e);
 	      stopPropagation(e);
 
-	      componentEvent$1.unbind(document,'mousemove', onMouseMove, false);
-	      componentEvent$1.unbind(document, 'mouseup', onMouseUp, false);
+	      componentEvent.unbind(document,'mousemove', onMouseMove, false);
+	      componentEvent.unbind(document, 'mouseup', onMouseUp, false);
 	    };
 
-	    componentEvent$1.bind(resizeHandle, 'mousedown', onMouseDown);
+	    componentEvent.bind(resizeHandle, 'mousedown', onMouseDown);
 	  }
 
-	  assign$1(resizeHandle.style, {
+	  assign(resizeHandle.style, {
 	    position: 'absolute',
 	    bottom: '0px',
 	    right: '0px',
@@ -32261,18 +31396,18 @@
 	  parent.removeAttribute('style');
 	  content.removeAttribute('style');
 
-	  componentEvent$1.unbind(content, 'keydown', this.keyHandler);
-	  componentEvent$1.unbind(content, 'mousedown', stopPropagation);
-	  componentEvent$1.unbind(content, 'input', this.autoResize);
-	  componentEvent$1.unbind(content, 'paste', this.handlePaste);
+	  componentEvent.unbind(content, 'keydown', this.keyHandler);
+	  componentEvent.unbind(content, 'mousedown', stopPropagation);
+	  componentEvent.unbind(content, 'input', this.autoResize);
+	  componentEvent.unbind(content, 'paste', this.handlePaste);
 
 	  if (resizeHandle) {
 	    resizeHandle.removeAttribute('style');
 
-	    remove$4(resizeHandle);
+	    remove$2(resizeHandle);
 	  }
 
-	  remove$4(parent);
+	  remove$2(parent);
 	};
 
 
@@ -32324,8 +31459,8 @@
 	  this._providers = [];
 	  this._textbox = new TextBox({
 	    container: canvas.getContainer(),
-	    keyHandler: bind$4(this._handleKey, this),
-	    resizeHandler: bind$4(this._handleResize, this)
+	    keyHandler: bind$2(this._handleKey, this),
+	    resizeHandler: bind$2(this._handleResize, this)
 	  });
 	}
 
@@ -32464,7 +31599,7 @@
 	  // the direct editing context
 	  var context;
 
-	  var provider = find$1(this._providers, function(p) {
+	  var provider = find(this._providers, function(p) {
 	    return (context = p.activate(element)) ? p : null;
 	  });
 
@@ -32570,7 +31705,7 @@
 	  eventBus.on('elements.delete', function(event) {
 	    var elements = event.elements;
 
-	    forEach$1(elements, function(e) {
+	    forEach(elements, function(e) {
 	      if (self.isOpen(e)) {
 	        self.close();
 	      }
@@ -32638,13 +31773,13 @@
 
 	  // loop through all providers and their entries.
 	  // group entries by id so that overriding an entry is possible
-	  forEach$1(providers, function(provider) {
+	  forEach(providers, function(provider) {
 	    var entriesOrUpdater = provider.getContextPadEntries(element);
 
 	    if (isFunction(entriesOrUpdater)) {
 	      entries = entriesOrUpdater(entries);
 	    } else {
-	      forEach$1(entriesOrUpdater, function(entry, id) {
+	      forEach(entriesOrUpdater, function(entry, id) {
 	        entries[id] = entry;
 	      });
 	    }
@@ -32674,7 +31809,7 @@
 	    return event.preventDefault();
 	  }
 
-	  entry = entries[attr(button, 'data-action')];
+	  entry = entries[attr$1(button, 'data-action')];
 	  handler = entry.action;
 
 	  originalEvent = event.originalEvent || event;
@@ -32728,12 +31863,12 @@
 	      pad = this.getPad(element),
 	      html = pad.html;
 
-	  forEach$1(entries, function(entry, id) {
+	  forEach(entries, function(entry, id) {
 	    var grouping = entry.group || 'default',
 	        control = domify(entry.html || '<div class="entry" draggable="true"></div>'),
 	        container;
 
-	    attr(control, 'data-action', id);
+	    attr$1(control, 'data-action', id);
 
 	    container = query('[data-group=' + grouping + ']', html);
 	    if (!container) {
@@ -32748,7 +31883,7 @@
 	    }
 
 	    if (entry.title) {
-	      attr(control, 'title', entry.title);
+	      attr$1(control, 'title', entry.title);
 	    }
 
 	    if (entry.imageUrl) {
@@ -32756,7 +31891,7 @@
 	    }
 	  });
 
-	  classes(html).add('open');
+	  classes$1(html).add('open');
 
 	  this._current = {
 	    element: element,
@@ -32841,11 +31976,11 @@
 
 	function addClasses$1(element, classNames) {
 
-	  var classes$1 = classes(element);
+	  var classes = classes$1(element);
 
-	  var actualClassNames = isArray$1(classNames) ? classNames : classNames.split(/\s+/g);
+	  var actualClassNames = isArray$2(classNames) ? classNames : classNames.split(/\s+/g);
 	  actualClassNames.forEach(function(cls) {
-	    classes$1.add(cls);
+	    classes.add(cls);
 	  });
 	}
 
@@ -32887,8 +32022,8 @@
 	  var self = this;
 
 	  eventBus.on('drag.cleanup', function() {
-	    forEach$1(self._clonedMarkers, function(clonedMarker) {
-	      remove$2(clonedMarker);
+	    forEach(self._clonedMarkers, function(clonedMarker) {
+	      remove$1(clonedMarker);
 	    });
 
 	    self._clonedMarkers = {};
@@ -32931,7 +32066,7 @@
 
 	  this._cloneMarkers(getVisual(dragger));
 
-	  attr$1(dragger, this._styles.cls('djs-dragger', [], {
+	  attr(dragger, this._styles.cls('djs-dragger', [], {
 	    x: bbox.top,
 	    y: bbox.left
 	  }));
@@ -32987,7 +32122,7 @@
 	  }
 
 	  MARKER_TYPES.forEach(function(markerType) {
-	    if (attr$1(gfx, markerType)) {
+	    if (attr(gfx, markerType)) {
 	      var marker = getMarker(gfx, markerType, self._canvas.getContainer());
 
 	      self._cloneMarker(gfx, marker, markerType);
@@ -33014,7 +32149,7 @@
 
 	    clonedMarker.id = clonedMarkerId;
 
-	    classes$1(clonedMarker)
+	    classes(clonedMarker)
 	      .add('djs-dragger')
 	      .add('djs-dragger-marker');
 
@@ -33033,7 +32168,7 @@
 
 	  var reference = idToReference(this._clonedMarkers[ markerId ].id);
 
-	  attr$1(gfx, markerType, reference);
+	  attr(gfx, markerType, reference);
 	};
 
 	// helpers //////////
@@ -33048,7 +32183,7 @@
 	 * @param {Node}
 	 */
 	function getMarker(node, markerType, parentNode) {
-	  var id = referenceToId(attr$1(node, markerType));
+	  var id = referenceToId(attr(node, markerType));
 
 	  return query('marker#' + id, parentNode || document);
 	}
@@ -33335,7 +32470,7 @@
 	  // API //////////
 
 	  this.start = function(event, elements, context) {
-	    if (!isArray$1(elements)) {
+	    if (!isArray$2(elements)) {
 	      elements = [ elements ];
 	    }
 
@@ -33356,7 +32491,7 @@
 	    }, context || {});
 
 	    // make sure each element has x and y
-	    forEach$1(elements, function(element) {
+	    forEach(elements, function(element) {
 	      if (!isNumber(element.x)) {
 	        element.x = 0;
 	      }
@@ -33369,7 +32504,7 @@
 	    var bbox = getBBox(elements);
 
 	    // center elements around cursor
-	    forEach$1(elements, function(element) {
+	    forEach(elements, function(element) {
 	      if (isConnection$b(element)) {
 	        element.waypoints = map$1(element.waypoints, function(waypoint) {
 	          return {
@@ -33457,7 +32592,7 @@
 	  function createDragGroup(elements) {
 	    var dragGroup = create$1('g');
 
-	    attr$1(dragGroup, styles.cls('djs-drag-group', [ 'no-events' ]));
+	    attr(dragGroup, styles.cls('djs-drag-group', [ 'no-events' ]));
 
 	    var childrenGfx = create$1('g');
 
@@ -33505,14 +32640,14 @@
 
 	    if (hover) {
 	      if (!dragGroup.parentNode) {
-	        activeLayer = canvas.getActivePlane().layer;
+	        activeLayer = canvas.getActiveLayer();
 
 	        append(activeLayer, dragGroup);
 	      }
 
 	      translate$2(dragGroup, event.x, event.y);
 	    } else {
-	      remove$2(dragGroup);
+	      remove$1(dragGroup);
 	    }
 	  });
 
@@ -33521,7 +32656,7 @@
 	        dragGroup = context.dragGroup;
 
 	    if (dragGroup) {
-	      remove$2(dragGroup);
+	      remove$1(dragGroup);
 	    }
 	  });
 	}
@@ -33734,7 +32869,7 @@
 	  this._emit('close');
 
 	  this._unbindAutoClose();
-	  remove(this._current.container);
+	  remove$2(this._current.container);
 	  this._current.container = null;
 	};
 
@@ -33762,7 +32897,7 @@
 	  event.preventDefault();
 
 	  var element = event.delegateTarget || event.target,
-	      entryId = attr(element, DATA_REF);
+	      entryId = attr$1(element, DATA_REF);
 
 	  var entry = this._getEntry(entryId);
 
@@ -33787,11 +32922,11 @@
 
 	  var entries = {};
 
-	  forEach$1(providers, function(provider) {
+	  forEach(providers, function(provider) {
 
 	    // handle legacy method
 	    if (!provider.getPopupMenuEntries) {
-	      forEach$1(provider.getEntries(element), function(entry) {
+	      forEach(provider.getEntries(element), function(entry) {
 	        var id = entry.id;
 
 	        if (!id) {
@@ -33809,7 +32944,7 @@
 	    if (isFunction(entriesOrUpdater)) {
 	      entries = entriesOrUpdater(entries);
 	    } else {
-	      forEach$1(entriesOrUpdater, function(entry, id) {
+	      forEach(entriesOrUpdater, function(entry, id) {
 	        entries[id] = entry;
 	      });
 	    }
@@ -33822,7 +32957,7 @@
 
 	  var entries = {};
 
-	  forEach$1(providers, function(provider) {
+	  forEach(providers, function(provider) {
 
 	    // handle legacy method
 	    if (!provider.getPopupMenuHeaderEntries) {
@@ -33830,7 +32965,7 @@
 	        return;
 	      }
 
-	      forEach$1(provider.getHeaderEntries(element), function(entry) {
+	      forEach(provider.getHeaderEntries(element), function(entry) {
 	        var id = entry.id;
 
 	        if (!id) {
@@ -33848,7 +32983,7 @@
 	    if (isFunction(entriesOrUpdater)) {
 	      entries = entriesOrUpdater(entries);
 	    } else {
-	      forEach$1(entriesOrUpdater, function(entry, id) {
+	      forEach(entriesOrUpdater, function(entry, id) {
 	        entries[id] = entry;
 	      });
 	    }
@@ -33898,7 +33033,7 @@
 	    visibility: 'hidden'
 	  });
 
-	  classes(container).add(className);
+	  classes$1(container).add(className);
 
 	  return container;
 	};
@@ -34031,9 +33166,9 @@
 	  var entriesContainer = domify('<div>'),
 	      self = this;
 
-	  classes(entriesContainer).add(className);
+	  classes$1(entriesContainer).add(className);
 
-	  forEach$1(entries, function(entry, id) {
+	  forEach(entries, function(entry, id) {
 	    var entryContainer = self._createEntry(entry, id);
 	    entriesContainer.appendChild(entryContainer);
 	  });
@@ -34052,7 +33187,7 @@
 	PopupMenu.prototype._createEntry = function(entry, id) {
 
 	  var entryContainer = domify('<div>'),
-	      entryClasses = classes(entryContainer);
+	      entryClasses = classes$1(entryContainer);
 
 	  entryClasses.add('entry');
 
@@ -34062,7 +33197,7 @@
 	    });
 	  }
 
-	  attr(entryContainer, DATA_REF, id);
+	  attr$1(entryContainer, DATA_REF, id);
 
 	  if (entry.label) {
 	    var label = domify('<span>');
@@ -34335,7 +33470,7 @@
 	      descriptor.labelTarget = element.labelTarget.id;
 	    }
 
-	    forEach$1([ 'x', 'y', 'width', 'height' ], function(property) {
+	    forEach([ 'x', 'y', 'width', 'height' ], function(property) {
 	      if (isNumber(element[ property ])) {
 	        descriptor[ property ] = element[ property ];
 	      }
@@ -34378,7 +33513,7 @@
 	  var allowed,
 	      tree;
 
-	  if (!isArray$1(elements)) {
+	  if (!isArray$2(elements)) {
 	    elements = elements ? [ elements ] : [];
 	  }
 
@@ -34389,7 +33524,7 @@
 	  if (allowed === false) {
 	    tree = {};
 	  } else {
-	    tree = this.createTree(isArray$1(allowed) ? allowed : elements);
+	    tree = this.createTree(isArray$2(allowed) ? allowed : elements);
 	  }
 
 	  // we set an empty tree, selection of elements
@@ -34448,7 +33583,7 @@
 	CopyPaste.prototype._paste = function(elements, target, position, hints) {
 
 	  // make sure each element has x and y
-	  forEach$1(elements, function(element) {
+	  forEach(elements, function(element) {
 	    if (!isNumber(element.x)) {
 	      element.x = 0;
 	    }
@@ -34461,7 +33596,7 @@
 	  var bbox = getBBox(elements);
 
 	  // center elements around cursor
-	  forEach$1(elements, function(element) {
+	  forEach(elements, function(element) {
 	    if (isConnection$a(element)) {
 	      element.waypoints = map$1(element.waypoints, function(waypoint) {
 	        return {
@@ -34492,12 +33627,12 @@
 
 	  var elements = [];
 
-	  forEach$1(tree, function(branch, depth) {
+	  forEach(tree, function(branch, depth) {
 
 	    // sort by priority
 	    branch = sortBy(branch, 'priority');
 
-	    forEach$1(branch, function(descriptor) {
+	    forEach(branch, function(descriptor) {
 
 	      // remove priority
 	      var attrs = assign({}, omit(descriptor, [ 'priority' ]));
@@ -34685,15 +33820,15 @@
 	    }
 
 	    // always copy external labels
-	    forEach$1(element.labels, function(label) {
+	    forEach(element.labels, function(label) {
 	      addElementData(label, depth);
 	    });
 
 	    function addRelatedElements(elements) {
-	      elements && elements.length && forEach$1(elements, function(element) {
+	      elements && elements.length && forEach(elements, function(element) {
 
 	        // add external labels
-	        forEach$1(element.labels, function(label) {
+	        forEach(element.labels, function(label) {
 	          addElementData(label, depth);
 	        });
 
@@ -34701,7 +33836,7 @@
 	      });
 	    }
 
-	    forEach$1([ element.attachers, element.incoming, element.outgoing ], addRelatedElements);
+	    forEach([ element.attachers, element.incoming, element.outgoing ], addRelatedElements);
 
 	    addElementData(element, depth);
 
@@ -34735,7 +33870,7 @@
 	  });
 
 	  // (4) create tree
-	  forEach$1(elementsData, function(elementData) {
+	  forEach(elementsData, function(elementData) {
 	    var depth = elementData.depth;
 
 	    if (!self.hasRelations(elementData.element, elements)) {
@@ -34812,24 +33947,24 @@
 	  copyPaste: [ 'type', CopyPaste ]
 	};
 
-	function copyProperties(source, target, properties) {
-	  if (!isArray$3(properties)) {
+	function copyProperties$1(source, target, properties) {
+	  if (!isArray$2(properties)) {
 	    properties = [ properties ];
 	  }
 
-	  forEach$2(properties, function(property) {
-	    if (!isUndefined$2(source[property])) {
+	  forEach(properties, function(property) {
+	    if (!isUndefined$1(source[property])) {
 	      target[property] = source[property];
 	    }
 	  });
 	}
 
 	function removeProperties(element, properties) {
-	  if (!isArray$3(properties)) {
+	  if (!isArray$2(properties)) {
 	    properties = [ properties ];
 	  }
 
-	  forEach$2(properties, function(property) {
+	  forEach(properties, function(property) {
 	    if (element[property]) {
 	      delete element[property];
 	    }
@@ -34845,14 +33980,14 @@
 	    var descriptor = context.descriptor,
 	        element = context.element;
 
-	    var businessObject = descriptor.oldBusinessObject = getBusinessObject$1(element);
-	    var di = descriptor.oldDi = getDi$1(element);
+	    var businessObject = descriptor.oldBusinessObject = getBusinessObject(element);
+	    var di = descriptor.oldDi = getDi(element);
 
 	    descriptor.type = element.type;
 
-	    copyProperties(businessObject, descriptor, 'name');
+	    copyProperties$1(businessObject, descriptor, 'name');
 
-	    copyProperties(di, descriptor, 'isExpanded');
+	    copyProperties$1(di, descriptor, 'isExpanded');
 
 	    if (isLabel$3(descriptor)) {
 	      return descriptor;
@@ -34872,8 +34007,8 @@
 
 	    if (
 	      propertyName === 'processRef' &&
-	      is$2(parent, 'bpmn:Participant') &&
-	      is$2(property, 'bpmn:Process')
+	      is$1(parent, 'bpmn:Participant') &&
+	      is$1(property, 'bpmn:Process')
 	    ) {
 	      bpmnProcess = bpmnFactory.create('bpmn:Process');
 
@@ -34885,7 +34020,7 @@
 	  var references;
 
 	  function resolveReferences(descriptor, cache) {
-	    var businessObject = getBusinessObject$1(descriptor);
+	    var businessObject = getBusinessObject(descriptor);
 
 	    // default sequence flows
 	    if (descriptor.default) {
@@ -34901,10 +34036,10 @@
 	    if (descriptor.host) {
 
 	      // relationship can be resolved immediately
-	      getBusinessObject$1(descriptor).attachedToRef = getBusinessObject$1(cache[ descriptor.host ]);
+	      getBusinessObject(descriptor).attachedToRef = getBusinessObject(cache[ descriptor.host ]);
 	    }
 
-	    references = omit$1(references, reduce$2(references, function(array, reference, key) {
+	    references = omit(references, reduce(references, function(array, reference, key) {
 	      var element = reference.element,
 	          property = reference.property;
 
@@ -34931,8 +34066,8 @@
 
 	    // do NOT copy business object if external label
 	    if (isLabel$3(descriptor)) {
-	      descriptor.businessObject = getBusinessObject$1(cache[ descriptor.labelTarget ]);
-	      descriptor.di = getDi$1(cache[ descriptor.labelTarget ]);
+	      descriptor.businessObject = getBusinessObject(cache[ descriptor.labelTarget ]);
+	      descriptor.di = getDi(cache[ descriptor.labelTarget ]);
 
 	      return;
 	    }
@@ -34954,7 +34089,7 @@
 	    // resolve references e.g. default sequence flow
 	    resolveReferences(descriptor, cache);
 
-	    copyProperties(descriptor, newBusinessObject, [
+	    copyProperties$1(descriptor, newBusinessObject, [
 	      'isExpanded',
 	      'name'
 	    ]);
@@ -35044,7 +34179,7 @@
 	      return;
 	    }
 
-	    return sortBy$1(propertyNames, function(propertyName) {
+	    return sortBy(propertyNames, function(propertyName) {
 	      return propertyName === 'extensionElements';
 	    });
 	  });
@@ -35052,7 +34187,7 @@
 	  // default check whether property can be copied
 	  eventBus.on('moddleCopy.canCopyProperty', function(context) {
 	    var parent = context.parent,
-	        parentDescriptor = isObject$1(parent) && parent.$descriptor,
+	        parentDescriptor = isObject(parent) && parent.$descriptor,
 	        propertyName = context.propertyName;
 
 	    if (propertyName && DISALLOWED_PROPERTIES.indexOf(propertyName) !== -1) {
@@ -35063,7 +34198,7 @@
 
 	    if (propertyName &&
 	      parentDescriptor &&
-	      !find$1(parentDescriptor.properties, matchPattern$1({ name: propertyName }))) {
+	      !find(parentDescriptor.properties, matchPattern({ name: propertyName }))) {
 
 	      // disallow copying property
 	      return false;
@@ -35074,7 +34209,7 @@
 	  eventBus.on('moddleCopy.canSetCopiedProperty', function(context) {
 	    var property = context.property;
 
-	    if (is$1(property, 'bpmn:ExtensionElements') && (!property.values || !property.values.length)) {
+	    if (is(property, 'bpmn:ExtensionElements') && (!property.values || !property.values.length)) {
 
 	      // disallow setting copied property
 	      return false;
@@ -35100,7 +34235,7 @@
 	ModdleCopy.prototype.copyElement = function(sourceElement, targetElement, propertyNames) {
 	  var self = this;
 
-	  if (propertyNames && !isArray$3(propertyNames)) {
+	  if (propertyNames && !isArray$2(propertyNames)) {
 	    propertyNames = [ propertyNames ];
 	  }
 
@@ -35116,15 +34251,15 @@
 	    return targetElement;
 	  }
 
-	  if (isArray$3(canCopyProperties)) {
+	  if (isArray$2(canCopyProperties)) {
 	    propertyNames = canCopyProperties;
 	  }
 
 	  // copy properties
-	  forEach$2(propertyNames, function(propertyName) {
+	  forEach(propertyNames, function(propertyName) {
 	    var sourceProperty;
 
-	    if (has$1(sourceElement, propertyName)) {
+	    if (has(sourceElement, propertyName)) {
 	      sourceProperty = sourceElement.get(propertyName);
 	    }
 
@@ -35140,7 +34275,7 @@
 	      return;
 	    }
 
-	    if (isDefined$1(copiedProperty)) {
+	    if (isDefined(copiedProperty)) {
 	      targetElement.set(propertyName, copiedProperty);
 	    }
 	  });
@@ -35173,7 +34308,7 @@
 	  }
 
 	  if (copiedProperty) {
-	    if (isObject$1(copiedProperty) && copiedProperty.$type && !copiedProperty.$parent) {
+	    if (isObject(copiedProperty) && copiedProperty.$type && !copiedProperty.$parent) {
 	      copiedProperty.$parent = parent;
 	    }
 
@@ -35182,14 +34317,19 @@
 
 	  var propertyDescriptor = this._moddle.getPropertyDescriptor(parent, propertyName);
 
-	  // do NOT copy Ids and references
-	  if (propertyDescriptor.isId || propertyDescriptor.isReference) {
+	  // do NOT copy references
+	  if (propertyDescriptor.isReference) {
 	    return;
 	  }
 
+	  // copy id
+	  if (propertyDescriptor.isId) {
+	    return this._copyId(property, parent);
+	  }
+
 	  // copy arrays
-	  if (isArray$3(property)) {
-	    return reduce$2(property, function(childProperties, childProperty) {
+	  if (isArray$2(property)) {
+	    return reduce(property, function(childProperties, childProperty) {
 
 	      // recursion
 	      copiedProperty = self.copyProperty(childProperty, parent, propertyName);
@@ -35206,7 +34346,7 @@
 	  }
 
 	  // copy model elements
-	  if (isObject$1(property) && property.$type) {
+	  if (isObject(property) && property.$type) {
 	    if (this._moddle.getElementDescriptor(property).isGeneric) {
 	      return;
 	    }
@@ -35225,10 +34365,22 @@
 	  return property;
 	};
 
+	ModdleCopy.prototype._copyId = function(id, element) {
+
+	  // disallow if already taken
+	  if (this._moddle.ids.assigned(id)) {
+	    return;
+	  } else {
+
+	    this._moddle.ids.claim(id, element);
+	    return id;
+	  }
+	};
+
 	// helpers //////////
 
 	function getPropertyNames(descriptor, keepDefaultProperties) {
-	  return reduce$2(descriptor.properties, function(properties, property) {
+	  return reduce(descriptor.properties, function(properties, property) {
 
 	    if (keepDefaultProperties && property.default) {
 	      return properties;
@@ -35238,7 +34390,7 @@
 	  }, []);
 	}
 
-	function is$1(element, type) {
+	function is(element, type) {
 	  return element && (typeof element.$instanceOf === 'function') && element.$instanceOf(type);
 	}
 
@@ -35313,6 +34465,19 @@
 	  replace: [ 'type', Replace ]
 	};
 
+	function copyProperties(source, target, properties) {
+	  if (!isArray$2(properties)) {
+	    properties = [ properties ];
+	  }
+
+	  forEach(properties, function(property) {
+	    if (!isUndefined$1(source[property])) {
+	      target[property] = source[property];
+	    }
+	  });
+	}
+
+
 	var CUSTOM_PROPERTIES = [
 	  'cancelActivity',
 	  'instantiate',
@@ -35321,20 +34486,22 @@
 	  'isInterrupting'
 	];
 
-
-	function toggeling(element, target) {
+	/**
+	 * Check if element should be collapsed or expanded.
+	 */
+	function shouldToggleCollapsed(element, targetElement) {
 
 	  var oldCollapsed = (
-	    element && has$1(element, 'collapsed') ? element.collapsed : !isExpanded(element)
+	    element && has(element, 'collapsed') ? element.collapsed : !isExpanded(element)
 	  );
 
 	  var targetCollapsed;
 
-	  if (target && (has$1(target, 'collapsed') || has$1(target, 'isExpanded'))) {
+	  if (targetElement && (has(targetElement, 'collapsed') || has(targetElement, 'isExpanded'))) {
 
 	    // property is explicitly set so use it
 	    targetCollapsed = (
-	      has$1(target, 'collapsed') ? target.collapsed : !target.isExpanded
+	      has(targetElement, 'collapsed') ? targetElement.collapsed : !targetElement.isExpanded
 	    );
 	  } else {
 
@@ -35343,13 +34510,11 @@
 	  }
 
 	  if (oldCollapsed !== targetCollapsed) {
-	    element.collapsed = oldCollapsed;
 	    return true;
 	  }
 
 	  return false;
 	}
-
 
 
 	/**
@@ -35382,15 +34547,13 @@
 	    var type = target.type,
 	        oldBusinessObject = element.businessObject;
 
-	    if (isSubProcess(oldBusinessObject)) {
-	      if (type === 'bpmn:SubProcess') {
-	        if (toggeling(element, target)) {
+	    if (isSubProcess(oldBusinessObject) && type === 'bpmn:SubProcess') {
+	      if (shouldToggleCollapsed(element, target)) {
 
-	          // expanding or collapsing process
-	          modeling.toggleCollapse(element);
+	        // expanding or collapsing process
+	        modeling.toggleCollapse(element);
 
-	          return element;
-	        }
+	        return element;
 	      }
 	    }
 
@@ -35399,17 +34562,27 @@
 	    var newElement = {
 	      type: type,
 	      businessObject: newBusinessObject,
-	      di: getDi$1(element)
 	    };
+
+	    newElement.di = {};
+
+	    // colors will be set to DI
+	    copyProperties(element.di, newElement.di, [
+	      'fill',
+	      'stroke',
+	      'background-color',
+	      'border-color',
+	      'color'
+	    ]);
 
 	    var elementProps = getPropertyNames(oldBusinessObject.$descriptor),
 	        newElementProps = getPropertyNames(newBusinessObject.$descriptor, true),
 	        copyProps = intersection(elementProps, newElementProps);
 
 	    // initialize special properties defined in target definition
-	    assign$1(newBusinessObject, pick$1(target, CUSTOM_PROPERTIES));
+	    assign(newBusinessObject, pick(target, CUSTOM_PROPERTIES));
 
-	    var properties = filter$1(copyProps, function(propertyName) {
+	    var properties = filter(copyProps, function(propertyName) {
 
 	      // copying event definitions, unless we replace
 	      if (propertyName === 'eventDefinitions') {
@@ -35423,7 +34596,7 @@
 	      }
 
 	      // so the applied properties from 'target' don't get lost
-	      if (has$1(newBusinessObject, propertyName)) {
+	      if (has(newBusinessObject, propertyName)) {
 	        return false;
 	      }
 
@@ -35456,7 +34629,7 @@
 	      }
 	    }
 
-	    if (is$2(oldBusinessObject, 'bpmn:Activity')) {
+	    if (is$1(oldBusinessObject, 'bpmn:Activity')) {
 
 	      if (isSubProcess(oldBusinessObject)) {
 
@@ -35465,14 +34638,14 @@
 	      }
 
 	      // else if property is explicitly set, use it
-	      else if (target && has$1(target, 'isExpanded')) {
+	      else if (target && has(target, 'isExpanded')) {
 	        newElement.isExpanded = target.isExpanded;
 	      }
 
 	      // TODO: need also to respect min/max Size
 	      // copy size, from an expanded subprocess to an expanded alternative subprocess
 	      // except bpmn:Task, because Task is always expanded
-	      if ((isExpanded(oldBusinessObject) && !is$2(oldBusinessObject, 'bpmn:Task')) && newElement.isExpanded) {
+	      if ((isExpanded(element) && !is$1(oldBusinessObject, 'bpmn:Task')) && newElement.isExpanded) {
 	        newElement.width = element.width;
 	        newElement.height = element.height;
 	      }
@@ -35484,7 +34657,7 @@
 	    }
 
 	    // transform collapsed/expanded pools
-	    if (is$2(oldBusinessObject, 'bpmn:Participant')) {
+	    if (is$1(oldBusinessObject, 'bpmn:Participant')) {
 
 	      // create expanded pool
 	      if (target.isExpanded === true) {
@@ -35525,8 +34698,8 @@
 
 	    if (
 	      target.host &&
-	      !is$2(oldBusinessObject, 'bpmn:BoundaryEvent') &&
-	      is$2(newBusinessObject, 'bpmn:BoundaryEvent')
+	      !is$1(oldBusinessObject, 'bpmn:BoundaryEvent') &&
+	      is$1(newBusinessObject, 'bpmn:BoundaryEvent')
 	    ) {
 	      newElement.host = target.host;
 	    }
@@ -35565,15 +34738,15 @@
 
 
 	function isSubProcess(bo) {
-	  return is$2(bo, 'bpmn:SubProcess');
+	  return is$1(bo, 'bpmn:SubProcess');
 	}
 
 	function hasEventDefinition$1(element, type) {
 
-	  var bo = getBusinessObject$1(element);
+	  var bo = getBusinessObject(element);
 
 	  return type && bo.get('eventDefinitions').some(function(definition) {
-	    return is$2(definition, type);
+	    return is$1(definition, type);
 	  });
 	}
 
@@ -35609,7 +34782,7 @@
 	  return function(entry) {
 	    var target = entry.target;
 
-	    var businessObject = getBusinessObject$1(element),
+	    var businessObject = getBusinessObject(element),
 	        eventDefinition = businessObject.eventDefinitions && businessObject.eventDefinitions[0];
 
 	    var isTypeEqual = businessObject.$type === target.type;
@@ -36541,26 +35714,26 @@
 
 	  var differentType = isDifferentType(element);
 
-	  if (is$2(businessObject, 'bpmn:DataObjectReference')) {
+	  if (is$1(businessObject, 'bpmn:DataObjectReference')) {
 	    return this._createEntries(element, DATA_OBJECT_REFERENCE);
 	  }
 
-	  if (is$2(businessObject, 'bpmn:DataStoreReference')) {
+	  if (is$1(businessObject, 'bpmn:DataStoreReference')) {
 	    return this._createEntries(element, DATA_STORE_REFERENCE);
 	  }
 
 	  // start events outside sub processes
-	  if (is$2(businessObject, 'bpmn:StartEvent') && !is$2(businessObject.$parent, 'bpmn:SubProcess')) {
+	  if (is$1(businessObject, 'bpmn:StartEvent') && !is$1(businessObject.$parent, 'bpmn:SubProcess')) {
 
-	    entries = filter$1(START_EVENT, differentType);
+	    entries = filter(START_EVENT, differentType);
 
 	    return this._createEntries(element, entries);
 	  }
 
 	  // expanded/collapsed pools
-	  if (is$2(businessObject, 'bpmn:Participant')) {
+	  if (is$1(businessObject, 'bpmn:Participant')) {
 
-	    entries = filter$1(PARTICIPANT, function(entry) {
+	    entries = filter(PARTICIPANT, function(entry) {
 	      return isExpanded(element) !== entry.target.isExpanded;
 	    });
 
@@ -36568,14 +35741,14 @@
 	  }
 
 	  // start events inside event sub processes
-	  if (is$2(businessObject, 'bpmn:StartEvent') && isEventSubProcess(businessObject.$parent)) {
-	    entries = filter$1(EVENT_SUB_PROCESS_START_EVENT, function(entry) {
+	  if (is$1(businessObject, 'bpmn:StartEvent') && isEventSubProcess(businessObject.$parent)) {
+	    entries = filter(EVENT_SUB_PROCESS_START_EVENT, function(entry) {
 
 	      var target = entry.target;
 
 	      var isInterrupting = target.isInterrupting !== false;
 
-	      var isInterruptingEqual = getBusinessObject$1(element).isInterrupting === isInterrupting;
+	      var isInterruptingEqual = getBusinessObject(element).isInterrupting === isInterrupting;
 
 	      // filters elements which types and event definition are equal but have have different interrupting types
 	      return differentType(entry) || !differentType(entry) && !isInterruptingEqual;
@@ -36586,21 +35759,21 @@
 	  }
 
 	  // start events inside sub processes
-	  if (is$2(businessObject, 'bpmn:StartEvent') && !isEventSubProcess(businessObject.$parent)
-	      && is$2(businessObject.$parent, 'bpmn:SubProcess')) {
-	    entries = filter$1(START_EVENT_SUB_PROCESS, differentType);
+	  if (is$1(businessObject, 'bpmn:StartEvent') && !isEventSubProcess(businessObject.$parent)
+	      && is$1(businessObject.$parent, 'bpmn:SubProcess')) {
+	    entries = filter(START_EVENT_SUB_PROCESS, differentType);
 
 	    return this._createEntries(element, entries);
 	  }
 
 	  // end events
-	  if (is$2(businessObject, 'bpmn:EndEvent')) {
+	  if (is$1(businessObject, 'bpmn:EndEvent')) {
 
-	    entries = filter$1(END_EVENT, function(entry) {
+	    entries = filter(END_EVENT, function(entry) {
 	      var target = entry.target;
 
 	      // hide cancel end events outside transactions
-	      if (target.eventDefinitionType == 'bpmn:CancelEventDefinition' && !is$2(businessObject.$parent, 'bpmn:Transaction')) {
+	      if (target.eventDefinitionType == 'bpmn:CancelEventDefinition' && !is$1(businessObject.$parent, 'bpmn:Transaction')) {
 	        return false;
 	      }
 
@@ -36611,14 +35784,14 @@
 	  }
 
 	  // boundary events
-	  if (is$2(businessObject, 'bpmn:BoundaryEvent')) {
+	  if (is$1(businessObject, 'bpmn:BoundaryEvent')) {
 
-	    entries = filter$1(BOUNDARY_EVENT, function(entry) {
+	    entries = filter(BOUNDARY_EVENT, function(entry) {
 
 	      var target = entry.target;
 
 	      if (target.eventDefinitionType == 'bpmn:CancelEventDefinition' &&
-	         !is$2(businessObject.attachedToRef, 'bpmn:Transaction')) {
+	         !is$1(businessObject.attachedToRef, 'bpmn:Transaction')) {
 	        return false;
 	      }
 	      var cancelActivity = target.cancelActivity !== false;
@@ -36632,26 +35805,26 @@
 	  }
 
 	  // intermediate events
-	  if (is$2(businessObject, 'bpmn:IntermediateCatchEvent') ||
-	      is$2(businessObject, 'bpmn:IntermediateThrowEvent')) {
+	  if (is$1(businessObject, 'bpmn:IntermediateCatchEvent') ||
+	      is$1(businessObject, 'bpmn:IntermediateThrowEvent')) {
 
-	    entries = filter$1(INTERMEDIATE_EVENT, differentType);
+	    entries = filter(INTERMEDIATE_EVENT, differentType);
 
 	    return this._createEntries(element, entries);
 	  }
 
 	  // gateways
-	  if (is$2(businessObject, 'bpmn:Gateway')) {
+	  if (is$1(businessObject, 'bpmn:Gateway')) {
 
-	    entries = filter$1(GATEWAY, differentType);
+	    entries = filter(GATEWAY, differentType);
 
 	    return this._createEntries(element, entries);
 	  }
 
 	  // transactions
-	  if (is$2(businessObject, 'bpmn:Transaction')) {
+	  if (is$1(businessObject, 'bpmn:Transaction')) {
 
-	    entries = filter$1(TRANSACTION, differentType);
+	    entries = filter(TRANSACTION, differentType);
 
 	    return this._createEntries(element, entries);
 	  }
@@ -36659,23 +35832,23 @@
 	  // expanded event sub processes
 	  if (isEventSubProcess(businessObject) && isExpanded(element)) {
 
-	    entries = filter$1(EVENT_SUB_PROCESS, differentType);
+	    entries = filter(EVENT_SUB_PROCESS, differentType);
 
 	    return this._createEntries(element, entries);
 	  }
 
 	  // expanded sub processes
-	  if (is$2(businessObject, 'bpmn:SubProcess') && isExpanded(element)) {
+	  if (is$1(businessObject, 'bpmn:SubProcess') && isExpanded(element)) {
 
-	    entries = filter$1(SUBPROCESS_EXPANDED, differentType);
+	    entries = filter(SUBPROCESS_EXPANDED, differentType);
 
 	    return this._createEntries(element, entries);
 	  }
 
 	  // collapsed ad hoc sub processes
-	  if (is$2(businessObject, 'bpmn:AdHocSubProcess') && !isExpanded(element)) {
+	  if (is$1(businessObject, 'bpmn:AdHocSubProcess') && !isExpanded(element)) {
 
-	    entries = filter$1(TASK, function(entry) {
+	    entries = filter(TASK, function(entry) {
 
 	      var target = entry.target;
 
@@ -36690,17 +35863,17 @@
 	  }
 
 	  // sequence flows
-	  if (is$2(businessObject, 'bpmn:SequenceFlow')) {
+	  if (is$1(businessObject, 'bpmn:SequenceFlow')) {
 	    return this._createSequenceFlowEntries(element, SEQUENCE_FLOW);
 	  }
 
 	  // flow nodes
-	  if (is$2(businessObject, 'bpmn:FlowNode')) {
-	    entries = filter$1(TASK, differentType);
+	  if (is$1(businessObject, 'bpmn:FlowNode')) {
+	    entries = filter(TASK, differentType);
 
 	    // collapsed SubProcess can not be replaced with itself
-	    if (is$2(businessObject, 'bpmn:SubProcess') && !isExpanded(element)) {
-	      entries = filter$1(entries, function(entry) {
+	    if (is$1(businessObject, 'bpmn:SubProcess') && !isExpanded(element)) {
+	      entries = filter(entries, function(entry) {
 	        return entry.label !== 'Sub Process (collapsed)';
 	      });
 	    }
@@ -36724,20 +35897,20 @@
 
 	  var headerEntries = [];
 
-	  if (is$2(element, 'bpmn:Activity') && !isEventSubProcess(element)) {
+	  if (is$1(element, 'bpmn:Activity') && !isEventSubProcess(element)) {
 	    headerEntries = headerEntries.concat(this._getLoopEntries(element));
 	  }
 
-	  if (is$2(element, 'bpmn:DataObjectReference')) {
+	  if (is$1(element, 'bpmn:DataObjectReference')) {
 	    headerEntries = headerEntries.concat(this._getDataObjectIsCollection(element));
 	  }
 
-	  if (is$2(element, 'bpmn:Participant')) {
+	  if (is$1(element, 'bpmn:Participant')) {
 	    headerEntries = headerEntries.concat(this._getParticipantMultiplicity(element));
 	  }
 
-	  if (is$2(element, 'bpmn:SubProcess') &&
-	      !is$2(element, 'bpmn:Transaction') &&
+	  if (is$1(element, 'bpmn:SubProcess') &&
+	      !is$1(element, 'bpmn:Transaction') &&
 	      !isEventSubProcess(element)) {
 	    headerEntries.push(this._getAdHocEntry(element));
 	  }
@@ -36760,7 +35933,7 @@
 
 	  var self = this;
 
-	  forEach$2(replaceOptions, function(definition) {
+	  forEach(replaceOptions, function(definition) {
 	    var entry = self._createMenuEntry(definition, element);
 
 	    menuEntries.push(entry);
@@ -36779,7 +35952,7 @@
 	 */
 	ReplaceMenuProvider.prototype._createSequenceFlowEntries = function(element, replaceOptions) {
 
-	  var businessObject = getBusinessObject$1(element);
+	  var businessObject = getBusinessObject(element);
 
 	  var menuEntries = [];
 
@@ -36788,15 +35961,15 @@
 
 	  var self = this;
 
-	  forEach$2(replaceOptions, function(entry) {
+	  forEach(replaceOptions, function(entry) {
 
 	    switch (entry.actionName) {
 	    case 'replace-with-default-flow':
 	      if (businessObject.sourceRef.default !== businessObject &&
-	            (is$2(businessObject.sourceRef, 'bpmn:ExclusiveGateway') ||
-	             is$2(businessObject.sourceRef, 'bpmn:InclusiveGateway') ||
-	             is$2(businessObject.sourceRef, 'bpmn:ComplexGateway') ||
-	             is$2(businessObject.sourceRef, 'bpmn:Activity'))) {
+	            (is$1(businessObject.sourceRef, 'bpmn:ExclusiveGateway') ||
+	             is$1(businessObject.sourceRef, 'bpmn:InclusiveGateway') ||
+	             is$1(businessObject.sourceRef, 'bpmn:ComplexGateway') ||
+	             is$1(businessObject.sourceRef, 'bpmn:Activity'))) {
 
 	        menuEntries.push(self._createMenuEntry(entry, element, function() {
 	          modeling.updateProperties(element.source, { default: businessObject });
@@ -36804,7 +35977,7 @@
 	      }
 	      break;
 	    case 'replace-with-conditional-flow':
-	      if (!businessObject.conditionExpression && is$2(businessObject.sourceRef, 'bpmn:Activity')) {
+	      if (!businessObject.conditionExpression && is$1(businessObject.sourceRef, 'bpmn:Activity')) {
 
 	        menuEntries.push(self._createMenuEntry(entry, element, function() {
 	          var conditionExpression = moddle.create('bpmn:FormalExpression', { body: '' });
@@ -36816,17 +35989,17 @@
 	    default:
 
 	      // default flows
-	      if (is$2(businessObject.sourceRef, 'bpmn:Activity') && businessObject.conditionExpression) {
+	      if (is$1(businessObject.sourceRef, 'bpmn:Activity') && businessObject.conditionExpression) {
 	        return menuEntries.push(self._createMenuEntry(entry, element, function() {
 	          modeling.updateProperties(element, { conditionExpression: undefined });
 	        }));
 	      }
 
 	      // conditional flows
-	      if ((is$2(businessObject.sourceRef, 'bpmn:ExclusiveGateway') ||
-	           is$2(businessObject.sourceRef, 'bpmn:InclusiveGateway') ||
-	           is$2(businessObject.sourceRef, 'bpmn:ComplexGateway') ||
-	           is$2(businessObject.sourceRef, 'bpmn:Activity')) &&
+	      if ((is$1(businessObject.sourceRef, 'bpmn:ExclusiveGateway') ||
+	           is$1(businessObject.sourceRef, 'bpmn:InclusiveGateway') ||
+	           is$1(businessObject.sourceRef, 'bpmn:ComplexGateway') ||
+	           is$1(businessObject.sourceRef, 'bpmn:Activity')) &&
 	           businessObject.sourceRef.default === businessObject) {
 
 	        return menuEntries.push(self._createMenuEntry(entry, element, function() {
@@ -36902,7 +36075,7 @@
 	    self._modeling.updateProperties(element, { loopCharacteristics: loopCharacteristics });
 	  }
 
-	  var businessObject = getBusinessObject$1(element),
+	  var businessObject = getBusinessObject(element),
 	      loopCharacteristics = businessObject.loopCharacteristics;
 
 	  var isSequential,
@@ -37037,9 +36210,9 @@
 	 */
 	ReplaceMenuProvider.prototype._getAdHocEntry = function(element) {
 	  var translate = this._translate;
-	  var businessObject = getBusinessObject$1(element);
+	  var businessObject = getBusinessObject(element);
 
-	  var isAdHoc = is$2(businessObject, 'bpmn:AdHocSubProcess');
+	  var isAdHoc = is$1(businessObject, 'bpmn:AdHocSubProcess');
 
 	  var replaceElement = this._bpmnReplace.replaceElement;
 
@@ -37324,7 +36497,7 @@
 	  collectedShapes = collectedShapes || [];
 
 	  shape.children.filter(function(s) {
-	    if (is$2(s, 'bpmn:Lane')) {
+	    if (is$1(s, 'bpmn:Lane')) {
 	      collectLanes(s, collectedShapes);
 
 	      collectedShapes.push(s);
@@ -37344,7 +36517,7 @@
 	 */
 	function getChildLanes(shape) {
 	  return shape.children.filter(function(c) {
-	    return is$2(c, 'bpmn:Lane');
+	    return is$1(c, 'bpmn:Lane');
 	  });
 	}
 
@@ -37375,7 +36548,7 @@
 
 	  var rootElement = getLanesRoot(shape);
 
-	  var initialShapes = is$2(rootElement, 'bpmn:Process') ? [] : [ rootElement ];
+	  var initialShapes = is$1(rootElement, 'bpmn:Process') ? [] : [ rootElement ];
 
 	  var allLanes = collectLanes(rootElement, initialShapes),
 	      shapeTrbl = asTRBL(shape),
@@ -37566,7 +36739,7 @@
 
 	    function appendStart(event, element) {
 
-	      var shape = elementFactory.createShape(assign$1({ type: type }, options));
+	      var shape = elementFactory.createShape(assign({ type: type }, options));
 	      create.start(event, shape, {
 	        source: element
 	      });
@@ -37574,7 +36747,7 @@
 
 
 	    var append = autoPlace ? function(event, element) {
-	      var shape = elementFactory.createShape(assign$1({ type: type }, options));
+	      var shape = elementFactory.createShape(assign({ type: type }, options));
 
 	      autoPlace.append(element, shape);
 	    } : appendStart;
@@ -37609,7 +36782,7 @@
 
 	    var childLanes = getChildLanes(element);
 
-	    assign$1(actions, {
+	    assign(actions, {
 	      'lane-insert-above': {
 	        group: 'lane-insert-above',
 	        className: 'bpmn-icon-lane-insert-above',
@@ -37625,7 +36798,7 @@
 	    if (childLanes.length < 2) {
 
 	      if (element.height >= 120) {
-	        assign$1(actions, {
+	        assign(actions, {
 	          'lane-divide-two': {
 	            group: 'lane-divide',
 	            className: 'bpmn-icon-lane-divide-two',
@@ -37638,7 +36811,7 @@
 	      }
 
 	      if (element.height >= 180) {
-	        assign$1(actions, {
+	        assign(actions, {
 	          'lane-divide-three': {
 	            group: 'lane-divide',
 	            className: 'bpmn-icon-lane-divide-three',
@@ -37651,7 +36824,7 @@
 	      }
 	    }
 
-	    assign$1(actions, {
+	    assign(actions, {
 	      'lane-insert-below': {
 	        group: 'lane-insert-below',
 	        className: 'bpmn-icon-lane-insert-below',
@@ -37666,11 +36839,11 @@
 
 	  }
 
-	  if (is$2(businessObject, 'bpmn:FlowNode')) {
+	  if (is$1(businessObject, 'bpmn:FlowNode')) {
 
-	    if (is$2(businessObject, 'bpmn:EventBasedGateway')) {
+	    if (is$1(businessObject, 'bpmn:EventBasedGateway')) {
 
-	      assign$1(actions, {
+	      assign(actions, {
 	        'append.receive-task': appendAction(
 	          'bpmn:ReceiveTask',
 	          'bpmn-icon-receive-task',
@@ -37705,7 +36878,7 @@
 
 	    if (isEventType(businessObject, 'bpmn:BoundaryEvent', 'bpmn:CompensateEventDefinition')) {
 
-	      assign$1(actions, {
+	      assign(actions, {
 	        'append.compensation-activity':
 	            appendAction(
 	              'bpmn:Task',
@@ -37718,12 +36891,12 @@
 	      });
 	    } else
 
-	    if (!is$2(businessObject, 'bpmn:EndEvent') &&
+	    if (!is$1(businessObject, 'bpmn:EndEvent') &&
 	        !businessObject.isForCompensation &&
 	        !isEventType(businessObject, 'bpmn:IntermediateThrowEvent', 'bpmn:LinkEventDefinition') &&
 	        !isEventSubProcess(businessObject)) {
 
-	      assign$1(actions, {
+	      assign(actions, {
 	        'append.end-event': appendAction(
 	          'bpmn:EndEvent',
 	          'bpmn-icon-end-event-none',
@@ -37751,7 +36924,7 @@
 	  if (!popupMenu.isEmpty(element, 'bpmn-replace')) {
 
 	    // Replace menu entry
-	    assign$1(actions, {
+	    assign(actions, {
 	      'replace': {
 	        group: 'edit',
 	        className: 'bpmn-icon-screw-wrench',
@@ -37759,7 +36932,7 @@
 	        action: {
 	          click: function(event, element) {
 
-	            var position = assign$1(getReplaceMenuPosition(element), {
+	            var position = assign(getReplaceMenuPosition(element), {
 	              cursor: { x: event.x, y: event.y }
 	            });
 
@@ -37778,7 +36951,7 @@
 	      'bpmn:DataStoreReference',
 	    ])
 	  ) {
-	    assign$1(actions, {
+	    assign(actions, {
 	      'append.text-annotation': appendAction(
 	        'bpmn:TextAnnotation',
 	        'bpmn-icon-text-annotation'
@@ -37802,8 +36975,8 @@
 	    });
 	  }
 
-	  if (is$2(businessObject, 'bpmn:TextAnnotation')) {
-	    assign$1(actions, {
+	  if (is$1(businessObject, 'bpmn:TextAnnotation')) {
+	    assign(actions, {
 	      'connect': {
 	        group: 'connect',
 	        className: 'bpmn-icon-connection-multi',
@@ -37817,7 +36990,7 @@
 	  }
 
 	  if (isAny(businessObject, [ 'bpmn:DataObjectReference', 'bpmn:DataStoreReference' ])) {
-	    assign$1(actions, {
+	    assign(actions, {
 	      'connect': {
 	        group: 'connect',
 	        className: 'bpmn-icon-connection-multi',
@@ -37830,8 +37003,8 @@
 	    });
 	  }
 
-	  if (is$2(businessObject, 'bpmn:Group')) {
-	    assign$1(actions, {
+	  if (is$1(businessObject, 'bpmn:Group')) {
+	    assign(actions, {
 	      'append.text-annotation': appendAction('bpmn:TextAnnotation', 'bpmn-icon-text-annotation')
 	    });
 	  }
@@ -37839,14 +37012,14 @@
 	  // delete element entry, only show if allowed by rules
 	  var deleteAllowed = rules.allowed('elements.delete', { elements: [ element ] });
 
-	  if (isArray$3(deleteAllowed)) {
+	  if (isArray$2(deleteAllowed)) {
 
 	    // was the element returned as a deletion candidate?
 	    deleteAllowed = deleteAllowed[0] === element;
 	  }
 
 	  if (deleteAllowed) {
-	    assign$1(actions, {
+	    assign(actions, {
 	      'delete': {
 	        group: 'edit',
 	        className: 'bpmn-icon-trash',
@@ -37870,7 +37043,7 @@
 	  var isDefinition = false;
 
 	  var definitions = eventBo.eventDefinitions || [];
-	  forEach$2(definitions, function(def) {
+	  forEach(definitions, function(def) {
 	    if (def.$type === definition) {
 	      isDefinition = true;
 	    }
@@ -37914,7 +37087,7 @@
 	        numOfShapes = 0,
 	        avgDimension;
 
-	    forEach$1(elements, function(element) {
+	    forEach(elements, function(element) {
 	      if (element.waypoints || element.labelTarget) {
 	        return;
 	      }
@@ -37953,8 +37126,8 @@
 	/**
 	 * Distributes the elements with a given orientation
 	 *
-	 * @param  {Array} elements    [description]
-	 * @param  {string} orientation [description]
+	 * @param  {Array} elements
+	 * @param  {string} orientation
 	 */
 	DistributeElements$1.prototype.trigger = function(elements, orientation) {
 	  var modeling = this._modeling;
@@ -37999,7 +37172,7 @@
 	    return elements;
 	  }
 
-	  forEach$1(filters, function(filterFn) {
+	  forEach(filters, function(filterFn) {
 	    distributableElements = filterFn(distributableElements, axis, dimension);
 	  });
 
@@ -38039,7 +37212,7 @@
 	  // sort by 'left->right' or 'top->bottom'
 	  var sortedElements = sortBy(elements, axis);
 
-	  forEach$1(sortedElements, function(element, idx) {
+	  forEach(sortedElements, function(element, idx) {
 	    var elementRange = self._findRange(element, axis, dimension),
 	        range;
 
@@ -38088,11 +37261,11 @@
 	/**
 	 * Returns the min and max values for an element
 	 *
-	 * @param  {[type]} element   [description]
-	 * @param  {[type]} axis      [description]
-	 * @param  {[type]} dimension [description]
+	 * @param  {Bounds} element
+	 * @param  {string} axis
+	 * @param  {string} dimension
 	 *
-	 * @return {[type]}           [description]
+	 * @return {{ min: number, max: number }}
 	 */
 	DistributeElements$1.prototype._findRange = function(element) {
 	  var axis = element[this._axis],
@@ -38116,7 +37289,7 @@
 	function BpmnDistributeElements(distributeElements) {
 
 	  distributeElements.registerFilter(function(elements) {
-	    return filter$1(elements, function(element) {
+	    return filter(elements, function(element) {
 	      var cannotDistribute = isAny(element, [
 	        'bpmn:Association',
 	        'bpmn:BoundaryEvent',
@@ -38267,7 +37440,7 @@
 	      if (allowed === false) {
 	        return;
 	      }
-	      else if (isArray$1(allowed)) {
+	      else if (isArray$2(allowed)) {
 	        removableElements = allowed;
 	      }
 	      else {
@@ -38341,7 +37514,7 @@
 	    return this._registerAction(actions, listener);
 	  }
 
-	  forEach$1(actions, function(listener, action) {
+	  forEach(actions, function(listener, action) {
 	    self._registerAction(action, listener);
 	  });
 	};
@@ -38412,7 +37585,7 @@
 	  injector.invoke(EditorActions, this);
 	}
 
-	inherits$2(BpmnEditorActions, EditorActions);
+	inherits$1(BpmnEditorActions, EditorActions);
 
 	BpmnEditorActions.$inject = [
 	  'injector'
@@ -38505,8 +37678,8 @@
 	          type = opts.type;
 
 	      if (currentSelection.length) {
-	        aligneableElements = filter$1(currentSelection, function(element) {
-	          return !is$2(element, 'bpmn:Lane');
+	        aligneableElements = filter(currentSelection, function(element) {
+	          return !is$1(element, 'bpmn:Lane');
 	        });
 
 	        alignElements.trigger(aligneableElements, type);
@@ -38546,13 +37719,13 @@
 	          boundingBox,
 	          elements;
 
-	      if (is$2(rootElement, 'bpmn:Collaboration')) {
+	      if (is$1(rootElement, 'bpmn:Collaboration')) {
 	        elements = elementRegistry.filter(function(element) {
-	          return is$2(element.parent, 'bpmn:Collaboration');
+	          return is$1(element.parent, 'bpmn:Collaboration');
 	        });
 	      } else {
 	        elements = elementRegistry.filter(function(element) {
-	          return element !== rootElement && !is$2(element.parent, 'bpmn:SubProcess');
+	          return element !== rootElement && !is$1(element.parent, 'bpmn:SubProcess');
 	        });
 	      }
 
@@ -39192,7 +38365,7 @@
 	        options.max = position[ axis ];
 	      }
 
-	      if (is$2(shape, 'bpmn:TextAnnotation')) {
+	      if (is$1(shape, 'bpmn:TextAnnotation')) {
 
 	        if (isHorizontal$2(axis)) {
 	          options.offset = -shape.width / 2;
@@ -39234,8 +38407,8 @@
 	        shape = context.shape,
 	        rootElement = canvas.getRootElement();
 
-	    if (!is$2(shape, 'bpmn:Participant') ||
-	      !is$2(rootElement, 'bpmn:Process') ||
+	    if (!is$1(shape, 'bpmn:Participant') ||
+	      !is$1(rootElement, 'bpmn:Process') ||
 	      !rootElement.children.length) {
 	      return;
 	    }
@@ -39297,7 +38470,7 @@
 	  'modeling'
 	];
 
-	inherits$2(LayoutConnectionBehavior, CommandInterceptor);
+	inherits$1(LayoutConnectionBehavior, CommandInterceptor);
 
 	/**
 	 * Snap middle segments of a given connection.
@@ -39385,8 +38558,8 @@
 	  }
 
 	  if ('x' in snapped || 'y' in snapped) {
-	    segmentStart = assign$1({}, segmentStart, snapped);
-	    segmentEnd = assign$1({}, segmentEnd, snapped);
+	    segmentStart = assign({}, segmentStart, snapped);
+	    segmentEnd = assign({}, segmentEnd, snapped);
 	  }
 
 	  return [ segmentStart, segmentEnd ];
@@ -39435,11 +38608,11 @@
 	    var element = context.element,
 	        gfx = context.gfx;
 
-	    if (is$2(element, 'bpmn:Lane')) {
+	    if (is$1(element, 'bpmn:Lane')) {
 	      return self.createParticipantHit(element, gfx);
 	    } else
 
-	    if (is$2(element, 'bpmn:Participant')) {
+	    if (is$1(element, 'bpmn:Participant')) {
 	      if (isExpanded(element)) {
 	        return self.createParticipantHit(element, gfx);
 	      } else {
@@ -39447,7 +38620,7 @@
 	      }
 	    } else
 
-	    if (is$2(element, 'bpmn:SubProcess')) {
+	    if (is$1(element, 'bpmn:SubProcess')) {
 	      if (isExpanded(element)) {
 	        return self.createSubProcessHit(element, gfx);
 	      } else {
@@ -39529,7 +38702,7 @@
 	  injector.invoke(KeyboardBindings, this);
 	}
 
-	inherits$2(BpmnKeyboardBindings, KeyboardBindings);
+	inherits$1(BpmnKeyboardBindings, KeyboardBindings);
 
 	BpmnKeyboardBindings.$inject = [
 	  'injector'
@@ -39832,75 +39005,6 @@
 	  keyboardMoveSelection: [ 'type', KeyboardMoveSelection ]
 	};
 
-	/**
-	 * Adds change support to the diagram, including
-	 *
-	 * <ul>
-	 *   <li>redrawing shapes and connections on change</li>
-	 * </ul>
-	 *
-	 * @param {EventBus} eventBus
-	 * @param {Canvas} canvas
-	 * @param {ElementRegistry} elementRegistry
-	 * @param {GraphicsFactory} graphicsFactory
-	 */
-	function ChangeSupport(
-	    eventBus, canvas, elementRegistry,
-	    graphicsFactory) {
-
-
-	  // redraw shapes / connections on change
-
-	  eventBus.on('element.changed', function(event) {
-
-	    var element = event.element;
-
-	    // element might have been deleted and replaced by new element with same ID
-	    // thus check for parent of element except for root element
-	    if (element.parent || element === canvas.getRootElement()) {
-	      event.gfx = elementRegistry.getGraphics(element);
-	    }
-
-	    // shape + gfx may have been deleted
-	    if (!event.gfx) {
-	      return;
-	    }
-
-	    eventBus.fire(getType(element) + '.changed', event);
-	  });
-
-	  eventBus.on('elements.changed', function(event) {
-
-	    var elements = event.elements;
-
-	    elements.forEach(function(e) {
-	      eventBus.fire('element.changed', { element: e });
-	    });
-
-	    graphicsFactory.updateContainments(elements);
-	  });
-
-	  eventBus.on('shape.changed', function(event) {
-	    graphicsFactory.update('shape', event.element, event.gfx);
-	  });
-
-	  eventBus.on('connection.changed', function(event) {
-	    graphicsFactory.update('connection', event.element, event.gfx);
-	  });
-	}
-
-	ChangeSupport.$inject = [
-	  'eventBus',
-	  'canvas',
-	  'elementRegistry',
-	  'graphicsFactory'
-	];
-
-	var ChangeSupportModule = {
-	  __init__: [ 'changeSupport'],
-	  changeSupport: [ 'type', ChangeSupport ]
-	};
-
 	var DEFAULT_MIN_WIDTH = 10;
 
 
@@ -40194,23 +39298,23 @@
 	        frame = context.frame;
 
 	    if (!frame) {
-	      frame = context.frame = previewSupport.addFrame(shape, canvas.getActivePlane().layer);
+	      frame = context.frame = previewSupport.addFrame(shape, canvas.getActiveLayer());
 
 	      canvas.addMarker(shape, MARKER_RESIZING$1);
 	    }
 
 	    if (bounds.width > 5) {
-	      attr$1(frame, { x: bounds.x, width: bounds.width });
+	      attr(frame, { x: bounds.x, width: bounds.width });
 	    }
 
 	    if (bounds.height > 5) {
-	      attr$1(frame, { y: bounds.y, height: bounds.height });
+	      attr(frame, { y: bounds.y, height: bounds.height });
 	    }
 
 	    if (context.canExecute) {
-	      classes$1(frame).remove(MARKER_RESIZE_NOT_OK);
+	      classes(frame).remove(MARKER_RESIZE_NOT_OK);
 	    } else {
-	      classes$1(frame).add(MARKER_RESIZE_NOT_OK);
+	      classes(frame).add(MARKER_RESIZE_NOT_OK);
 	    }
 	  }
 
@@ -40224,7 +39328,7 @@
 	        frame = context.frame;
 
 	    if (frame) {
-	      remove$2(context.frame);
+	      remove$1(context.frame);
 	    }
 
 	    canvas.removeMarker(shape, MARKER_RESIZING$1);
@@ -40280,7 +39384,7 @@
 
 	    // add new selection markers ONLY if single selection
 	    if (newSelection.length === 1) {
-	      forEach$1(newSelection, bind$2(self.addResizer, self));
+	      forEach(newSelection, bind$2(self.addResizer, self));
 	    }
 	  });
 
@@ -40319,35 +39423,35 @@
 
 	  var group = create$1('g');
 
-	  classes$1(group).add(CLS_RESIZER);
-	  classes$1(group).add(CLS_RESIZER + '-' + element.id);
-	  classes$1(group).add(CLS_RESIZER + '-' + direction);
+	  classes(group).add(CLS_RESIZER);
+	  classes(group).add(CLS_RESIZER + '-' + element.id);
+	  classes(group).add(CLS_RESIZER + '-' + direction);
 
 	  append(resizersParent, group);
 
 	  var visual = create$1('rect');
 
-	  attr$1(visual, {
+	  attr(visual, {
 	    x: -HANDLE_SIZE / 2 + offset.x,
 	    y: -HANDLE_SIZE / 2 + offset.y,
 	    width: HANDLE_SIZE,
 	    height: HANDLE_SIZE
 	  });
 
-	  classes$1(visual).add(CLS_RESIZER + '-visual');
+	  classes(visual).add(CLS_RESIZER + '-visual');
 
 	  append(group, visual);
 
 	  var hit = create$1('rect');
 
-	  attr$1(hit, {
+	  attr(hit, {
 	    x: -HANDLE_HIT_SIZE / 2 + offset.x,
 	    y: -HANDLE_HIT_SIZE / 2 + offset.y,
 	    width: HANDLE_HIT_SIZE,
 	    height: HANDLE_HIT_SIZE
 	  });
 
-	  classes$1(hit).add(CLS_RESIZER + '-hit');
+	  classes(hit).add(CLS_RESIZER + '-hit');
 
 	  append(group, hit);
 
@@ -40380,7 +39484,7 @@
 	    return;
 	  }
 
-	  forEach$1(directions, function(direction) {
+	  forEach(directions, function(direction) {
 	    self.createResizer(shape, direction);
 	  });
 	};
@@ -40391,7 +39495,7 @@
 	ResizeHandles.prototype.removeResizers = function() {
 	  var resizersParent = this._getResizersParent();
 
-	  clear$1(resizersParent);
+	  clear(resizersParent);
 	};
 
 	ResizeHandles.prototype._getResizersParent = function() {
@@ -40460,8 +39564,8 @@
 
 	  // add to correct place
 	  add(definitions.get('rootElements'), category);
-	  getBusinessObject$1(category).$parent = definitions;
-	  getBusinessObject$1(categoryValue).$parent = category;
+	  getBusinessObject(category).$parent = definitions;
+	  getBusinessObject(categoryValue).$parent = category;
 
 	  return categoryValue;
 
@@ -40589,7 +39693,7 @@
 	  // bounds
 	  var bounds = this.getEditingBBox(element);
 
-	  assign$1(context, bounds);
+	  assign(context, bounds);
 
 	  var options = {};
 
@@ -40603,27 +39707,27 @@
 	    ]) ||
 	    isCollapsedSubProcess(element)
 	  ) {
-	    assign$1(options, {
+	    assign(options, {
 	      centerVertically: true
 	    });
 	  }
 
 	  // external labels
 	  if (isLabelExternal(element)) {
-	    assign$1(options, {
+	    assign(options, {
 	      autoResize: true
 	    });
 	  }
 
 	  // text annotations
-	  if (is$2(element, 'bpmn:TextAnnotation')) {
-	    assign$1(options, {
+	  if (is$1(element, 'bpmn:TextAnnotation')) {
+	    assign(options, {
 	      resizable: true,
 	      autoResize: true
 	    });
 	  }
 
-	  assign$1(context, {
+	  assign(context, {
 	    options: options
 	  });
 
@@ -40671,16 +39775,16 @@
 	  };
 
 	  // adjust for expanded pools AND lanes
-	  if (is$2(element, 'bpmn:Lane') || isExpandedPool(element)) {
+	  if (is$1(element, 'bpmn:Lane') || isExpandedPool(element)) {
 
-	    assign$1(bounds, {
+	    assign(bounds, {
 	      width: bbox.height,
 	      height: 30 * zoom,
 	      x: bbox.x - bbox.height / 2 + (15 * zoom),
 	      y: mid.y - (30 * zoom) / 2
 	    });
 
-	    assign$1(style, {
+	    assign(style, {
 	      fontSize: defaultFontSize + 'px',
 	      lineHeight: defaultLineHeight,
 	      paddingTop: (7 * zoom) + 'px',
@@ -40698,12 +39802,12 @@
 	      isCollapsedPool(element) ||
 	      isCollapsedSubProcess(element)) {
 
-	    assign$1(bounds, {
+	    assign(bounds, {
 	      width: bbox.width,
 	      height: bbox.height
 	    });
 
-	    assign$1(style, {
+	    assign(style, {
 	      fontSize: defaultFontSize + 'px',
 	      lineHeight: defaultLineHeight,
 	      paddingTop: (7 * zoom) + 'px',
@@ -40716,12 +39820,12 @@
 
 	  // internal labels for expanded sub processes
 	  if (isExpandedSubProcess$1(element)) {
-	    assign$1(bounds, {
+	    assign(bounds, {
 	      width: bbox.width,
 	      x: bbox.x
 	    });
 
-	    assign$1(style, {
+	    assign(style, {
 	      fontSize: defaultFontSize + 'px',
 	      lineHeight: defaultLineHeight,
 	      paddingTop: (7 * zoom) + 'px',
@@ -40737,14 +39841,14 @@
 
 	  // external labels for events, data elements, gateways, groups and connections
 	  if (target.labelTarget) {
-	    assign$1(bounds, {
+	    assign(bounds, {
 	      width: width,
 	      height: bbox.height + paddingTop + paddingBottom,
 	      x: mid.x - width / 2,
 	      y: bbox.y - paddingTop
 	    });
 
-	    assign$1(style, {
+	    assign(style, {
 	      fontSize: externalFontSize + 'px',
 	      lineHeight: externalLineHeight,
 	      paddingTop: paddingTop + 'px',
@@ -40768,14 +39872,14 @@
 
 	    var height = externalFontSize + paddingTop + paddingBottom;
 
-	    assign$1(bounds, {
+	    assign(bounds, {
 	      width: width,
 	      height: height,
 	      x: absoluteBBox.x - width / 2,
 	      y: absoluteBBox.y - height / 2
 	    });
 
-	    assign$1(style, {
+	    assign(style, {
 	      fontSize: externalFontSize + 'px',
 	      lineHeight: externalLineHeight,
 	      paddingTop: paddingTop + 'px',
@@ -40784,15 +39888,15 @@
 	  }
 
 	  // text annotations
-	  if (is$2(element, 'bpmn:TextAnnotation')) {
-	    assign$1(bounds, {
+	  if (is$1(element, 'bpmn:TextAnnotation')) {
+	    assign(bounds, {
 	      width: bbox.width,
 	      height: bbox.height,
 	      minWidth: 30 * zoom,
 	      minHeight: 10 * zoom
 	    });
 
-	    assign$1(style, {
+	    assign(style, {
 	      textAlign: 'left',
 	      paddingTop: (5 * zoom) + 'px',
 	      paddingBottom: (7 * zoom) + 'px',
@@ -40814,7 +39918,7 @@
 	  var newBounds,
 	      bbox;
 
-	  if (is$2(element, 'bpmn:TextAnnotation')) {
+	  if (is$1(element, 'bpmn:TextAnnotation')) {
 
 	    bbox = this._canvas.getAbsoluteBBox(element);
 
@@ -40826,19 +39930,19 @@
 	    };
 	  }
 
-	  if (is$2(element, 'bpmn:Group')) {
+	  if (is$1(element, 'bpmn:Group')) {
 
-	    var businessObject = getBusinessObject$1(element);
+	    var businessObject = getBusinessObject(element);
 
 	    // initialize categoryValue if not existing
 	    if (!businessObject.categoryValueRef) {
 
 	      var rootElement = this._canvas.getRootElement(),
-	          definitions = getBusinessObject$1(rootElement).$parent;
+	          definitions = getBusinessObject(rootElement).$parent;
 
 	      var categoryValue = createCategoryValue(definitions, this._bpmnFactory);
 
-	      getBusinessObject$1(element).categoryValueRef = categoryValue;
+	      getBusinessObject(element).categoryValueRef = categoryValue;
 	    }
 
 	  }
@@ -40855,19 +39959,19 @@
 	// helpers //////////////////////
 
 	function isCollapsedSubProcess(element) {
-	  return is$2(element, 'bpmn:SubProcess') && !isExpanded(element);
+	  return is$1(element, 'bpmn:SubProcess') && !isExpanded(element);
 	}
 
 	function isExpandedSubProcess$1(element) {
-	  return is$2(element, 'bpmn:SubProcess') && isExpanded(element);
+	  return is$1(element, 'bpmn:SubProcess') && isExpanded(element);
 	}
 
 	function isCollapsedPool(element) {
-	  return is$2(element, 'bpmn:Participant') && !isExpanded(element);
+	  return is$1(element, 'bpmn:Participant') && !isExpanded(element);
 	}
 
 	function isExpandedPool(element) {
-	  return is$2(element, 'bpmn:Participant') && isExpanded(element);
+	  return is$1(element, 'bpmn:Participant') && isExpanded(element);
 	}
 
 	function isEmptyText$1(label) {
@@ -40894,10 +39998,10 @@
 	    element = activeProvider.element.label || activeProvider.element;
 
 	    // text annotation
-	    if (is$2(element, 'bpmn:TextAnnotation')) {
+	    if (is$1(element, 'bpmn:TextAnnotation')) {
 	      absoluteElementBBox = canvas.getAbsoluteBBox(element);
 
-	      gfx = create$2('g');
+	      gfx = create$1('g');
 
 	      var textPathData = pathMap.getScaledPath('TEXT_ANNOTATION', {
 	        xScaleFactor: 1,
@@ -40910,28 +40014,28 @@
 	        }
 	      });
 
-	      var path = self.path = create$2('path');
+	      var path = self.path = create$1('path');
 
-	      attr$2(path, {
+	      attr(path, {
 	        d: textPathData,
 	        strokeWidth: 2,
 	        stroke: getStrokeColor(element)
 	      });
 
-	      append$1(gfx, path);
+	      append(gfx, path);
 
-	      append$1(defaultLayer, gfx);
+	      append(defaultLayer, gfx);
 
 	      translate$2(gfx, element.x, element.y);
 	    }
 
-	    if (is$2(element, 'bpmn:TextAnnotation') ||
+	    if (is$1(element, 'bpmn:TextAnnotation') ||
 	        element.labelTarget) {
 	      canvas.addMarker(element, MARKER_HIDDEN);
-	    } else if (is$2(element, 'bpmn:Task') ||
-	               is$2(element, 'bpmn:CallActivity') ||
-	               is$2(element, 'bpmn:SubProcess') ||
-	               is$2(element, 'bpmn:Participant')) {
+	    } else if (is$1(element, 'bpmn:Task') ||
+	               is$1(element, 'bpmn:CallActivity') ||
+	               is$1(element, 'bpmn:SubProcess') ||
+	               is$1(element, 'bpmn:Participant')) {
 	      canvas.addMarker(element, MARKER_LABEL_HIDDEN);
 	    }
 	  });
@@ -40939,7 +40043,7 @@
 	  eventBus.on('directEditing.resize', function(context) {
 
 	    // text annotation
-	    if (is$2(element, 'bpmn:TextAnnotation')) {
+	    if (is$1(element, 'bpmn:TextAnnotation')) {
 	      var height = context.height,
 	          dy = context.dy;
 
@@ -40956,7 +40060,7 @@
 	        }
 	      });
 
-	      attr$2(self.path, {
+	      attr(self.path, {
 	        d: textPathData
 	      });
 	    }
@@ -40974,7 +40078,7 @@
 	    absoluteElementBBox = undefined;
 
 	    if (gfx) {
-	      remove$3(gfx);
+	      remove$1(gfx);
 
 	      gfx = undefined;
 	    }
@@ -40992,7 +40096,7 @@
 	// helpers ///////////////////
 
 	function getStrokeColor(element, defaultColor) {
-	  var di = getDi$1(element);
+	  var di = getDi(element);
 
 	  return di.get('stroke') || defaultColor || 'black';
 	}
@@ -41153,7 +40257,7 @@
 
 	}
 
-	inherits$2(AdaptiveLabelPositioningBehavior, CommandInterceptor);
+	inherits$1(AdaptiveLabelPositioningBehavior, CommandInterceptor);
 
 	AdaptiveLabelPositioningBehavior.$inject = [
 	  'eventBus',
@@ -41281,7 +40385,7 @@
 
 	    if (!context.position) {
 
-	      if (is$2(shape, 'bpmn:TextAnnotation')) {
+	      if (is$1(shape, 'bpmn:TextAnnotation')) {
 	        context.position = {
 	          x: source.x + source.width / 2 + 75,
 	          y: source.y - (50) - shape.height / 2
@@ -41296,7 +40400,7 @@
 	  }, true);
 	}
 
-	inherits$2(AppendBehavior, CommandInterceptor);
+	inherits$1(AppendBehavior, CommandInterceptor);
 
 	AppendBehavior.$inject = [
 	  'eventBus',
@@ -41311,17 +40415,17 @@
 	    var newParent = context.newParent,
 	        shape = context.shape;
 
-	    var associations = filter$1(shape.incoming.concat(shape.outgoing), function(connection) {
-	      return is$2(connection, 'bpmn:Association');
+	    var associations = filter(shape.incoming.concat(shape.outgoing), function(connection) {
+	      return is$1(connection, 'bpmn:Association');
 	    });
 
-	    forEach$2(associations, function(association) {
+	    forEach(associations, function(association) {
 	      modeling.moveConnection(association, { x: 0, y: 0 }, newParent);
 	    });
 	  }, true);
 	}
 
-	inherits$2(AssociationBehavior, CommandInterceptor);
+	inherits$1(AssociationBehavior, CommandInterceptor);
 
 	AssociationBehavior.$inject = [
 	  'injector',
@@ -41385,7 +40489,7 @@
 	  'injector'
 	];
 
-	inherits$2(AttachEventBehavior, CommandInterceptor);
+	inherits$1(AttachEventBehavior, CommandInterceptor);
 
 	AttachEventBehavior.prototype.replaceShape = function(shape, host) {
 	  var eventDefinition = getEventDefinition$1(shape);
@@ -41406,7 +40510,7 @@
 	// helpers //////////
 
 	function getEventDefinition$1(element) {
-	  var businessObject = getBusinessObject$1(element),
+	  var businessObject = getBusinessObject(element),
 	      eventDefinitions = businessObject.eventDefinitions;
 
 	  return eventDefinitions && eventDefinitions[0];
@@ -41428,8 +40532,8 @@
 	  CommandInterceptor.call(this, eventBus);
 
 	  function getBoundaryEvents(element) {
-	    return filter$1(element.attachers, function(attacher) {
-	      return is$2(attacher, 'bpmn:BoundaryEvent');
+	    return filter(element.attachers, function(attacher) {
+	      return is$1(attacher, 'bpmn:BoundaryEvent');
 	    });
 	  }
 
@@ -41440,8 +40544,8 @@
 	        boundaryEvents = getBoundaryEvents(target);
 
 	    if (
-	      is$2(source, 'bpmn:EventBasedGateway') &&
-	      is$2(target, 'bpmn:ReceiveTask') &&
+	      is$1(source, 'bpmn:EventBasedGateway') &&
+	      is$1(target, 'bpmn:ReceiveTask') &&
 	      boundaryEvents.length > 0
 	    ) {
 	      modeling.removeElements(boundaryEvents);
@@ -41454,13 +40558,13 @@
 	    var oldSource = event.context.oldSource,
 	        newSource = event.context.newSource;
 
-	    if (is$2(oldSource, 'bpmn:Gateway') &&
-	        is$2(newSource, 'bpmn:EventBasedGateway')) {
-	      forEach$2(newSource.outgoing, function(connection) {
+	    if (is$1(oldSource, 'bpmn:Gateway') &&
+	        is$1(newSource, 'bpmn:EventBasedGateway')) {
+	      forEach(newSource.outgoing, function(connection) {
 	        var target = connection.target,
 	            attachedboundaryEvents = getBoundaryEvents(target);
 
-	        if (is$2(target, 'bpmn:ReceiveTask') &&
+	        if (is$1(target, 'bpmn:ReceiveTask') &&
 	            attachedboundaryEvents.length > 0) {
 	          modeling.removeElements(attachedboundaryEvents);
 	        }
@@ -41476,7 +40580,7 @@
 
 	    var propertyDescriptor = moddle.getPropertyDescriptor(parent, propertyName);
 
-	    if (propertyDescriptor && propertyDescriptor.isReference && is$2(property, 'bpmn:RootElement')) {
+	    if (propertyDescriptor && propertyDescriptor.isReference && is$1(property, 'bpmn:RootElement')) {
 	      parent.set(propertyName, property);
 	    }
 	  });
@@ -41488,7 +40592,7 @@
 	  'modeling'
 	];
 
-	inherits$2(BoundaryEventBehavior, CommandInterceptor);
+	inherits$1(BoundaryEventBehavior, CommandInterceptor);
 
 	var LOW_PRIORITY$b = 500;
 
@@ -41516,17 +40620,17 @@
 	    var definitions = bpmnjs.getDefinitions(),
 	        rootElements = definitions.get('rootElements');
 
-	    return !!find$1(rootElements, matchPattern$1({ id: rootElement.id }));
+	    return !!find(rootElements, matchPattern({ id: rootElement.id }));
 	  }
 
 	  function getRootElementReferencePropertyName(eventDefinition) {
-	    if (is$2(eventDefinition, 'bpmn:ErrorEventDefinition')) {
+	    if (is$1(eventDefinition, 'bpmn:ErrorEventDefinition')) {
 	      return 'errorRef';
-	    } else if (is$2(eventDefinition, 'bpmn:EscalationEventDefinition')) {
+	    } else if (is$1(eventDefinition, 'bpmn:EscalationEventDefinition')) {
 	      return 'escalationRef';
-	    } else if (is$2(eventDefinition, 'bpmn:MessageEventDefinition')) {
+	    } else if (is$1(eventDefinition, 'bpmn:MessageEventDefinition')) {
 	      return 'messageRef';
-	    } else if (is$2(eventDefinition, 'bpmn:SignalEventDefinition')) {
+	    } else if (is$1(eventDefinition, 'bpmn:SignalEventDefinition')) {
 	      return 'signalRef';
 	    }
 	  }
@@ -41561,7 +40665,7 @@
 	      return;
 	    }
 
-	    var businessObject = getBusinessObject$1(shape),
+	    var businessObject = getBusinessObject(shape),
 	        rootElement = getRootElement(businessObject),
 	        rootElements;
 
@@ -41585,7 +40689,7 @@
 	    var rootElements = bpmnjs.getDefinitions().get('rootElements');
 
 	    // remove root element
-	    remove$1(rootElements, addedRootElement);
+	    remove(rootElements, addedRootElement);
 	  }, true);
 
 	  eventBus.on('copyPaste.copyElement', function(context) {
@@ -41596,7 +40700,7 @@
 	      return;
 	    }
 
-	    var businessObject = getBusinessObject$1(element),
+	    var businessObject = getBusinessObject(element),
 	        rootElement = getRootElement(businessObject);
 
 	    if (rootElement) {
@@ -41637,16 +40741,16 @@
 	  'bpmnFactory'
 	];
 
-	inherits$2(RootElementReferenceBehavior, CommandInterceptor);
+	inherits$1(RootElementReferenceBehavior, CommandInterceptor);
 
 	// helpers //////////
 
 	function hasAnyEventDefinition(element, types) {
-	  if (!isArray$3(types)) {
+	  if (!isArray$2(types)) {
 	    types = [ types ];
 	  }
 
-	  return some$1(types, function(type) {
+	  return some(types, function(type) {
 	    return hasEventDefinition$2(element, type);
 	  });
 	}
@@ -41659,7 +40763,7 @@
 	        parent = context.parent,
 	        shape = context.shape;
 
-	    if (is$2(parent, 'bpmn:Lane') && !is$2(shape, 'bpmn:Lane')) {
+	    if (is$1(parent, 'bpmn:Lane') && !is$1(shape, 'bpmn:Lane')) {
 	      context.parent = getParent(parent, 'bpmn:Participant');
 	    }
 	  });
@@ -41669,7 +40773,7 @@
 
 	CreateBehavior.$inject = [ 'injector' ];
 
-	inherits$2(CreateBehavior, CommandInterceptor);
+	inherits$1(CreateBehavior, CommandInterceptor);
 
 	var HIGH_PRIORITY$b = 1500;
 	var HIGHEST_PRIORITY = 2000;
@@ -41700,7 +40804,7 @@
 
 	    // ensure elements are not dropped onto a bpmn:Lane but onto
 	    // the underlying bpmn:Participant
-	    if (is$2(hover, 'bpmn:Lane') && !isAny(shape, [ 'bpmn:Lane', 'bpmn:Participant' ])) {
+	    if (is$1(hover, 'bpmn:Lane') && !isAny(shape, [ 'bpmn:Lane', 'bpmn:Participant' ])) {
 	      event.hover = getLanesRoot(hover);
 	      event.hoverGfx = elementRegistry.getGraphics(event.hover);
 	    }
@@ -41709,7 +40813,7 @@
 
 	    // ensure bpmn:Group and label elements are dropped
 	    // always onto the root
-	    if (hover !== rootElement && (shape.labelTarget || is$2(shape, 'bpmn:Group'))) {
+	    if (hover !== rootElement && (shape.labelTarget || is$1(shape, 'bpmn:Group'))) {
 	      event.hover = rootElement;
 	      event.hoverGfx = elementRegistry.getGraphics(event.hover);
 	    }
@@ -41729,7 +40833,7 @@
 
 	    // ensure connections start/end on bpmn:Participant,
 	    // not the underlying bpmn:Lane
-	    if (is$2(hover, 'bpmn:Lane')) {
+	    if (is$1(hover, 'bpmn:Lane')) {
 	      event.hover = getLanesRoot(hover) || hover;
 	      event.hoverGfx = elementRegistry.getGraphics(event.hover);
 	    }
@@ -41745,7 +40849,7 @@
 
 	    // ensure reconnect start/end on bpmn:Participant,
 	    // not the underlying bpmn:Lane
-	    if (is$2(hover, 'bpmn:Lane') && /reconnect/.test(type)) {
+	    if (is$1(hover, 'bpmn:Lane') && /reconnect/.test(type)) {
 	      event.hover = getLanesRoot(hover) || hover;
 	      event.hoverGfx = elementRegistry.getGraphics(event.hover);
 	    }
@@ -41760,7 +40864,7 @@
 
 	    // ensure connect start on bpmn:Participant,
 	    // not the underlying bpmn:Lane
-	    if (is$2(start, 'bpmn:Lane')) {
+	    if (is$1(start, 'bpmn:Lane')) {
 	      context.start = getLanesRoot(start) || start;
 	    }
 	  });
@@ -41770,7 +40874,7 @@
 	  eventBus.on('shape.move.start', HIGHEST_PRIORITY, function(event) {
 	    var shape = event.shape;
 
-	    if (is$2(shape, 'bpmn:Lane')) {
+	    if (is$1(shape, 'bpmn:Lane')) {
 	      event.shape = getLanesRoot(shape) || shape;
 	    }
 	  });
@@ -41795,7 +40899,7 @@
 	    var context = event.context,
 	        shape = context.shape;
 
-	    if (is$2(shape, 'bpmn:DataObjectReference') && shape.type !== 'label') {
+	    if (is$1(shape, 'bpmn:DataObjectReference') && shape.type !== 'label') {
 
 	      // create a DataObject every time a DataObjectReference is created
 	      var dataObject = bpmnFactory.create('bpmn:DataObject');
@@ -41813,7 +40917,7 @@
 	  'moddle'
 	];
 
-	inherits$2(CreateDataObjectBehavior, CommandInterceptor);
+	inherits$1(CreateDataObjectBehavior, CommandInterceptor);
 
 	var HORIZONTAL_PARTICIPANT_PADDING = 20,
 	    VERTICAL_PARTICIPANT_PADDING = 20;
@@ -41838,15 +40942,15 @@
 	        shape = context.shape,
 	        rootElement = canvas.getRootElement();
 
-	    if (!is$2(shape, 'bpmn:Participant') ||
-	      !is$2(rootElement, 'bpmn:Process') ||
+	    if (!is$1(shape, 'bpmn:Participant') ||
+	      !is$1(rootElement, 'bpmn:Process') ||
 	      !rootElement.children.length) {
 	      return;
 	    }
 
 	    // ignore connections, groups and labels
 	    var children = rootElement.children.filter(function(element) {
-	      return !is$2(element, 'bpmn:Group') &&
+	      return !is$1(element, 'bpmn:Group') &&
 	        !isLabel$6(element) &&
 	        !isConnection$9(element);
 	    });
@@ -41861,7 +40965,7 @@
 	    var participantBounds = getParticipantBounds(shape, childrenBBox);
 
 	    // assign width and height
-	    assign$1(shape, participantBounds);
+	    assign(shape, participantBounds);
 
 	    // assign create constraints
 	    context.createConstraints = getParticipantCreateConstraints(shape, childrenBBox);
@@ -41879,7 +40983,7 @@
 	      event.gfx = rootElementGfx;
 	    }
 
-	    if (is$2(shape, 'bpmn:Participant') && is$2(rootElement, 'bpmn:Process')) {
+	    if (is$1(shape, 'bpmn:Participant') && is$1(rootElement, 'bpmn:Process')) {
 	      eventBus.on('element.hover', HIGH_PRIORITY$a, ensureHoveringProcess);
 
 	      eventBus.once('create.cleanup', function() {
@@ -41894,7 +40998,7 @@
 
 	    var rootElement = canvas.getRootElement();
 
-	    if (is$2(rootElement, 'bpmn:Collaboration')) {
+	    if (is$1(rootElement, 'bpmn:Collaboration')) {
 	      collaboration = rootElement;
 	    } else {
 
@@ -41913,7 +41017,7 @@
 	    var parent = context.parent,
 	        shape = context.shape;
 
-	    if (is$2(shape, 'bpmn:Participant') && is$2(parent, 'bpmn:Process')) {
+	    if (is$1(shape, 'bpmn:Participant') && is$1(parent, 'bpmn:Process')) {
 	      ensureCollaboration(context);
 	    }
 	  }, true);
@@ -41963,7 +41067,7 @@
 
 	    var hasParticipants = findParticipant(elements);
 
-	    if (hasParticipants && is$2(parent, 'bpmn:Process')) {
+	    if (hasParticipants && is$1(parent, 'bpmn:Process')) {
 	      ensureCollaboration(context);
 
 	      participant = findParticipant(elements);
@@ -42012,7 +41116,7 @@
 	  'modeling'
 	];
 
-	inherits$2(CreateParticipantBehavior, CommandInterceptor);
+	inherits$1(CreateParticipantBehavior, CommandInterceptor);
 
 	// helpers //////////
 
@@ -42049,8 +41153,8 @@
 	}
 
 	function findParticipant(elements) {
-	  return find$1(elements, function(element) {
-	    return is$2(element, 'bpmn:Participant');
+	  return find(elements, function(element) {
+	    return is$1(element, 'bpmn:Participant');
 	  });
 	}
 
@@ -42093,7 +41197,7 @@
 
 	    var inputAssociations = element.get('dataInputAssociations');
 
-	    return find$1(inputAssociations, function(association) {
+	    return find(inputAssociations, function(association) {
 	      return association !== removedConnection &&
 	             association.targetRef === targetRef;
 	    });
@@ -42103,7 +41207,7 @@
 
 	    var properties = element.get('properties');
 
-	    var targetRefProp = find$1(properties, function(p) {
+	    var targetRefProp = find(properties, function(p) {
 	      return p.name === TARGET_REF_PLACEHOLDER_NAME;
 	    });
 
@@ -42127,7 +41231,7 @@
 	    }
 
 	    if (!usesTargetRef(element, targetRefProp, connection)) {
-	      remove$1(element.get('properties'), targetRefProp);
+	      remove(element.get('properties'), targetRefProp);
 	    }
 	  }
 
@@ -42174,7 +41278,7 @@
 	  'bpmnFactory'
 	];
 
-	inherits$2(DataInputAssociationBehavior, CommandInterceptor);
+	inherits$1(DataInputAssociationBehavior, CommandInterceptor);
 
 
 	/**
@@ -42190,7 +41294,7 @@
 	    var context = event.context,
 	        connection = context.connection;
 
-	    if (is$2(connection, 'bpmn:DataInputAssociation')) {
+	    if (is$1(connection, 'bpmn:DataInputAssociation')) {
 	      return fn(event);
 	    }
 	  };
@@ -42245,13 +41349,13 @@
 
 	  function getFirstParticipantWithProcessRef() {
 	    return elementRegistry.filter(function(element) {
-	      return is$2(element, 'bpmn:Participant') && getBusinessObject$1(element).processRef;
+	      return is$1(element, 'bpmn:Participant') && getBusinessObject(element).processRef;
 	    })[0];
 	  }
 
 	  function getDataStores(element) {
 	    return element.children.filter(function(child) {
-	      return is$2(child, 'bpmn:DataStoreReference') && !child.labelTarget;
+	      return is$1(child, 'bpmn:DataStoreReference') && !child.labelTarget;
 	    });
 	  }
 
@@ -42265,9 +41369,9 @@
 
 	      commandStack.execute('dataStore.updateContainment', {
 	        dataStoreBo: dataStoreBo,
-	        dataStoreDi: getDi$1(dataStore),
+	        dataStoreDi: getDi(dataStore),
 	        newSemanticParent: newDataStoreParentBo.processRef || newDataStoreParentBo,
-	        newDiParent: getDi$1(newDataStoreParent)
+	        newDiParent: getDi(newDataStoreParent)
 	      });
 	    }
 	  }
@@ -42279,7 +41383,7 @@
 	    var context = event.context,
 	        shape = context.shape;
 
-	    if (is$2(shape, 'bpmn:DataStoreReference') &&
+	    if (is$1(shape, 'bpmn:DataStoreReference') &&
 	        shape.type !== 'label') {
 
 	      if (!context.hints) {
@@ -42298,7 +41402,7 @@
 	        shapes = context.shapes;
 
 	    var dataStoreReferences = shapes.filter(function(shape) {
-	      return is$2(shape, 'bpmn:DataStoreReference');
+	      return is$1(shape, 'bpmn:DataStoreReference');
 	    });
 
 	    if (dataStoreReferences.length) {
@@ -42308,7 +41412,7 @@
 
 	      // prevent auto resizing for data store references
 	      context.hints.autoResize = shapes.filter(function(shape) {
-	        return !is$2(shape, 'bpmn:DataStoreReference');
+	        return !is$1(shape, 'bpmn:DataStoreReference');
 	      });
 	    }
 	  });
@@ -42321,9 +41425,9 @@
 	        parent = shape.parent;
 
 
-	    if (is$2(shape, 'bpmn:DataStoreReference') &&
+	    if (is$1(shape, 'bpmn:DataStoreReference') &&
 	        shape.type !== 'label' &&
-	        is$2(parent, 'bpmn:Collaboration')) {
+	        is$1(parent, 'bpmn:Collaboration')) {
 
 	      updateDataStoreParent(shape);
 	    }
@@ -42337,17 +41441,17 @@
 	        oldParent = context.oldParent,
 	        parent = shape.parent;
 
-	    if (is$2(oldParent, 'bpmn:Collaboration')) {
+	    if (is$1(oldParent, 'bpmn:Collaboration')) {
 
 	      // do nothing if not necessary
 	      return;
 	    }
 
-	    if (is$2(shape, 'bpmn:DataStoreReference') &&
+	    if (is$1(shape, 'bpmn:DataStoreReference') &&
 	        shape.type !== 'label' &&
-	        is$2(parent, 'bpmn:Collaboration')) {
+	        is$1(parent, 'bpmn:Collaboration')) {
 
-	      var participant = is$2(oldParent, 'bpmn:Participant') ?
+	      var participant = is$1(oldParent, 'bpmn:Participant') ?
 	        oldParent :
 	        getAncestor(oldParent, 'bpmn:Participant');
 
@@ -42363,7 +41467,7 @@
 	        rootElement = canvas.getRootElement();
 
 	    if (isAny(shape, [ 'bpmn:Participant', 'bpmn:SubProcess' ])
-	        && is$2(rootElement, 'bpmn:Collaboration')) {
+	        && is$1(rootElement, 'bpmn:Collaboration')) {
 	      getDataStores(rootElement)
 	        .filter(function(dataStore) {
 	          return isDescendant(dataStore, shape);
@@ -42384,7 +41488,7 @@
 
 	    dataStores.forEach(function(dataStore) {
 
-	      if (is$2(newRoot, 'bpmn:Process')) {
+	      if (is$1(newRoot, 'bpmn:Process')) {
 	        updateDataStoreParent(dataStore, newRoot);
 	      }
 
@@ -42399,7 +41503,7 @@
 	  'eventBus',
 	];
 
-	inherits$2(DataStoreBehavior, CommandInterceptor);
+	inherits$1(DataStoreBehavior, CommandInterceptor);
 
 
 	// helpers //////////
@@ -42422,7 +41526,7 @@
 	function getAncestor(element, type) {
 
 	  while (element.parent) {
-	    if (is$2(element.parent, type)) {
+	    if (is$1(element.parent, type)) {
 	      return element.parent;
 	    }
 
@@ -42507,7 +41611,7 @@
 	        oldParent = context.oldParent;
 
 	    // only compensate lane deletes
-	    if (!is$2(shape, 'bpmn:Lane')) {
+	    if (!is$1(shape, 'bpmn:Lane')) {
 	      return;
 	    }
 
@@ -42526,7 +41630,7 @@
 	  'spaceTool'
 	];
 
-	inherits$2(DeleteLaneBehavior, CommandInterceptor);
+	inherits$1(DeleteLaneBehavior, CommandInterceptor);
 
 	var LOW_PRIORITY$9 = 500;
 
@@ -42574,7 +41678,7 @@
 	  'injector'
 	];
 
-	inherits$2(DetachEventBehavior, CommandInterceptor);
+	inherits$1(DetachEventBehavior, CommandInterceptor);
 
 	DetachEventBehavior.prototype.replaceShape = function(shape) {
 	  var eventDefinition = getEventDefinition(shape),
@@ -42598,14 +41702,14 @@
 	// helpers //////////
 
 	function getEventDefinition(element) {
-	  var businessObject = getBusinessObject$1(element),
+	  var businessObject = getBusinessObject(element),
 	      eventDefinitions = businessObject.eventDefinitions;
 
 	  return eventDefinitions && eventDefinitions[0];
 	}
 
 	function shouldReplace(shape, host) {
-	  return !isLabel$6(shape) && is$2(shape, 'bpmn:BoundaryEvent') && !host;
+	  return !isLabel$6(shape) && is$1(shape, 'bpmn:BoundaryEvent') && !host;
 	}
 
 	function includes$6(array, item) {
@@ -42635,7 +41739,7 @@
 
 	    var mid;
 
-	    if (isNumber$1(positionOrBounds.width)) {
+	    if (isNumber(positionOrBounds.width)) {
 	      mid = getMid(positionOrBounds);
 	    } else {
 	      mid = positionOrBounds;
@@ -42693,11 +41797,11 @@
 
 	    var duplicateConnections = [].concat(
 
-	      incomingConnection && filter$1(oldIncoming, function(connection) {
+	      incomingConnection && filter(oldIncoming, function(connection) {
 	        return connection.source === incomingConnection.source;
 	      }) || [],
 
-	      outgoingConnection && filter$1(oldOutgoing, function(connection) {
+	      outgoingConnection && filter(oldOutgoing, function(connection) {
 	        return connection.target === outgoingConnection.target;
 	      }) || []
 	    );
@@ -42732,7 +41836,7 @@
 
 	    // find a connection which intersects with the
 	    // element's mid point
-	    var connection = find$1(newParent.children, function(element) {
+	    var connection = find(newParent.children, function(element) {
 	      var canInsert = bpmnRules.canInsert(shapes, element);
 
 	      return canInsert && getApproxIntersection(element.waypoints, newShapeMid);
@@ -42780,7 +41884,7 @@
 	  }, true);
 	}
 
-	inherits$2(DropOnFlowBehavior, CommandInterceptor);
+	inherits$1(DropOnFlowBehavior, CommandInterceptor);
 
 	DropOnFlowBehavior.$inject = [
 	  'eventBus',
@@ -42802,7 +41906,7 @@
 	}
 
 	function copy(obj) {
-	  return assign$1({}, obj);
+	  return assign({}, obj);
 	}
 
 	function EventBasedGatewayBehavior(eventBus, modeling) {
@@ -42825,7 +41929,7 @@
 	    }
 
 	    if (
-	      is$2(source, 'bpmn:EventBasedGateway') &&
+	      is$1(source, 'bpmn:EventBasedGateway') &&
 	      target.incoming.length
 	    ) {
 
@@ -42847,7 +41951,7 @@
 	        newShapeTargets,
 	        newShapeTargetsIncomingSequenceFlows;
 
-	    if (!is$2(newShape, 'bpmn:EventBasedGateway')) {
+	    if (!is$1(newShape, 'bpmn:EventBasedGateway')) {
 	      return;
 	    }
 
@@ -42875,14 +41979,14 @@
 	  'modeling'
 	];
 
-	inherits$2(EventBasedGatewayBehavior, CommandInterceptor);
+	inherits$1(EventBasedGatewayBehavior, CommandInterceptor);
 
 
 
 	// helpers //////////////////////
 
 	function isSequenceFlow(connection) {
-	  return is$2(connection, 'bpmn:SequenceFlow');
+	  return is$1(connection, 'bpmn:SequenceFlow');
 	}
 
 	var HIGH_PRIORITY$9 = 2000;
@@ -42908,7 +42012,7 @@
 	   */
 	  function getDefinitions() {
 	    var rootElement = canvas.getRootElement(),
-	        businessObject = getBusinessObject$1(rootElement);
+	        businessObject = getBusinessObject(rootElement);
 
 	    return businessObject.$parent;
 	  }
@@ -42920,7 +42024,7 @@
 	   */
 	  function removeReferencedCategoryValue(shape) {
 
-	    var businessObject = getBusinessObject$1(shape),
+	    var businessObject = getBusinessObject(shape),
 	        categoryValue = businessObject.categoryValueRef;
 
 	    if (!categoryValue) {
@@ -42933,7 +42037,7 @@
 	      return;
 	    }
 
-	    remove$1(category.categoryValue, categoryValue);
+	    remove(category.categoryValue, categoryValue);
 
 	    // cleanup category if it is empty
 	    if (category && !category.categoryValue.length) {
@@ -42950,7 +42054,7 @@
 
 	    var definitions = getDefinitions();
 
-	    remove$1(definitions.get('rootElements'), category);
+	    remove(definitions.get('rootElements'), category);
 	  }
 
 	  /**
@@ -42960,7 +42064,7 @@
 	   */
 	  function getGroupElements() {
 	    return elementRegistry.filter(function(e) {
-	      return is$2(e, 'bpmn:Group');
+	      return is$1(e, 'bpmn:Group');
 	    });
 	  }
 
@@ -42974,7 +42078,7 @@
 	  function isReferenced(elements, categoryValue) {
 	    return elements.some(function(e) {
 
-	      var businessObject = getBusinessObject$1(e);
+	      var businessObject = getBusinessObject(e);
 
 	      return businessObject.categoryValueRef
 	        && businessObject.categoryValueRef === categoryValue;
@@ -42989,9 +42093,9 @@
 	    var context = event.context,
 	        shape = context.shape;
 
-	    if (is$2(shape, 'bpmn:Group')) {
+	    if (is$1(shape, 'bpmn:Group')) {
 
-	      var businessObject = getBusinessObject$1(shape),
+	      var businessObject = getBusinessObject(shape),
 	          categoryValueRef = businessObject.categoryValueRef,
 	          groupElements = getGroupElements();
 
@@ -43009,9 +42113,9 @@
 	    var context = event.context,
 	        shape = context.shape;
 
-	    if (is$2(shape, 'bpmn:Group')) {
+	    if (is$1(shape, 'bpmn:Group')) {
 
-	      var businessObject = getBusinessObject$1(shape),
+	      var businessObject = getBusinessObject(shape),
 	          categoryValueRef = businessObject.categoryValueRef,
 	          definitions = getDefinitions(),
 	          category = categoryValueRef ? categoryValueRef.$parent : null;
@@ -43027,9 +42131,9 @@
 	  this.execute('shape.create', function(event) {
 	    var context = event.context,
 	        shape = context.shape,
-	        businessObject = getBusinessObject$1(shape);
+	        businessObject = getBusinessObject(shape);
 
-	    if (is$2(businessObject, 'bpmn:Group') && !businessObject.categoryValueRef) {
+	    if (is$1(businessObject, 'bpmn:Group') && !businessObject.categoryValueRef) {
 
 	      var definitions = getDefinitions(),
 	          categoryValue = createCategoryValue(definitions, bpmnFactory);
@@ -43045,10 +42149,10 @@
 	    var context = event.context,
 	        shape = context.shape;
 
-	    if (is$2(shape, 'bpmn:Group')) {
+	    if (is$1(shape, 'bpmn:Group')) {
 	      removeReferencedCategoryValue(shape);
 
-	      delete getBusinessObject$1(shape).categoryValueRef;
+	      delete getBusinessObject(shape).categoryValueRef;
 
 	    }
 	  });
@@ -43058,7 +42162,7 @@
 	    var property = context.property,
 	        categoryValue;
 
-	    if (is$2(property, 'bpmn:CategoryValue')) {
+	    if (is$1(property, 'bpmn:CategoryValue')) {
 	      categoryValue = createCategoryValue(getDefinitions(), bpmnFactory);
 
 	      // return copy of category
@@ -43077,7 +42181,7 @@
 	  'moddleCopy'
 	];
 
-	inherits$2(GroupBehavior, CommandInterceptor);
+	inherits$1(GroupBehavior, CommandInterceptor);
 
 	/**
 	 * Returns the intersection between two line segments a and b.
@@ -43208,8 +42312,8 @@
 
 	  this.executed([ 'shape.move', 'shape.create', 'shape.resize' ], function(event) {
 	    var shape = event.context.shape,
-	        bo = getBusinessObject$1(shape),
-	        di = getDi$1(shape);
+	        bo = getBusinessObject(shape),
+	        di = getDi(shape);
 
 	    if (isAny(bo, elementTypesToUpdate) && !di.get('isHorizontal')) {
 
@@ -43222,7 +42326,7 @@
 
 	IsHorizontalFix.$inject = [ 'eventBus' ];
 
-	inherits$2(IsHorizontalFix, CommandInterceptor);
+	inherits$1(IsHorizontalFix, CommandInterceptor);
 
 	/**
 	 * Returns the length of a vector
@@ -43950,7 +43054,7 @@
 	    }
 
 	    if (TEXT_PROPERTY in properties
-	        && is$2(element, 'bpmn:TextAnnotation')) {
+	        && is$1(element, 'bpmn:TextAnnotation')) {
 
 	      var newBounds = textRenderer.getTextAnnotationBounds(
 	        {
@@ -44020,21 +43124,20 @@
 
 	    var context = event.context,
 	        element = context.shape,
-	        parent = context.labelTarget,
+	        labelTarget = context.labelTarget,
 	        di;
 
 	    // we want to trigger on real labels only
-	    if (!element.labelTarget) {
+	    if (!labelTarget) {
 	      return;
 	    }
 
 	    // we want to trigger on BPMN elements only
-	    if (!is$2(element.labelTarget || element, 'bpmn:BaseElement')) {
+	    if (!is$1(labelTarget, 'bpmn:BaseElement')) {
 	      return;
 	    }
 
-	    di = getDi$1(parent);
-
+	    di = getDi(labelTarget);
 
 	    if (!di.label) {
 	      di.label = bpmnFactory.create('bpmndi:BPMNLabel', {
@@ -44044,7 +43147,7 @@
 	      element.di = di;
 	    }
 
-	    assign$1(di.label.bounds, {
+	    assign(di.label.bounds, {
 	      x: element.x,
 	      y: element.y,
 	      width: element.width,
@@ -44057,7 +43160,7 @@
 	    var context = event.context,
 	        connection = context.connection,
 	        label = connection.label,
-	        hints = assign$1({}, context.hints),
+	        hints = assign({}, context.hints),
 	        newWaypoints = context.newWaypoints || connection.waypoints,
 	        oldWaypoints = context.oldWaypoints;
 
@@ -44109,7 +43212,7 @@
 	        newShape = context.newShape,
 	        oldShape = context.oldShape;
 
-	    var businessObject = getBusinessObject$1(newShape);
+	    var businessObject = getBusinessObject(newShape);
 
 	    if (businessObject
 	      && isLabelExternal(businessObject)
@@ -44148,7 +43251,7 @@
 
 	}
 
-	inherits$2(LabelBehavior, CommandInterceptor);
+	inherits$1(LabelBehavior, CommandInterceptor);
 
 	LabelBehavior.$inject = [
 	  'eventBus',
@@ -44264,7 +43367,7 @@
 	    };
 	  });
 
-	  var sorted = sortBy$1(distances, 'distance');
+	  var sorted = sortBy(distances, 'distance');
 
 	  return sorted[0].line;
 	}
@@ -44405,14 +43508,14 @@
 
 	MessageFlowBehavior.$inject = [ 'eventBus', 'modeling' ];
 
-	inherits$2(MessageFlowBehavior, CommandInterceptor);
+	inherits$1(MessageFlowBehavior, CommandInterceptor);
 
 	// helpers //////////
 
 	function isParticipantCollapse(oldShape, newShape) {
-	  return is$2(oldShape, 'bpmn:Participant')
+	  return is$1(oldShape, 'bpmn:Participant')
 	    && isExpanded(oldShape)
-	    && is$2(newShape, 'bpmn:Participant')
+	    && is$1(newShape, 'bpmn:Participant')
 	    && !isExpanded(newShape);
 	}
 
@@ -44428,13 +43531,13 @@
 	    }
 
 	    element.incoming.forEach(function(connection) {
-	      if (is$2(connection, 'bpmn:MessageFlow')) {
+	      if (is$1(connection, 'bpmn:MessageFlow')) {
 	        incoming.push(connection);
 	      }
 	    });
 
 	    element.outgoing.forEach(function(connection) {
-	      if (is$2(connection, 'bpmn:MessageFlow')) {
+	      if (is$1(connection, 'bpmn:MessageFlow')) {
 	        outgoing.push(connection);
 	      }
 	    });
@@ -44467,7 +43570,7 @@
 	        shape = context.shape,
 	        target = context.target;
 
-	    if (is$2(target, 'bpmn:Collaboration') && is$2(shape, 'bpmn:FlowNode')) {
+	    if (is$1(target, 'bpmn:Collaboration') && is$1(shape, 'bpmn:FlowNode')) {
 	      showError(event, translate(COLLAB_ERR_MSG));
 	    }
 	  });
@@ -44510,7 +43613,7 @@
 	     * This holds true for SequenceFlow <> MessageFlow.
 	     */
 
-	    if (is$2(connection, 'bpmn:SequenceFlow')) {
+	    if (is$1(connection, 'bpmn:SequenceFlow')) {
 	      if (!bpmnRules.canConnectSequenceFlow(source, target)) {
 	        remove = true;
 	      }
@@ -44522,7 +43625,7 @@
 
 	    // transform message flows into sequence flows, if possible
 
-	    if (is$2(connection, 'bpmn:MessageFlow')) {
+	    if (is$1(connection, 'bpmn:MessageFlow')) {
 
 	      if (!bpmnRules.canConnectMessageFlow(source, target)) {
 	        remove = true;
@@ -44533,7 +43636,7 @@
 	      }
 	    }
 
-	    if (is$2(connection, 'bpmn:Association') && !bpmnRules.canConnectAssociation(source, target)) {
+	    if (is$1(connection, 'bpmn:Association') && !bpmnRules.canConnectAssociation(source, target)) {
 	      remove = true;
 	    }
 
@@ -44612,7 +43715,7 @@
 	    var closure = context.closure,
 	        allConnections = closure.allConnections;
 
-	    forEach$2(allConnections, fixConnection);
+	    forEach(allConnections, fixConnection);
 	  }, true);
 
 	  this.preExecute('connection.reconnect', replaceReconnectedConnection);
@@ -44626,9 +43729,9 @@
 
 	    // remove condition on change to default
 	    if (properties.default) {
-	      connection = find$1(
+	      connection = find(
 	        element.outgoing,
-	        matchPattern$1({ id: element.businessObject.default.id })
+	        matchPattern({ id: element.businessObject.default.id })
 	      );
 
 	      if (connection) {
@@ -44643,7 +43746,7 @@
 	  });
 	}
 
-	inherits$2(ReplaceConnectionBehavior, CommandInterceptor);
+	inherits$1(ReplaceConnectionBehavior, CommandInterceptor);
 
 	ReplaceConnectionBehavior.$inject = [
 	  'eventBus',
@@ -44672,7 +43775,7 @@
 
 	    // activate the behavior if the shape to be removed
 	    // is a participant
-	    if (is$2(shape, 'bpmn:Participant')) {
+	    if (is$1(shape, 'bpmn:Participant')) {
 	      context.collaborationRoot = parent;
 	    }
 	  }, true);
@@ -44692,7 +43795,7 @@
 
 	RemoveParticipantBehavior.$inject = [ 'eventBus', 'modeling' ];
 
-	inherits$2(RemoveParticipantBehavior, CommandInterceptor);
+	inherits$1(RemoveParticipantBehavior, CommandInterceptor);
 
 	/**
 	 * BPMN-specific replace behavior.
@@ -44731,7 +43834,7 @@
 	        newHost = context.newHost,
 	        elements = [];
 
-	    forEach$2(context.closure.topLevel, function(topLevelElements) {
+	    forEach(context.closure.topLevel, function(topLevelElements) {
 	      if (isEventSubProcess(topLevelElements)) {
 	        elements = elements.concat(topLevelElements.children);
 	      } else {
@@ -44778,14 +43881,14 @@
 	  });
 	}
 
-	inherits$2(ReplaceElementBehaviour, CommandInterceptor);
+	inherits$1(ReplaceElementBehaviour, CommandInterceptor);
 
 	ReplaceElementBehaviour.prototype.replaceElements = function(elements, newElements) {
 	  var elementRegistry = this._elementRegistry,
 	      bpmnReplace = this._bpmnReplace,
 	      selection = this._selection;
 
-	  forEach$2(newElements, function(replacement) {
+	  forEach(newElements, function(replacement) {
 	    var newElement = {
 	      type: replacement.newElementType
 	    };
@@ -44810,6 +43913,49 @@
 	  'modeling',
 	  'selection'
 	];
+
+	var HIGH_PRIORITY$8 = 1500;
+
+	var LANE_MIN_DIMENSIONS = { width: 300, height: 60 };
+
+	var PARTICIPANT_MIN_DIMENSIONS = { width: 300, height: 150 };
+
+	var SUB_PROCESS_MIN_DIMENSIONS = { width: 140, height: 120 };
+
+	var TEXT_ANNOTATION_MIN_DIMENSIONS = { width: 50, height: 30 };
+
+	/**
+	 * Set minimum bounds/resize constraints on resize.
+	 *
+	 * @param {EventBus} eventBus
+	 */
+	function ResizeBehavior(eventBus) {
+	  eventBus.on('resize.start', HIGH_PRIORITY$8, function(event) {
+	    var context = event.context,
+	        shape = context.shape,
+	        direction = context.direction,
+	        balanced = context.balanced;
+
+	    if (is$1(shape, 'bpmn:Lane') || is$1(shape, 'bpmn:Participant')) {
+	      context.resizeConstraints = getParticipantResizeConstraints(shape, direction, balanced);
+	    }
+
+	    if (is$1(shape, 'bpmn:Participant')) {
+	      context.minDimensions = PARTICIPANT_MIN_DIMENSIONS;
+	    }
+
+	    if (is$1(shape, 'bpmn:SubProcess') && isExpanded(shape)) {
+	      context.minDimensions = SUB_PROCESS_MIN_DIMENSIONS;
+	    }
+
+	    if (is$1(shape, 'bpmn:TextAnnotation')) {
+	      context.minDimensions = TEXT_ANNOTATION_MIN_DIMENSIONS;
+	    }
+	  });
+	}
+
+	ResizeBehavior.$inject = [ 'eventBus' ];
+
 
 	var abs$2 = Math.abs,
 	    min = Math.min,
@@ -44837,7 +43983,6 @@
 	    LANE_LEFT_PADDING = 50,
 	    LANE_TOP_PADDING = 20,
 	    LANE_BOTTOM_PADDING = 20;
-
 
 	function getParticipantResizeConstraints(laneShape, resizeDirection, balanced) {
 	  var lanesRoot = getLanesRoot(laneShape);
@@ -44901,7 +44046,7 @@
 
 	  // max top/bottom/left/right size based on flow nodes
 	  var flowElements = lanesRoot.children.filter(function(s) {
-	    return !s.hidden && !s.waypoints && (is$2(s, 'bpmn:FlowElement') || is$2(s, 'bpmn:Artifact'));
+	    return !s.hidden && !s.waypoints && (is$1(s, 'bpmn:FlowElement') || is$1(s, 'bpmn:Artifact'));
 	  });
 
 	  flowElements.forEach(function(flowElement) {
@@ -44931,49 +44076,6 @@
 	  };
 	}
 
-	var HIGH_PRIORITY$8 = 1500;
-
-	var LANE_MIN_DIMENSIONS = { width: 300, height: 60 };
-
-	var PARTICIPANT_MIN_DIMENSIONS = { width: 300, height: 150 };
-
-	var SUB_PROCESS_MIN_DIMENSIONS = { width: 140, height: 120 };
-
-	var TEXT_ANNOTATION_MIN_DIMENSIONS = { width: 50, height: 30 };
-
-
-	/**
-	 * Set minimum bounds/resize constraints on resize.
-	 *
-	 * @param {EventBus} eventBus
-	 */
-	function ResizeBehavior(eventBus) {
-	  eventBus.on('resize.start', HIGH_PRIORITY$8, function(event) {
-	    var context = event.context,
-	        shape = context.shape,
-	        direction = context.direction,
-	        balanced = context.balanced;
-
-	    if (is$2(shape, 'bpmn:Lane') || is$2(shape, 'bpmn:Participant')) {
-	      context.resizeConstraints = getParticipantResizeConstraints(shape, direction, balanced);
-	    }
-
-	    if (is$2(shape, 'bpmn:Participant')) {
-	      context.minDimensions = PARTICIPANT_MIN_DIMENSIONS;
-	    }
-
-	    if (is$2(shape, 'bpmn:SubProcess') && isExpanded(shape)) {
-	      context.minDimensions = SUB_PROCESS_MIN_DIMENSIONS;
-	    }
-
-	    if (is$2(shape, 'bpmn:TextAnnotation')) {
-	      context.minDimensions = TEXT_ANNOTATION_MIN_DIMENSIONS;
-	    }
-	  });
-	}
-
-	ResizeBehavior.$inject = [ 'eventBus' ];
-
 	var SLIGHTLY_HIGHER_PRIORITY = 1001;
 
 
@@ -44988,7 +44090,7 @@
 	    var context = event.context,
 	        shape = context.shape;
 
-	    if (is$2(shape, 'bpmn:Lane') || is$2(shape, 'bpmn:Participant')) {
+	    if (is$1(shape, 'bpmn:Lane') || is$1(shape, 'bpmn:Participant')) {
 
 	      // should we resize the opposite lane(s) in
 	      // order to compensate for the resize operation?
@@ -45005,7 +44107,7 @@
 	        canExecute = context.canExecute,
 	        newBounds = context.newBounds;
 
-	    if (is$2(shape, 'bpmn:Lane') || is$2(shape, 'bpmn:Participant')) {
+	    if (is$1(shape, 'bpmn:Lane') || is$1(shape, 'bpmn:Participant')) {
 
 	      if (canExecute) {
 
@@ -45050,7 +44152,7 @@
 	        outConnection = shape.outgoing[0];
 
 	    // only handle sequence flows
-	    if (!is$2(inConnection, 'bpmn:SequenceFlow') || !is$2(outConnection, 'bpmn:SequenceFlow')) {
+	    if (!is$1(inConnection, 'bpmn:SequenceFlow') || !is$1(outConnection, 'bpmn:SequenceFlow')) {
 	      return;
 	    }
 
@@ -45065,7 +44167,7 @@
 
 	}
 
-	inherits$2(RemoveElementBehavior, CommandInterceptor);
+	inherits$1(RemoveElementBehavior, CommandInterceptor);
 
 	RemoveElementBehavior.$inject = [
 	  'eventBus',
@@ -45112,10 +44214,10 @@
 	        start = context.start,
 	        minDimensions = {};
 
-	    forEach$2(shapes, function(shape) {
+	    forEach(shapes, function(shape) {
 	      var id = shape.id;
 
-	      if (is$2(shape, 'bpmn:Participant')) {
+	      if (is$1(shape, 'bpmn:Participant')) {
 
 	        if (isHorizontal$1(axis)) {
 	          minDimensions[ id ] = PARTICIPANT_MIN_DIMENSIONS;
@@ -45128,11 +44230,11 @@
 
 	      }
 
-	      if (is$2(shape, 'bpmn:SubProcess') && isExpanded(shape)) {
+	      if (is$1(shape, 'bpmn:SubProcess') && isExpanded(shape)) {
 	        minDimensions[ id ] = SUB_PROCESS_MIN_DIMENSIONS;
 	      }
 
-	      if (is$2(shape, 'bpmn:TextAnnotation')) {
+	      if (is$1(shape, 'bpmn:TextAnnotation')) {
 	        minDimensions[ id ] = TEXT_ANNOTATION_MIN_DIMENSIONS;
 	      }
 	    });
@@ -45226,8 +44328,8 @@
 	        newShape = event.context.newShape;
 
 	    if (
-	      !is$2(newShape, 'bpmn:SubProcess') ||
-	      !is$2(oldShape, 'bpmn:Task') ||
+	      !is$1(newShape, 'bpmn:SubProcess') ||
+	      !is$1(oldShape, 'bpmn:Task') ||
 	      !isExpanded(newShape)
 	    ) {
 	      return;
@@ -45244,7 +44346,7 @@
 	  'modeling'
 	];
 
-	inherits$2(SubProcessStartEventBehavior, CommandInterceptor);
+	inherits$1(SubProcessStartEventBehavior, CommandInterceptor);
 
 	// helpers //////////
 
@@ -45254,6 +44356,125 @@
 	    y: shape.y + shape.height / 2
 	  };
 	}
+
+	// TODO(nikku): test this!
+
+	/**
+	 * Behavior implementing the creation and deletion
+	 * of sub-process planes
+	 *
+	 * @param {Canvas} canvas
+	 * @param {EventBus} eventBus
+	 * @param {Modeling} modeling
+	 * @param {ElementFactory} elementFactory
+	 * @param {BpmnFactory} bpmnFactory
+	 */
+	function SubProcessPlaneBehavior(
+	    canvas, eventBus, modeling,
+	    elementFactory, bpmnFactory) {
+
+	  CommandInterceptor.call(this, eventBus);
+
+	  function isCollapsedSubProcess(element) {
+	    return is$1(element, 'bpmn:SubProcess') && !isExpanded(element);
+	  }
+
+	  // add plane elements for newly created sub-processes
+	  // this ensures we can actually drill down into the element
+	  this.postExecute('shape.create', 500, function(context) {
+	    var shape = context.shape;
+
+	    if (!isCollapsedSubProcess(shape)) {
+	      return;
+	    }
+
+	    // TODO(nikku): how does this relate to our
+	    // import logic where we explicitly allow only
+	    // a single diagram to be shown (no drilldown)?
+	    //
+	    // here we do create nested plane elements forcefully,
+	    // while during import these got ignored
+	    var businessObject = getBusinessObject(shape);
+
+	    var di = bpmnFactory.create('bpmndi:BPMNPlane', {
+	      bpmnElement: businessObject
+	    });
+
+	    // TODO(nikku): BpmnImporter must wire this appropriately,
+	    // i.e. add plane elements to the BPMN diagram and wrap
+	    // them into a bpmndi:BPMNDiagram
+
+	    // add a virtual element (not being drawn),
+	    // a copy cat of our BpmnImporter code
+	    var planeElement = elementFactory.createRoot({
+	      id: shape.id + '_plane',
+	      type: businessObject.$type,
+	      di: di,
+	      businessObject: businessObject,
+	      collapsed: true
+	    });
+
+	    canvas.createPlane(shape.id, planeElement);
+	  }, true);
+
+
+	  // TODO(nikku): move elements to plane when collapsing expanded
+	  // sub-process with existing children
+
+	  // ensure we re-wire planes as element IDs change
+	  // otherwise our assumption of plane#name => subProcess#id
+	  // breaks
+	  this.postExecute('element.updateProperties', function(context) {
+
+	    var properties = context.properties;
+	    var oldProperties = context.oldProperties;
+
+	    var oldId = oldProperties.id;
+
+	    if (!oldId || !canvas._planes[oldId]) {
+	      return;
+	    }
+
+	    var newId = properties.id;
+
+	    canvas._planes[newId] = canvas._planes[oldId];
+	    canvas._planes[newId].name = newId;
+
+	    delete canvas._planes[oldId];
+	  }, true);
+
+	  // remove plane and child elements on deletion
+	  this.postExecute('shape.delete', function(context) {
+	    var shape = context.shape;
+
+	    if (!isCollapsedSubProcess(shape)) {
+	      return;
+	    }
+
+	    // TODO(nikku): implement
+	    //
+	    // * remove referenced plane element
+	    // * remove shapes on these plane elements
+
+	    // TODO(nikku): how does this interact with
+	    // single diagram imports (cf. above)?
+	  }, true);
+
+	  // TODO(nikku): make un-doable
+
+	  // TODO(nikku): navigate out of plane if plane gets deleted,
+	  // i.e. via UNDO)
+	}
+
+	SubProcessPlaneBehavior.$inject = [
+	  'canvas',
+	  'eventBus',
+	  'modeling',
+	  'elementFactory',
+	  'bpmnFactory'
+	];
+
+	inherits$1(SubProcessPlaneBehavior, CommandInterceptor);
 
 	var LOW_PRIORITY$8 = 500;
 
@@ -45318,7 +44539,7 @@
 	    var context = e.context,
 	        shape = context.shape;
 
-	    if (!is$2(shape, 'bpmn:SubProcess')) {
+	    if (!is$1(shape, 'bpmn:SubProcess')) {
 	      return;
 	    }
 
@@ -45328,11 +44549,11 @@
 	      hideEmptyLabels(shape.children);
 
 	      // remove collapsed marker
-	      getDi$1(shape).isExpanded = true;
+	      getDi(shape).isExpanded = true;
 	    } else {
 
 	      // place collapsed marker
-	      getDi$1(shape).isExpanded = false;
+	      getDi(shape).isExpanded = false;
 	    }
 	  });
 
@@ -45344,10 +44565,10 @@
 
 	    // revert removing/placing collapsed marker
 	    if (!shape.collapsed) {
-	      getDi$1(shape).isExpanded = true;
+	      getDi(shape).isExpanded = true;
 
 	    } else {
-	      getDi$1(shape).isExpanded = false;
+	      getDi(shape).isExpanded = false;
 	    }
 	  });
 
@@ -45374,7 +44595,7 @@
 	}
 
 
-	inherits$2(ToggleElementCollapseBehaviour, CommandInterceptor);
+	inherits$1(ToggleElementCollapseBehaviour, CommandInterceptor);
 
 	ToggleElementCollapseBehaviour.$inject = [
 	  'eventBus',
@@ -45411,7 +44632,7 @@
 	      return;
 	    }
 
-	    if (is$2(shape, 'bpmn:Participant') && isExpanded(shape)) {
+	    if (is$1(shape, 'bpmn:Participant') && isExpanded(shape)) {
 	      moddle.ids.unclaim(shapeBo.processRef.id);
 	    }
 
@@ -45435,7 +44656,7 @@
 	  });
 	}
 
-	inherits$2(UnclaimIdBehavior, CommandInterceptor);
+	inherits$1(UnclaimIdBehavior, CommandInterceptor);
 
 	UnclaimIdBehavior.$inject = [ 'canvas', 'injector', 'moddle', 'modeling' ];
 
@@ -45545,11 +44766,11 @@
 	      return;
 	    }
 
-	    if (is$2(shape, 'bpmn:Lane')) {
+	    if (is$1(shape, 'bpmn:Lane')) {
 	      updateContext.addLane(shape);
 	    }
 
-	    if (is$2(shape, 'bpmn:FlowNode')) {
+	    if (is$1(shape, 'bpmn:FlowNode')) {
 	      updateContext.addFlowNode(shape);
 	    }
 	  });
@@ -45561,7 +44782,7 @@
 	  'translate'
 	];
 
-	inherits$2(UpdateFlowNodeRefsBehavior, CommandInterceptor);
+	inherits$1(UpdateFlowNodeRefsBehavior, CommandInterceptor);
 
 
 	function UpdateContext() {
@@ -45616,7 +44837,7 @@
 	  });
 	}
 
-	inherits$2(DeleteSequenceFlowBehavior, CommandInterceptor);
+	inherits$1(DeleteSequenceFlowBehavior, CommandInterceptor);
 
 	DeleteSequenceFlowBehavior.$inject = [
 	  'eventBus',
@@ -45628,12 +44849,12 @@
 
 	function isDefaultFlow(connection, source) {
 
-	  if (!is$2(connection, 'bpmn:SequenceFlow')) {
+	  if (!is$1(connection, 'bpmn:SequenceFlow')) {
 	    return false;
 	  }
 
-	  var sourceBo = getBusinessObject$1(source),
-	      sequenceFlow = getBusinessObject$1(connection);
+	  var sourceBo = getBusinessObject(source),
+	      sequenceFlow = getBusinessObject(connection);
 
 	  return sourceBo.get('default') === sequenceFlow;
 	}
@@ -45671,6 +44892,7 @@
 	    'toggleElementCollapseBehaviour',
 	    'spaceToolBehavior',
 	    'subProcessStartEventBehavior',
+	    'subProcessPlaneBehavior',
 	    'unclaimIdBehavior',
 	    'unsetDefaultFlowBehavior',
 	    'updateFlowNodeRefsBehavior'
@@ -45706,6 +44928,7 @@
 	  toggleElementCollapseBehaviour : [ 'type', ToggleElementCollapseBehaviour ],
 	  spaceToolBehavior: [ 'type', SpaceToolBehavior ],
 	  subProcessStartEventBehavior: [ 'type', SubProcessStartEventBehavior ],
+	  subProcessPlaneBehavior: [ 'type', SubProcessPlaneBehavior ],
 	  unclaimIdBehavior: [ 'type', UnclaimIdBehavior ],
 	  updateFlowNodeRefsBehavior: [ 'type', UpdateFlowNodeRefsBehavior ],
 	  unsetDefaultFlowBehavior: [ 'type', DeleteSequenceFlowBehavior ]
@@ -45729,7 +44952,7 @@
 	  RuleProvider.call(this, eventBus);
 	}
 
-	inherits$2(BpmnRules, RuleProvider);
+	inherits$1(BpmnRules, RuleProvider);
 
 	BpmnRules.$inject = [ 'eventBus' ];
 
@@ -45804,7 +45027,7 @@
 	      return false;
 	    }
 
-	    return every$1(elements, function(element) {
+	    return every(elements, function(element) {
 	      if (isConnection$8(element)) {
 	        return canConnect(element.source, element.target, element);
 	      }
@@ -45918,14 +45141,14 @@
 	function getOrganizationalParent(element) {
 
 	  do {
-	    if (is$2(element, 'bpmn:Process')) {
-	      return getBusinessObject$1(element);
+	    if (is$1(element, 'bpmn:Process')) {
+	      return getBusinessObject(element);
 	    }
 
-	    if (is$2(element, 'bpmn:Participant')) {
+	    if (is$1(element, 'bpmn:Participant')) {
 	      return (
-	        getBusinessObject$1(element).processRef ||
-	        getBusinessObject$1(element)
+	        getBusinessObject(element).processRef ||
+	        getBusinessObject(element)
 	      );
 	    }
 	  } while ((element = element.parent));
@@ -45933,20 +45156,20 @@
 	}
 
 	function isTextAnnotation(element) {
-	  return is$2(element, 'bpmn:TextAnnotation');
+	  return is$1(element, 'bpmn:TextAnnotation');
 	}
 
 	function isGroup(element) {
-	  return is$2(element, 'bpmn:Group') && !element.labelTarget;
+	  return is$1(element, 'bpmn:Group') && !element.labelTarget;
 	}
 
 	function isCompensationBoundary(element) {
-	  return is$2(element, 'bpmn:BoundaryEvent') &&
+	  return is$1(element, 'bpmn:BoundaryEvent') &&
 	         hasEventDefinition(element, 'bpmn:CompensateEventDefinition');
 	}
 
 	function isForCompensation(e) {
-	  return getBusinessObject$1(e).isForCompensation;
+	  return getBusinessObject(e).isForCompensation;
 	}
 
 	function isSameOrganization(a, b) {
@@ -45958,10 +45181,10 @@
 
 	function isMessageFlowSource(element) {
 	  return (
-	    is$2(element, 'bpmn:InteractionNode') &&
-	    !is$2(element, 'bpmn:BoundaryEvent') && (
-	      !is$2(element, 'bpmn:Event') || (
-	        is$2(element, 'bpmn:ThrowEvent') &&
+	    is$1(element, 'bpmn:InteractionNode') &&
+	    !is$1(element, 'bpmn:BoundaryEvent') && (
+	      !is$1(element, 'bpmn:Event') || (
+	        is$1(element, 'bpmn:ThrowEvent') &&
 	        hasEventDefinitionOrNone(element, 'bpmn:MessageEventDefinition')
 	      )
 	    )
@@ -45970,14 +45193,14 @@
 
 	function isMessageFlowTarget(element) {
 	  return (
-	    is$2(element, 'bpmn:InteractionNode') &&
+	    is$1(element, 'bpmn:InteractionNode') &&
 	    !isForCompensation(element) && (
-	      !is$2(element, 'bpmn:Event') || (
-	        is$2(element, 'bpmn:CatchEvent') &&
+	      !is$1(element, 'bpmn:Event') || (
+	        is$1(element, 'bpmn:CatchEvent') &&
 	        hasEventDefinitionOrNone(element, 'bpmn:MessageEventDefinition')
 	      )
 	    ) && !(
-	      is$2(element, 'bpmn:BoundaryEvent') &&
+	      is$1(element, 'bpmn:BoundaryEvent') &&
 	      !hasEventDefinition(element, 'bpmn:MessageEventDefinition')
 	    )
 	  );
@@ -45989,12 +45212,12 @@
 
 	  while ((parent = parent.parent)) {
 
-	    if (is$2(parent, 'bpmn:FlowElementsContainer')) {
-	      return getBusinessObject$1(parent);
+	    if (is$1(parent, 'bpmn:FlowElementsContainer')) {
+	      return getBusinessObject(parent);
 	    }
 
-	    if (is$2(parent, 'bpmn:Participant')) {
-	      return getBusinessObject$1(parent).processRef;
+	    if (is$1(parent, 'bpmn:Participant')) {
+	      return getBusinessObject(parent).processRef;
 	    }
 	  }
 
@@ -46009,27 +45232,27 @@
 	}
 
 	function hasEventDefinition(element, eventDefinition) {
-	  var bo = getBusinessObject$1(element);
+	  var bo = getBusinessObject(element);
 
-	  return !!find$1(bo.eventDefinitions || [], function(definition) {
-	    return is$2(definition, eventDefinition);
+	  return !!find(bo.eventDefinitions || [], function(definition) {
+	    return is$1(definition, eventDefinition);
 	  });
 	}
 
 	function hasEventDefinitionOrNone(element, eventDefinition) {
-	  var bo = getBusinessObject$1(element);
+	  var bo = getBusinessObject(element);
 
 	  return (bo.eventDefinitions || []).every(function(definition) {
-	    return is$2(definition, eventDefinition);
+	    return is$1(definition, eventDefinition);
 	  });
 	}
 
 	function isSequenceFlowSource(element) {
 	  return (
-	    is$2(element, 'bpmn:FlowNode') &&
-	    !is$2(element, 'bpmn:EndEvent') &&
+	    is$1(element, 'bpmn:FlowNode') &&
+	    !is$1(element, 'bpmn:EndEvent') &&
 	    !isEventSubProcess(element) &&
-	    !(is$2(element, 'bpmn:IntermediateThrowEvent') &&
+	    !(is$1(element, 'bpmn:IntermediateThrowEvent') &&
 	      hasEventDefinition(element, 'bpmn:LinkEventDefinition')
 	    ) &&
 	    !isCompensationBoundary(element) &&
@@ -46039,11 +45262,11 @@
 
 	function isSequenceFlowTarget(element) {
 	  return (
-	    is$2(element, 'bpmn:FlowNode') &&
-	    !is$2(element, 'bpmn:StartEvent') &&
-	    !is$2(element, 'bpmn:BoundaryEvent') &&
+	    is$1(element, 'bpmn:FlowNode') &&
+	    !is$1(element, 'bpmn:StartEvent') &&
+	    !is$1(element, 'bpmn:BoundaryEvent') &&
 	    !isEventSubProcess(element) &&
-	    !(is$2(element, 'bpmn:IntermediateCatchEvent') &&
+	    !(is$1(element, 'bpmn:IntermediateCatchEvent') &&
 	      hasEventDefinition(element, 'bpmn:LinkEventDefinition')
 	    ) &&
 	    !isForCompensation(element)
@@ -46052,8 +45275,8 @@
 
 	function isEventBasedTarget(element) {
 	  return (
-	    is$2(element, 'bpmn:ReceiveTask') || (
-	      is$2(element, 'bpmn:IntermediateCatchEvent') && (
+	    is$1(element, 'bpmn:ReceiveTask') || (
+	      is$1(element, 'bpmn:IntermediateCatchEvent') && (
 	        hasEventDefinition(element, 'bpmn:MessageEventDefinition') ||
 	        hasEventDefinition(element, 'bpmn:TimerEventDefinition') ||
 	        hasEventDefinition(element, 'bpmn:ConditionalEventDefinition') ||
@@ -46093,7 +45316,7 @@
 	    return null;
 	  }
 
-	  if (!is$2(connection, 'bpmn:DataAssociation')) {
+	  if (!is$1(connection, 'bpmn:DataAssociation')) {
 
 	    if (canConnectMessageFlow(source, target)) {
 	      return { type: 'bpmn:MessageFlow' };
@@ -46141,14 +45364,14 @@
 
 
 	  // disallow to create elements on collapsed pools
-	  if (is$2(target, 'bpmn:Participant') && !isExpanded(target)) {
+	  if (is$1(target, 'bpmn:Participant') && !isExpanded(target)) {
 	    return false;
 	  }
 
 	  // allow to create new participants on
 	  // existing collaboration and process diagrams
-	  if (is$2(element, 'bpmn:Participant')) {
-	    return is$2(target, 'bpmn:Process') || is$2(target, 'bpmn:Collaboration');
+	  if (is$1(element, 'bpmn:Participant')) {
+	    return is$1(target, 'bpmn:Process') || is$1(target, 'bpmn:Collaboration');
 	  }
 
 	  // allow moving DataInput / DataOutput within its original container only
@@ -46160,19 +45383,19 @@
 	  }
 
 	  // allow creating lanes on participants and other lanes only
-	  if (is$2(element, 'bpmn:Lane')) {
-	    return is$2(target, 'bpmn:Participant') || is$2(target, 'bpmn:Lane');
+	  if (is$1(element, 'bpmn:Lane')) {
+	    return is$1(target, 'bpmn:Participant') || is$1(target, 'bpmn:Lane');
 	  }
 
 	  // disallow dropping boundary events which cannot replace with intermediate event
-	  if (is$2(element, 'bpmn:BoundaryEvent') && !isDroppableBoundaryEvent(element)) {
+	  if (is$1(element, 'bpmn:BoundaryEvent') && !isDroppableBoundaryEvent(element)) {
 	    return false;
 	  }
 
 	  // drop flow elements onto flow element containers
 	  // and participants
-	  if (is$2(element, 'bpmn:FlowElement') && !is$2(element, 'bpmn:DataStoreReference')) {
-	    if (is$2(target, 'bpmn:FlowElementsContainer')) {
+	  if (is$1(element, 'bpmn:FlowElement') && !is$1(element, 'bpmn:DataStoreReference')) {
+	    if (is$1(target, 'bpmn:FlowElementsContainer')) {
 	      return isExpanded(target);
 	    }
 
@@ -46180,8 +45403,8 @@
 	  }
 
 	  // disallow dropping data store reference if there is no process to append to
-	  if (is$2(element, 'bpmn:DataStoreReference') && is$2(target, 'bpmn:Collaboration')) {
-	    return some$1(getBusinessObject$1(target).get('participants'), function(participant) {
+	  if (is$1(element, 'bpmn:DataStoreReference') && is$1(target, 'bpmn:Collaboration')) {
+	    return some(getBusinessObject(target).get('participants'), function(participant) {
 	      return !!participant.get('processRef');
 	    });
 	  }
@@ -46199,8 +45422,8 @@
 	      'bpmn:SubProcess' ]);
 	  }
 
-	  if (is$2(element, 'bpmn:MessageFlow')) {
-	    return is$2(target, 'bpmn:Collaboration')
+	  if (is$1(element, 'bpmn:MessageFlow')) {
+	    return is$1(target, 'bpmn:Collaboration')
 	      || element.source.parent == target
 	      || element.target.parent == target;
 	  }
@@ -46209,17 +45432,17 @@
 	}
 
 	function isDroppableBoundaryEvent(event) {
-	  return getBusinessObject$1(event).cancelActivity && (
+	  return getBusinessObject(event).cancelActivity && (
 	    hasNoEventDefinition(event) || hasCommonBoundaryIntermediateEventDefinition(event)
 	  );
 	}
 
 	function isBoundaryEvent(element) {
-	  return !isLabel$6(element) && is$2(element, 'bpmn:BoundaryEvent');
+	  return !isLabel$6(element) && is$1(element, 'bpmn:BoundaryEvent');
 	}
 
 	function isLane(element) {
-	  return is$2(element, 'bpmn:Lane');
+	  return is$1(element, 'bpmn:Lane');
 	}
 
 	/**
@@ -46231,18 +45454,18 @@
 	    return true;
 	  }
 
-	  if (is$2(element, 'bpmn:IntermediateThrowEvent') && hasNoEventDefinition(element)) {
+	  if (is$1(element, 'bpmn:IntermediateThrowEvent') && hasNoEventDefinition(element)) {
 	    return true;
 	  }
 
 	  return (
-	    is$2(element, 'bpmn:IntermediateCatchEvent') &&
+	    is$1(element, 'bpmn:IntermediateCatchEvent') &&
 	    hasCommonBoundaryIntermediateEventDefinition(element)
 	  );
 	}
 
 	function hasNoEventDefinition(element) {
-	  var bo = getBusinessObject$1(element);
+	  var bo = getBusinessObject(element);
 
 	  return bo && !(bo.eventDefinitions && bo.eventDefinitions.length);
 	}
@@ -46264,9 +45487,9 @@
 
 	function isReceiveTaskAfterEventBasedGateway(element) {
 	  return (
-	    is$2(element, 'bpmn:ReceiveTask') &&
-	    find$1(element.incoming, function(incoming) {
-	      return is$2(incoming.source, 'bpmn:EventBasedGateway');
+	    is$1(element, 'bpmn:ReceiveTask') &&
+	    find(element.incoming, function(incoming) {
+	      return is$1(incoming.source, 'bpmn:EventBasedGateway');
 	    })
 	  );
 	}
@@ -46301,7 +45524,7 @@
 	  }
 
 	  // only allow drop on non compensation activities
-	  if (!is$2(target, 'bpmn:Activity') || isForCompensation(target)) {
+	  if (!is$1(target, 'bpmn:Activity') || isForCompensation(target)) {
 	    return false;
 	  }
 
@@ -46348,11 +45571,11 @@
 	    replacements: []
 	  };
 
-	  forEach$2(elements, function(element) {
+	  forEach(elements, function(element) {
 
 	    if (!isEventSubProcess(target)) {
 
-	      if (is$2(element, 'bpmn:StartEvent') &&
+	      if (is$1(element, 'bpmn:StartEvent') &&
 	          element.type !== 'label' &&
 	          canDrop(element, target)) {
 
@@ -46385,7 +45608,7 @@
 	            'bpmn:SignalEventDefinition',
 	            'bpmn:ConditionalEventDefinition'
 	          ]) &&
-	            is$2(target, 'bpmn:SubProcess')) {
+	            is$1(target, 'bpmn:SubProcess')) {
 	          canExecute.replacements.push({
 	            oldElementId: element.id,
 	            newElementType: 'bpmn:StartEvent'
@@ -46394,18 +45617,18 @@
 	      }
 	    }
 
-	    if (!is$2(target, 'bpmn:Transaction')) {
+	    if (!is$1(target, 'bpmn:Transaction')) {
 	      if (hasEventDefinition(element, 'bpmn:CancelEventDefinition') &&
 	          element.type !== 'label') {
 
-	        if (is$2(element, 'bpmn:EndEvent') && canDrop(element, target)) {
+	        if (is$1(element, 'bpmn:EndEvent') && canDrop(element, target)) {
 	          canExecute.replacements.push({
 	            oldElementId: element.id,
 	            newElementType: 'bpmn:EndEvent'
 	          });
 	        }
 
-	        if (is$2(element, 'bpmn:BoundaryEvent') && canAttach(element, target, null, position)) {
+	        if (is$1(element, 'bpmn:BoundaryEvent') && canAttach(element, target, null, position)) {
 	          canExecute.replacements.push({
 	            oldElementId: element.id,
 	            newElementType: 'bpmn:BoundaryEvent'
@@ -46421,7 +45644,7 @@
 	function canMove(elements, target) {
 
 	  // do not move selection containing lanes
-	  if (some$1(elements, isLane)) {
+	  if (some(elements, isLane)) {
 	    return false;
 	  }
 
@@ -46459,7 +45682,7 @@
 	}
 
 	function canResize(shape, newBounds) {
-	  if (is$2(shape, 'bpmn:SubProcess')) {
+	  if (is$1(shape, 'bpmn:SubProcess')) {
 	    return (
 	      isExpanded(shape) && (
 	        !newBounds || (newBounds.width >= 100 && newBounds.height >= 80)
@@ -46467,11 +45690,11 @@
 	    );
 	  }
 
-	  if (is$2(shape, 'bpmn:Lane')) {
+	  if (is$1(shape, 'bpmn:Lane')) {
 	    return !newBounds || (newBounds.width >= 130 && newBounds.height >= 60);
 	  }
 
-	  if (is$2(shape, 'bpmn:Participant')) {
+	  if (is$1(shape, 'bpmn:Participant')) {
 	    return !newBounds || (newBounds.width >= 250 && newBounds.height >= 50);
 	  }
 
@@ -46550,7 +45773,7 @@
 	    isEventBasedTarget(target) &&
 	    target.incoming.length > 0 &&
 	    areOutgoingEventBasedGatewayConnections(target.incoming) &&
-	    !is$2(source, 'bpmn:EventBasedGateway')
+	    !is$1(source, 'bpmn:EventBasedGateway')
 	  ) {
 	    return false;
 	  }
@@ -46558,7 +45781,7 @@
 	  return isSequenceFlowSource(source) &&
 	         isSequenceFlowTarget(target) &&
 	         isSameScope(source, target) &&
-	         !(is$2(source, 'bpmn:EventBasedGateway') && !isEventBasedTarget(target));
+	         !(is$1(source, 'bpmn:EventBasedGateway') && !isEventBasedTarget(target));
 	}
 
 
@@ -46605,8 +45828,8 @@
 	  return (
 	    isAny(flow, [ 'bpmn:SequenceFlow', 'bpmn:MessageFlow' ]) &&
 	    !isLabel$6(flow) &&
-	    is$2(shape, 'bpmn:FlowNode') &&
-	    !is$2(shape, 'bpmn:BoundaryEvent') &&
+	    is$1(shape, 'bpmn:FlowNode') &&
+	    !is$1(shape, 'bpmn:BoundaryEvent') &&
 	    canDrop(shape, flow.parent));
 	}
 
@@ -46619,7 +45842,7 @@
 	    return true;
 	  }
 
-	  if (is$2(element, 'bpmn:Lane') && !includes$5(elements, element.parent)) {
+	  if (is$1(element, 'bpmn:Lane') && !includes$5(elements, element.parent)) {
 	    return false;
 	  }
 
@@ -46629,7 +45852,7 @@
 	function isOutgoingEventBasedGatewayConnection(connection) {
 
 	  if (connection && connection.source) {
-	    return is$2(connection.source, 'bpmn:EventBasedGateway');
+	    return is$1(connection.source, 'bpmn:EventBasedGateway');
 	  }
 	}
 
@@ -46666,11 +45889,11 @@
 	    elements = selfAndAllChildren([ root ], false);
 
 	    // only bpmndi:Shape and bpmndi:Edge can be direct children of bpmndi:Plane
-	    elements = filter$1(elements, function(element) {
+	    elements = filter(elements, function(element) {
 	      return element !== root && !element.labelTarget;
 	    });
 
-	    diElements = map$3(elements, getDi);
+	    diElements = map$1(elements, getDi);
 
 	    rootDi.set('planeElement', diElements);
 	  }
@@ -46848,7 +46071,7 @@
 	      return { level: 10 };
 	    }
 
-	    var entry = find$1(orders, function(o) {
+	    var entry = find(orders, function(o) {
 	      return isAny(element, [ o.type ]);
 	    });
 
@@ -46940,7 +46163,7 @@
 
 	BpmnOrderingProvider.$inject = [ 'eventBus', 'canvas', 'translate' ];
 
-	inherits$2(BpmnOrderingProvider, OrderingProvider);
+	inherits$1(BpmnOrderingProvider, OrderingProvider);
 
 	var OrderingModule = {
 	  __depends__: [
@@ -47427,7 +46650,7 @@
 	    return;
 	  }
 
-	  elements = isArray$1(elements) ? elements : [ elements ];
+	  elements = isArray$2(elements) ? elements : [ elements ];
 
 	  execution.dirty = execution.dirty.concat(elements);
 	};
@@ -47622,7 +46845,7 @@
 
 	  var node = event.delegateTarget || event.target;
 
-	  var tooltip = this.get(attr(node, 'data-tooltip-id'));
+	  var tooltip = this.get(attr$1(node, 'data-tooltip-id'));
 
 	  if (!tooltip) {
 	    return;
@@ -47698,8 +46921,8 @@
 	  var tooltip = this.get(id);
 
 	  if (tooltip) {
-	    remove(tooltip.html);
-	    remove(tooltip.htmlContainer);
+	    remove$2(tooltip.html);
+	    remove$2(tooltip.htmlContainer);
 
 	    delete tooltip.htmlContainer;
 
@@ -47752,11 +46975,11 @@
 	  htmlContainer.appendChild(html);
 
 	  if (tooltip.type) {
-	    classes(htmlContainer).add('djs-tooltip-' + tooltip.type);
+	    classes$1(htmlContainer).add('djs-tooltip-' + tooltip.type);
 	  }
 
 	  if (tooltip.className) {
-	    classes(htmlContainer).add(tooltip.className);
+	    classes$1(htmlContainer).add(tooltip.className);
 	  }
 
 	  tooltip.htmlContainer = htmlContainer;
@@ -47782,7 +47005,7 @@
 
 	Tooltips.prototype._updateTooltipVisibilty = function(viewbox) {
 
-	  forEach$1(this._tooltips, function(tooltip) {
+	  forEach(this._tooltips, function(tooltip) {
 	    var show = tooltip.show,
 	        htmlContainer = tooltip.htmlContainer,
 	        visible = true;
@@ -47898,9 +47121,9 @@
 
 	    var labels = [];
 
-	    forEach$1(shapes, function(element) {
+	    forEach(shapes, function(element) {
 
-	      forEach$1(element.labels, function(label) {
+	      forEach(element.labels, function(label) {
 
 	        if (!label.hidden && context.shapes.indexOf(label) === -1) {
 	          labels.push(label);
@@ -47912,7 +47135,7 @@
 	      });
 	    });
 
-	    forEach$1(labels, function(label) {
+	    forEach(labels, function(label) {
 	      movePreview.makeDraggable(context, label, true);
 	    });
 
@@ -47928,8 +47151,8 @@
 
 	    // find labels that are not part of
 	    // move closure yet and add them
-	    forEach$1(enclosedElements, function(element) {
-	      forEach$1(element.labels, function(label) {
+	    forEach(enclosedElements, function(element) {
+	      forEach(element.labels, function(label) {
 
 	        if (!enclosedElements[label.id]) {
 	          enclosedLabels.push(label);
@@ -47963,7 +47186,7 @@
 
 	    // unset labelTarget
 	    if (labelTarget) {
-	      context.labelTargetIndex = indexOf$1(labelTarget.labels, shape);
+	      context.labelTargetIndex = indexOf(labelTarget.labels, shape);
 	      context.labelTarget = labelTarget;
 
 	      shape.labelTarget = null;
@@ -48068,10 +47291,10 @@
 	        shapes = context.shapes,
 	        attachers = getAttachers(shapes);
 
-	    forEach$1(attachers, function(attacher) {
+	    forEach(attachers, function(attacher) {
 	      movePreview.makeDraggable(context, attacher, true);
 
-	      forEach$1(attacher.labels, function(label) {
+	      forEach(attacher.labels, function(label) {
 	        movePreview.makeDraggable(context, label, true);
 	      });
 	    });
@@ -48109,7 +47332,7 @@
 	        shapes = context.shapes,
 	        attachers = getAttachers(shapes);
 
-	    forEach$1(attachers, function(attacher) {
+	    forEach(attachers, function(attacher) {
 	      closure.add(attacher, closure.topLevel[attacher.host.id]);
 	    });
 	  });
@@ -48140,7 +47363,7 @@
 	      });
 	    }
 
-	    forEach$1(attachers, function(attacher) {
+	    forEach(attachers, function(attacher) {
 	      modeling.updateAttachment(attacher, newHost);
 	    });
 	  });
@@ -48150,12 +47373,12 @@
 
 	    var shapes = e.context.shapes;
 
-	    forEach$1(shapes, function(shape) {
+	    forEach(shapes, function(shape) {
 
-	      forEach$1(shape.attachers, function(attacher) {
+	      forEach(shape.attachers, function(attacher) {
 
 	        // remove invalid outgoing connections
-	        forEach$1(attacher.outgoing.slice(), function(connection) {
+	        forEach(attacher.outgoing.slice(), function(connection) {
 	          var allowed = rules.allowed('connection.reconnect', {
 	            connection: connection,
 	            source: connection.source,
@@ -48168,7 +47391,7 @@
 	        });
 
 	        // remove invalid incoming connections
-	        forEach$1(attacher.incoming.slice(), function(connection) {
+	        forEach(attacher.incoming.slice(), function(connection) {
 	          var allowed = rules.allowed('connection.reconnect', {
 	            connection: connection,
 	            source: connection.source,
@@ -48217,7 +47440,7 @@
 	    // move attachers if new host has different size
 	    if (newShape.attachers.length) {
 
-	      forEach$1(newShape.attachers, function(attacher) {
+	      forEach(newShape.attachers, function(attacher) {
 	        var delta = getNewAttachShapeDelta(attacher, oldShape, newShape);
 	        modeling.moveShape(attacher, delta, attacher.parent);
 	      });
@@ -48238,12 +47461,12 @@
 	      return;
 	    }
 
-	    forEach$1(attachers, function(attacher) {
+	    forEach(attachers, function(attacher) {
 	      var delta = getNewAttachShapeDelta(attacher, oldBounds, newBounds);
 
 	      modeling.moveShape(attacher, delta, attacher.parent);
 
-	      forEach$1(attacher.labels, function(label) {
+	      forEach(attacher.labels, function(label) {
 	        modeling.moveShape(label, delta, label.parent);
 	      });
 	    });
@@ -48415,7 +47638,7 @@
 	  }, this);
 
 	  // Todo[ricardo]: add test cases
-	  forEach$1(events, function(event) {
+	  forEach(events, function(event) {
 	    eventsToRegister.push(event + '.ended');
 	    eventsToRegister.push(event + '.canceled');
 	  });
@@ -48507,11 +47730,11 @@
 	function getWaypointsUpdatingConnections(movingShapes, resizingShapes) {
 	  var waypointsUpdatingConnections = [];
 
-	  forEach$1(movingShapes.concat(resizingShapes), function(shape) {
+	  forEach(movingShapes.concat(resizingShapes), function(shape) {
 	    var incoming = shape.incoming,
 	        outgoing = shape.outgoing;
 
-	    forEach$1(incoming.concat(outgoing), function(connection) {
+	    forEach(incoming.concat(outgoing), function(connection) {
 	      var source = connection.source,
 	          target = connection.target;
 
@@ -48836,7 +48059,7 @@
 	  var movingShapes = [],
 	      resizingShapes = [];
 
-	  forEach$1(elements, function(element) {
+	  forEach(elements, function(element) {
 	    if (!element.parent || isConnection$7(element)) {
 	      return;
 	    }
@@ -48944,7 +48167,7 @@
 	      min,
 	      max;
 
-	  forEach$1(resizingShapes, function(resizingShape) {
+	  forEach(resizingShapes, function(resizingShape) {
 	    var resizingShapeBBox = asTRBL(resizingShape);
 
 	    // find children that are not moving or resizing
@@ -49067,7 +48290,7 @@
 	    styles, previewSupport) {
 
 	  function addPreviewGfx(collection, dragGroup) {
-	    forEach$1(collection, function(element) {
+	    forEach(collection, function(element) {
 	      previewSupport.addDragger(element, dragGroup);
 
 	      canvas.addMarker(element, MARKER_DRAGGING$1);
@@ -49085,21 +48308,21 @@
 	    };
 
 	    var crosshairGroup = create$1('g');
-	    attr$1(crosshairGroup, styles.cls('djs-crosshair-group', [ 'no-events' ]));
+	    attr(crosshairGroup, styles.cls('djs-crosshair-group', [ 'no-events' ]));
 
 	    append(space, crosshairGroup);
 
 	    // horizontal path
 	    var pathX = create$1('path');
-	    attr$1(pathX, 'd', orientation.x);
-	    classes$1(pathX).add('djs-crosshair');
+	    attr(pathX, 'd', orientation.x);
+	    classes(pathX).add('djs-crosshair');
 
 	    append(crosshairGroup, pathX);
 
 	    // vertical path
 	    var pathY = create$1('path');
-	    attr$1(pathY, 'd', orientation.y);
-	    classes$1(pathY).add('djs-crosshair');
+	    attr(pathY, 'd', orientation.y);
+	    classes(pathY).add('djs-crosshair');
 
 	    append(crosshairGroup, pathY);
 
@@ -49119,7 +48342,7 @@
 	        crosshairGroup = context.crosshairGroup;
 
 	    if (crosshairGroup) {
-	      remove$2(crosshairGroup);
+	      remove$1(crosshairGroup);
 	    }
 	  });
 
@@ -49140,17 +48363,17 @@
 	      var spaceLayer = canvas.getLayer('space');
 
 	      line = create$1('path');
-	      attr$1(line, 'd', 'M0,0 L0,0');
-	      classes$1(line).add('djs-crosshair');
+	      attr(line, 'd', 'M0,0 L0,0');
+	      classes(line).add('djs-crosshair');
 
 	      append(spaceLayer, line);
 
 	      context.line = line;
 
 	      var dragGroup = create$1('g');
-	      attr$1(dragGroup, styles.cls('djs-drag-group', [ 'no-events' ]));
+	      attr(dragGroup, styles.cls('djs-drag-group', [ 'no-events' ]));
 
-	      append(canvas.getActivePlane().layer, dragGroup);
+	      append(canvas.getActiveLayer(), dragGroup);
 
 	      // shapes
 	      addPreviewGfx(movingShapes, dragGroup);
@@ -49159,8 +48382,8 @@
 	      var movingConnections = context.movingConnections = elementRegistry.filter(function(element) {
 	        var sourceIsMoving = false;
 
-	        forEach$1(movingShapes, function(shape) {
-	          forEach$1(shape.outgoing, function(connection) {
+	        forEach(movingShapes, function(shape) {
+	          forEach(shape.outgoing, function(connection) {
 	            if (element === connection) {
 	              sourceIsMoving = true;
 	            }
@@ -49169,8 +48392,8 @@
 
 	        var targetIsMoving = false;
 
-	        forEach$1(movingShapes, function(shape) {
-	          forEach$1(shape.incoming, function(connection) {
+	        forEach(movingShapes, function(shape) {
+	          forEach(shape.incoming, function(connection) {
 	            if (element === connection) {
 	              targetIsMoving = true;
 	            }
@@ -49179,8 +48402,8 @@
 
 	        var sourceIsResizing = false;
 
-	        forEach$1(resizingShapes, function(shape) {
-	          forEach$1(shape.outgoing, function(connection) {
+	        forEach(resizingShapes, function(shape) {
+	          forEach(shape.outgoing, function(connection) {
 	            if (element === connection) {
 	              sourceIsResizing = true;
 	            }
@@ -49189,8 +48412,8 @@
 
 	        var targetIsResizing = false;
 
-	        forEach$1(resizingShapes, function(shape) {
-	          forEach$1(shape.incoming, function(connection) {
+	        forEach(resizingShapes, function(shape) {
+	          forEach(shape.incoming, function(connection) {
 	            if (element === connection) {
 	              targetIsResizing = true;
 	            }
@@ -49210,13 +48433,13 @@
 
 	    if (!context.frameGroup) {
 	      var frameGroup = create$1('g');
-	      attr$1(frameGroup, styles.cls('djs-frame-group', [ 'no-events' ]));
+	      attr(frameGroup, styles.cls('djs-frame-group', [ 'no-events' ]));
 
-	      append(canvas.getActivePlane().layer, frameGroup);
+	      append(canvas.getActiveLayer(), frameGroup);
 
 	      var frames = [];
 
-	      forEach$1(resizingShapes, function(shape) {
+	      forEach(resizingShapes, function(shape) {
 	        var frame = previewSupport.addFrame(shape, frameGroup);
 
 	        var initialBounds = frame.getBBox();
@@ -49238,7 +48461,7 @@
 	      y: 'M -10000, ' + event.y + ' L 10000, ' + event.y
 	    };
 
-	    attr$1(line, { d: orientation[ axis ] });
+	    attr(line, { d: orientation[ axis ] });
 
 	    var opposite = { x: 'y', y: 'x' };
 	    var delta = { x: event.dx, y: event.dy };
@@ -49248,33 +48471,33 @@
 	    translate$2(context.dragGroup, delta.x, delta.y);
 
 	    // update resize previews
-	    forEach$1(context.frames, function(frame) {
+	    forEach(context.frames, function(frame) {
 	      var element = frame.element,
 	          initialBounds = frame.initialBounds,
 	          width,
 	          height;
 
 	      if (context.direction === 'e') {
-	        attr$1(element, {
+	        attr(element, {
 	          width: max(initialBounds.width + delta.x, 5)
 	        });
 	      } else {
 	        width = max(initialBounds.width - delta.x, 5);
 
-	        attr$1(element, {
+	        attr(element, {
 	          width: width,
 	          x: initialBounds.x + initialBounds.width - width
 	        });
 	      }
 
 	      if (context.direction === 's') {
-	        attr$1(element, {
+	        attr(element, {
 	          height: max(initialBounds.height + delta.y, 5)
 	        });
 	      } else {
 	        height = max(initialBounds.height - delta.y, 5);
 
-	        attr$1(element, {
+	        attr(element, {
 	          height: height,
 	          y: initialBounds.y + initialBounds.height - height
 	        });
@@ -49295,26 +48518,26 @@
 	        frameGroup = context.frameGroup;
 
 	    // moving shapes
-	    forEach$1(movingShapes, function(shape) {
+	    forEach(movingShapes, function(shape) {
 	      canvas.removeMarker(shape, MARKER_DRAGGING$1);
 	    });
 
 	    // moving connections
-	    forEach$1(movingConnections, function(connection) {
+	    forEach(movingConnections, function(connection) {
 	      canvas.removeMarker(connection, MARKER_DRAGGING$1);
 	    });
 
 	    if (dragGroup) {
-	      remove$2(line);
-	      remove$2(dragGroup);
+	      remove$1(line);
+	      remove$1(dragGroup);
 	    }
 
-	    forEach$1(resizingShapes, function(shape) {
+	    forEach(resizingShapes, function(shape) {
 	      canvas.removeMarker(shape, MARKER_RESIZING);
 	    });
 
 	    if (frameGroup) {
-	      remove$2(frameGroup);
+	      remove$1(frameGroup);
 	    }
 	  });
 	}
@@ -49384,11 +48607,11 @@
 	  // bpmn:SequenceFlow -> SequenceFlow_ID
 	  var prefix;
 
-	  if (is$2(element, 'bpmn:Activity')) {
+	  if (is$1(element, 'bpmn:Activity')) {
 	    prefix = 'Activity';
-	  } else if (is$2(element, 'bpmn:Event')) {
+	  } else if (is$1(element, 'bpmn:Event')) {
 	    prefix = 'Event';
-	  } else if (is$2(element, 'bpmn:Gateway')) {
+	  } else if (is$1(element, 'bpmn:Gateway')) {
 	    prefix = 'Gateway';
 	  } else if (isAny(element, [ 'bpmn:SequenceFlow', 'bpmn:MessageFlow' ])) {
 	    prefix = 'Flow';
@@ -49420,11 +48643,10 @@
 	};
 
 
-	BpmnFactory.prototype.createDiShape = function(semantic, bounds, attrs) {
-
-	  return this.create('bpmndi:BPMNShape', assign$1({
+	BpmnFactory.prototype.createDiShape = function(semantic, attrs) {
+	  return this.create('bpmndi:BPMNShape', assign({
 	    bpmnElement: semantic,
-	    bounds: this.createDiBounds(bounds)
+	    bounds: this.createDiBounds()
 	  }, attrs));
 	};
 
@@ -49437,26 +48659,27 @@
 	BpmnFactory.prototype.createDiWaypoints = function(waypoints) {
 	  var self = this;
 
-	  return map$3(waypoints, function(pos) {
+	  return map$1(waypoints, function(pos) {
 	    return self.createDiWaypoint(pos);
 	  });
 	};
 
 	BpmnFactory.prototype.createDiWaypoint = function(point) {
-	  return this.create('dc:Point', pick$1(point, [ 'x', 'y' ]));
+	  return this.create('dc:Point', pick(point, [ 'x', 'y' ]));
 	};
 
 
-	BpmnFactory.prototype.createDiEdge = function(semantic, waypoints, attrs) {
-	  return this.create('bpmndi:BPMNEdge', assign$1({
-	    bpmnElement: semantic
+	BpmnFactory.prototype.createDiEdge = function(semantic, attrs) {
+	  return this.create('bpmndi:BPMNEdge', assign({
+	    bpmnElement: semantic,
+	    waypoints: this.createDiWaypoints([])
 	  }, attrs));
 	};
 
-	BpmnFactory.prototype.createDiPlane = function(semantic) {
-	  return this.create('bpmndi:BPMNPlane', {
+	BpmnFactory.prototype.createDiPlane = function(semantic, attrs) {
+	  return this.create('bpmndi:BPMNPlane', assign({
 	    bpmnElement: semantic
-	  });
+	  }, attrs));
 	};
 
 	/**
@@ -49554,8 +48777,8 @@
 	        oldRoot = context.oldRoot,
 	        children = oldRoot.children;
 
-	    forEach$2(children, function(child) {
-	      if (is$2(child, 'bpmn:BaseElement')) {
+	    forEach(children, function(child) {
+	      if (is$1(child, 'bpmn:BaseElement')) {
 	        self.updateParent(child);
 	      }
 	    });
@@ -49569,7 +48792,7 @@
 	  function updateBounds(e) {
 	    var shape = e.context.shape;
 
-	    if (!is$2(shape, 'bpmn:BaseElement')) {
+	    if (!is$1(shape, 'bpmn:BaseElement')) {
 	      return;
 	    }
 
@@ -49647,9 +48870,9 @@
 	        connection = context.connection,
 	        oldSource = context.oldSource,
 	        newSource = context.newSource,
-	        connectionBo = getBusinessObject$1(connection),
-	        oldSourceBo = getBusinessObject$1(oldSource),
-	        newSourceBo = getBusinessObject$1(newSource);
+	        connectionBo = getBusinessObject(connection),
+	        oldSourceBo = getBusinessObject(oldSource),
+	        newSourceBo = getBusinessObject(newSource);
 
 	    // remove condition from connection on reconnect to new source
 	    // if new source can NOT have condional sequence flow
@@ -49677,9 +48900,9 @@
 	        connection = context.connection,
 	        oldSource = context.oldSource,
 	        newSource = context.newSource,
-	        connectionBo = getBusinessObject$1(connection),
-	        oldSourceBo = getBusinessObject$1(oldSource),
-	        newSourceBo = getBusinessObject$1(newSource);
+	        connectionBo = getBusinessObject(connection),
+	        oldSourceBo = getBusinessObject(oldSource),
+	        newSourceBo = getBusinessObject(newSource);
 
 	    // add condition to connection on revert reconnect to new source
 	    if (context.oldConditionExpression) {
@@ -49703,7 +48926,7 @@
 	  this.reverted([ 'element.updateAttachment' ], ifBpmn(updateAttachment));
 	}
 
-	inherits$2(BpmnUpdater, CommandInterceptor);
+	inherits$1(BpmnUpdater, CommandInterceptor);
 
 	BpmnUpdater.$inject = [
 	  'eventBus',
@@ -49732,24 +48955,24 @@
 	  }
 
 	  // data stores in collaborations are handled separately by DataStoreBehavior
-	  if (is$2(element, 'bpmn:DataStoreReference') &&
+	  if (is$1(element, 'bpmn:DataStoreReference') &&
 	      element.parent &&
-	      is$2(element.parent, 'bpmn:Collaboration')) {
+	      is$1(element.parent, 'bpmn:Collaboration')) {
 	    return;
 	  }
 
 	  var parentShape = element.parent;
 
 	  var businessObject = element.businessObject,
-	      di = getDi$1(element),
+	      di = getDi(element),
 	      parentBusinessObject = parentShape && parentShape.businessObject,
-	      parentDi = getDi$1(parentShape);
+	      parentDi = getDi(parentShape);
 
-	  if (is$2(element, 'bpmn:FlowNode')) {
+	  if (is$1(element, 'bpmn:FlowNode')) {
 	    this.updateFlowNodeRefs(businessObject, parentBusinessObject, oldParent && oldParent.businessObject);
 	  }
 
-	  if (is$2(element, 'bpmn:DataOutputAssociation')) {
+	  if (is$1(element, 'bpmn:DataOutputAssociation')) {
 	    if (element.source) {
 	      parentBusinessObject = element.source.businessObject;
 	    } else {
@@ -49757,7 +48980,7 @@
 	    }
 	  }
 
-	  if (is$2(element, 'bpmn:DataInputAssociation')) {
+	  if (is$1(element, 'bpmn:DataInputAssociation')) {
 	    if (element.target) {
 	      parentBusinessObject = element.target.businessObject;
 	    } else {
@@ -49767,7 +48990,7 @@
 
 	  this.updateSemanticParent(businessObject, parentBusinessObject);
 
-	  if (is$2(element, 'bpmn:DataObjectReference') && businessObject.dataObjectRef) {
+	  if (is$1(element, 'bpmn:DataObjectReference') && businessObject.dataObjectRef) {
 	    this.updateSemanticParent(businessObject.dataObjectRef, parentBusinessObject);
 	  }
 
@@ -49777,7 +49000,7 @@
 
 	BpmnUpdater.prototype.updateBounds = function(shape) {
 
-	  var di = getDi$1(shape);
+	  var di = getDi(shape);
 
 	  var target = (shape instanceof Label) ? this._getLabel(di) : di;
 
@@ -49788,7 +49011,7 @@
 	    target.set('bounds', bounds);
 	  }
 
-	  assign$1(bounds, {
+	  assign(bounds, {
 	    x: shape.x,
 	    y: shape.y,
 	    width: shape.width,
@@ -49804,12 +49027,12 @@
 
 	  var oldRefs, newRefs;
 
-	  if (is$2 (oldContainment, 'bpmn:Lane')) {
+	  if (is$1 (oldContainment, 'bpmn:Lane')) {
 	    oldRefs = oldContainment.get('flowNodeRef');
-	    remove$1(oldRefs, businessObject);
+	    remove(oldRefs, businessObject);
 	  }
 
-	  if (is$2(newContainment, 'bpmn:Lane')) {
+	  if (is$1(newContainment, 'bpmn:Lane')) {
 	    newRefs = newContainment.get('flowNodeRef');
 	    add(newRefs, businessObject);
 	  }
@@ -49818,15 +49041,15 @@
 
 	// update existing sourceElement and targetElement di information
 	BpmnUpdater.prototype.updateDiConnection = function(connection, newSource, newTarget) {
-	  var connectionDi = getDi$1(connection),
-	      newSourceDi = getDi$1(newSource),
-	      newTargetDi = getDi$1(newTarget);
+	  var connectionDi = getDi(connection),
+	      newSourceDi = getDi(newSource),
+	      newTargetDi = getDi(newTarget);
 
-	  if (connectionDi.sourceElement && connectionDi.sourceElement.bpmnElement !== getBusinessObject$1(newSource)) {
+	  if (connectionDi.sourceElement && connectionDi.sourceElement.bpmnElement !== getBusinessObject(newSource)) {
 	    connectionDi.sourceElement = newSource && newSourceDi;
 	  }
 
-	  if (connectionDi.targetElement && connectionDi.targetElement.bpmnElement !== getBusinessObject$1(newTarget)) {
+	  if (connectionDi.targetElement && connectionDi.targetElement.bpmnElement !== getBusinessObject(newTarget)) {
 	    connectionDi.targetElement = newTarget && newTargetDi;
 	  }
 
@@ -49835,16 +49058,11 @@
 
 	BpmnUpdater.prototype.updateDiParent = function(di, parentDi) {
 
-	  if (parentDi && !is$2(parentDi, 'bpmndi:BPMNPlane')) {
+	  if (parentDi && !is$1(parentDi, 'bpmndi:BPMNPlane')) {
 	    parentDi = parentDi.$parent;
 	  }
 
 	  if (di.$parent === parentDi) {
-	    return;
-	  }
-
-	  // Cover the case where di.$parent === undefined and parentDi === null
-	  if (!parentDi && !di.$parent) {
 	    return;
 	  }
 
@@ -49854,13 +49072,13 @@
 	    planeElements.push(di);
 	    di.$parent = parentDi;
 	  } else {
-	    remove$1(planeElements, di);
+	    remove(planeElements, di);
 	    di.$parent = null;
 	  }
 	};
 
 	function getDefinitions(element) {
-	  while (element && !is$2(element, 'bpmn:Definitions')) {
+	  while (element && !is$1(element, 'bpmn:Definitions')) {
 	    element = element.$parent;
 	  }
 
@@ -49872,7 +49090,7 @@
 	  var laneSet, laneSets;
 
 	  // bpmn:Lane
-	  if (is$2(container, 'bpmn:Lane')) {
+	  if (is$1(container, 'bpmn:Lane')) {
 	    laneSet = container.childLaneSet;
 
 	    if (!laneSet) {
@@ -49885,7 +49103,7 @@
 	  }
 
 	  // bpmn:Participant
-	  if (is$2(container, 'bpmn:Participant')) {
+	  if (is$1(container, 'bpmn:Participant')) {
 	    container = container.processRef;
 	  }
 
@@ -49911,9 +49129,9 @@
 	    return;
 	  }
 
-	  if (is$2(businessObject, 'bpmn:DataInput') || is$2(businessObject, 'bpmn:DataOutput')) {
+	  if (is$1(businessObject, 'bpmn:DataInput') || is$1(businessObject, 'bpmn:DataOutput')) {
 
-	    if (is$2(newParent, 'bpmn:Participant') && 'processRef' in newParent) {
+	    if (is$1(newParent, 'bpmn:Participant') && 'processRef' in newParent) {
 	      newParent = newParent.processRef;
 	    }
 
@@ -49923,7 +49141,7 @@
 	    }
 	  }
 
-	  if (is$2(businessObject, 'bpmn:Lane')) {
+	  if (is$1(businessObject, 'bpmn:Lane')) {
 
 	    if (newParent) {
 	      newParent = this.getLaneSet(newParent);
@@ -49932,20 +49150,20 @@
 	    containment = 'lanes';
 	  } else
 
-	  if (is$2(businessObject, 'bpmn:FlowElement')) {
+	  if (is$1(businessObject, 'bpmn:FlowElement')) {
 
 	    if (newParent) {
 
-	      if (is$2(newParent, 'bpmn:Participant')) {
+	      if (is$1(newParent, 'bpmn:Participant')) {
 	        newParent = newParent.processRef;
 	      } else
 
-	      if (is$2(newParent, 'bpmn:Lane')) {
+	      if (is$1(newParent, 'bpmn:Lane')) {
 	        do {
 
 	          // unwrap Lane -> LaneSet -> (Lane | FlowElementsContainer)
 	          newParent = newParent.$parent.$parent;
-	        } while (is$2(newParent, 'bpmn:Lane'));
+	        } while (is$1(newParent, 'bpmn:Lane'));
 
 	      }
 	    }
@@ -49954,14 +49172,14 @@
 
 	  } else
 
-	  if (is$2(businessObject, 'bpmn:Artifact')) {
+	  if (is$1(businessObject, 'bpmn:Artifact')) {
 
 	    while (newParent &&
-	           !is$2(newParent, 'bpmn:Process') &&
-	           !is$2(newParent, 'bpmn:SubProcess') &&
-	           !is$2(newParent, 'bpmn:Collaboration')) {
+	           !is$1(newParent, 'bpmn:Process') &&
+	           !is$1(newParent, 'bpmn:SubProcess') &&
+	           !is$1(newParent, 'bpmn:Collaboration')) {
 
-	      if (is$2(newParent, 'bpmn:Participant')) {
+	      if (is$1(newParent, 'bpmn:Participant')) {
 	        newParent = newParent.processRef;
 	        break;
 	      } else {
@@ -49972,12 +49190,12 @@
 	    containment = 'artifacts';
 	  } else
 
-	  if (is$2(businessObject, 'bpmn:MessageFlow')) {
+	  if (is$1(businessObject, 'bpmn:MessageFlow')) {
 	    containment = 'messageFlows';
 
 	  } else
 
-	  if (is$2(businessObject, 'bpmn:Participant')) {
+	  if (is$1(businessObject, 'bpmn:Participant')) {
 	    containment = 'participants';
 
 	    // make sure the participants process is properly attached / detached
@@ -49990,7 +49208,7 @@
 	      definitions = getDefinitions(businessObject.$parent || newParent);
 
 	      if (businessObject.$parent) {
-	        remove$1(definitions.get('rootElements'), process);
+	        remove(definitions.get('rootElements'), process);
 	        process.$parent = null;
 	      }
 
@@ -50001,11 +49219,11 @@
 	    }
 	  } else
 
-	  if (is$2(businessObject, 'bpmn:DataOutputAssociation')) {
+	  if (is$1(businessObject, 'bpmn:DataOutputAssociation')) {
 	    containment = 'dataOutputAssociations';
 	  } else
 
-	  if (is$2(businessObject, 'bpmn:DataInputAssociation')) {
+	  if (is$1(businessObject, 'bpmn:DataInputAssociation')) {
 	    containment = 'dataInputAssociations';
 	  }
 
@@ -50025,7 +49243,7 @@
 
 	    // remove from old parent
 	    children = businessObject.$parent.get(containment);
-	    remove$1(children, businessObject);
+	    remove(children, businessObject);
 	  }
 
 	  if (!newParent) {
@@ -50041,7 +49259,7 @@
 	  if (visualParent) {
 	    var diChildren = visualParent.get(containment);
 
-	    remove$1(children, businessObject);
+	    remove(children, businessObject);
 
 	    if (newParent) {
 
@@ -50057,7 +49275,7 @@
 
 
 	BpmnUpdater.prototype.updateConnectionWaypoints = function(connection) {
-	  var di = getDi$1(connection);
+	  var di = getDi(connection);
 
 	  di.set('waypoint', this._bpmnFactory.createDiWaypoints(connection.waypoints));
 	};
@@ -50065,20 +49283,20 @@
 
 	BpmnUpdater.prototype.updateConnection = function(context) {
 	  var connection = context.connection,
-	      businessObject = getBusinessObject$1(connection),
+	      businessObject = getBusinessObject(connection),
 	      newSource = connection.source,
-	      newSourceBo = getBusinessObject$1(newSource),
+	      newSourceBo = getBusinessObject(newSource),
 	      newTarget = connection.target,
-	      newTargetBo = getBusinessObject$1(connection.target),
+	      newTargetBo = getBusinessObject(connection.target),
 	      visualParent;
 
-	  if (!is$2(businessObject, 'bpmn:DataAssociation')) {
+	  if (!is$1(businessObject, 'bpmn:DataAssociation')) {
 
-	    var inverseSet = is$2(businessObject, 'bpmn:SequenceFlow');
+	    var inverseSet = is$1(businessObject, 'bpmn:SequenceFlow');
 
 	    if (businessObject.sourceRef !== newSourceBo) {
 	      if (inverseSet) {
-	        remove$1(businessObject.sourceRef && businessObject.sourceRef.get('outgoing'), businessObject);
+	        remove(businessObject.sourceRef && businessObject.sourceRef.get('outgoing'), businessObject);
 
 	        if (newSourceBo && newSourceBo.get('outgoing')) {
 	          newSourceBo.get('outgoing').push(businessObject);
@@ -50090,7 +49308,7 @@
 
 	    if (businessObject.targetRef !== newTargetBo) {
 	      if (inverseSet) {
-	        remove$1(businessObject.targetRef && businessObject.targetRef.get('incoming'), businessObject);
+	        remove(businessObject.targetRef && businessObject.targetRef.get('incoming'), businessObject);
 
 	        if (newTargetBo && newTargetBo.get('incoming')) {
 	          newTargetBo.get('incoming').push(businessObject);
@@ -50101,7 +49319,7 @@
 	    }
 	  } else
 
-	  if (is$2(businessObject, 'bpmn:DataInputAssociation')) {
+	  if (is$1(businessObject, 'bpmn:DataInputAssociation')) {
 
 	    // handle obnoxious isMsome sourceRef
 	    businessObject.get('sourceRef')[0] = newSourceBo;
@@ -50111,7 +49329,7 @@
 	    this.updateSemanticParent(businessObject, newTargetBo, visualParent);
 	  } else
 
-	  if (is$2(businessObject, 'bpmn:DataOutputAssociation')) {
+	  if (is$1(businessObject, 'bpmn:DataOutputAssociation')) {
 	    visualParent = context.parent || context.newParent || newSourceBo;
 
 	    this.updateSemanticParent(businessObject, newSourceBo, visualParent);
@@ -50151,7 +49369,7 @@
 	    var context = event.context,
 	        element = context.shape || context.connection;
 
-	    if (is$2(element, 'bpmn:BaseElement')) {
+	    if (is$1(element, 'bpmn:BaseElement')) {
 	      fn(event);
 	    }
 	  };
@@ -50168,7 +49386,7 @@
 	  this._translate = translate;
 	}
 
-	inherits$2(ElementFactory, ElementFactory$1);
+	inherits$1(ElementFactory, ElementFactory$1);
 
 	ElementFactory.$inject = [
 	  'bpmnFactory',
@@ -50185,7 +49403,7 @@
 	  // and wired via attrs
 	  if (elementType === 'label') {
 	    var di = attrs.di || this._bpmnFactory.createDiLabel();
-	    return this.baseCreate(elementType, assign$1({ type: 'label', di: di }, DEFAULT_LABEL_SIZE, attrs));
+	    return this.baseCreate(elementType, assign({ type: 'label', di: di }, DEFAULT_LABEL_SIZE, attrs));
 	  }
 
 	  return this.createBpmnElement(elementType, attrs);
@@ -50206,27 +49424,28 @@
 	    }
 
 	    businessObject = this._bpmnFactory.create(attrs.type);
+
+	    ensureCompatDiRef(businessObject);
 	  }
 
-	  if (!di) {
+	  if (!isModdleDi(di)) {
+	    var diAttrs = assign(
+	      di || {},
+	      { id: businessObject.id + '_di' }
+	    );
+
 	    if (elementType === 'root') {
-	      di = this._bpmnFactory.createDiPlane(businessObject, [], {
-	        id: businessObject.id + '_di'
-	      });
+	      di = this._bpmnFactory.createDiPlane(businessObject, diAttrs);
 	    } else
 	    if (elementType === 'connection') {
-	      di = this._bpmnFactory.createDiEdge(businessObject, [], {
-	        id: businessObject.id + '_di'
-	      });
+	      di = this._bpmnFactory.createDiEdge(businessObject, diAttrs);
 	    } else {
-	      di = this._bpmnFactory.createDiShape(businessObject, {}, {
-	        id: businessObject.id + '_di'
-	      });
+	      di = this._bpmnFactory.createDiShape(businessObject, diAttrs);
 	    }
 	  }
 
-	  if (is$2(businessObject, 'bpmn:Group')) {
-	    attrs = assign$1({
+	  if (is$1(businessObject, 'bpmn:Group')) {
+	    attrs = assign({
 	      isFrame: true
 	    }, attrs);
 	  }
@@ -50242,7 +49461,7 @@
 	    applyAttribute(di, attrs, 'isExpanded');
 	  }
 
-	  if (is$2(businessObject, 'bpmn:ExclusiveGateway')) {
+	  if (is$1(businessObject, 'bpmn:ExclusiveGateway')) {
 	    di.isMarkerVisible = true;
 	  }
 
@@ -50267,11 +49486,12 @@
 
 	  size = this.getDefaultSize(businessObject, di);
 
-	  attrs = assign$1({
-	    businessObject: businessObject,
-	    di: di,
+	  attrs = assign({
 	    id: businessObject.id
-	  }, size, attrs);
+	  }, size, attrs, {
+	    businessObject: businessObject,
+	    di: di
+	  });
 
 	  return this.baseCreate(elementType, attrs);
 	};
@@ -50279,10 +49499,10 @@
 
 	ElementFactory.prototype.getDefaultSize = function(element, di) {
 
-	  var bo = getBusinessObject$1(element);
-	  di = di || getDi$1(element);
+	  var bo = getBusinessObject(element);
+	  di = di || getDi(element);
 
-	  if (is$2(bo, 'bpmn:SubProcess')) {
+	  if (is$1(bo, 'bpmn:SubProcess')) {
 	    if (isExpanded(bo, di)) {
 	      return { width: 350, height: 200 };
 	    } else {
@@ -50290,19 +49510,19 @@
 	    }
 	  }
 
-	  if (is$2(bo, 'bpmn:Task')) {
+	  if (is$1(bo, 'bpmn:Task')) {
 	    return { width: 100, height: 80 };
 	  }
 
-	  if (is$2(bo, 'bpmn:Gateway')) {
+	  if (is$1(bo, 'bpmn:Gateway')) {
 	    return { width: 50, height: 50 };
 	  }
 
-	  if (is$2(bo, 'bpmn:Event')) {
+	  if (is$1(bo, 'bpmn:Event')) {
 	    return { width: 36, height: 36 };
 	  }
 
-	  if (is$2(bo, 'bpmn:Participant')) {
+	  if (is$1(bo, 'bpmn:Participant')) {
 	    if (isExpanded(bo, di)) {
 	      return { width: 600, height: 250 };
 	    } else {
@@ -50310,23 +49530,23 @@
 	    }
 	  }
 
-	  if (is$2(bo, 'bpmn:Lane')) {
+	  if (is$1(bo, 'bpmn:Lane')) {
 	    return { width: 400, height: 100 };
 	  }
 
-	  if (is$2(bo, 'bpmn:DataObjectReference')) {
+	  if (is$1(bo, 'bpmn:DataObjectReference')) {
 	    return { width: 36, height: 50 };
 	  }
 
-	  if (is$2(bo, 'bpmn:DataStoreReference')) {
+	  if (is$1(bo, 'bpmn:DataStoreReference')) {
 	    return { width: 50, height: 50 };
 	  }
 
-	  if (is$2(bo, 'bpmn:TextAnnotation')) {
+	  if (is$1(bo, 'bpmn:TextAnnotation')) {
 	    return { width: 100, height: 30 };
 	  }
 
-	  if (is$2(bo, 'bpmn:Group')) {
+	  if (is$1(bo, 'bpmn:Group')) {
 	    return { width: 300, height: 300 };
 	  }
 
@@ -50343,11 +49563,11 @@
 	 */
 	ElementFactory.prototype.createParticipantShape = function(attrs) {
 
-	  if (!isObject$1(attrs)) {
+	  if (!isObject(attrs)) {
 	    attrs = { isExpanded: attrs };
 	  }
 
-	  attrs = assign$1({ type: 'bpmn:Participant' }, attrs || {});
+	  attrs = assign({ type: 'bpmn:Participant' }, attrs || {});
 
 	  // participants are expanded by default
 	  if (attrs.isExpanded !== false) {
@@ -50370,7 +49590,7 @@
 	 */
 	function applyAttributes(element, attrs, attributeNames) {
 
-	  forEach$2(attributeNames, function(property) {
+	  forEach(attributeNames, function(property) {
 	    if (attrs[property] !== undefined) {
 	      applyAttribute(element, attrs, property);
 	    }
@@ -50389,6 +49609,16 @@
 	  element[attributeName] = attrs[attributeName];
 
 	  delete attrs[attributeName];
+	}
+
+
+	function isModdleDi(element) {
+	  return isAny(element, [
+	    'bpmndi:BPMNShape',
+	    'bpmndi:BPMNEdge',
+	    'bpmndi:BPMNDiagram',
+	    'bpmndi:BPMNPlane',
+	  ]);
 	}
 
 	/**
@@ -50410,7 +49640,7 @@
 	      alignment = context.alignment;
 
 
-	  forEach$1(elements, function(element) {
+	  forEach(elements, function(element) {
 	    var delta = {
 	      x: 0,
 	      y: 0
@@ -50592,7 +49822,7 @@
 	  var modeling = this._modeling;
 
 	  // make sure each element has x and y
-	  forEach$1(elements, function(element) {
+	  forEach(elements, function(element) {
 	    if (!isNumber(element.x)) {
 	      element.x = 0;
 	    }
@@ -50605,7 +49835,7 @@
 	  var bbox = getBBox(elements);
 
 	  // center elements around position
-	  forEach$1(elements, function(element) {
+	  forEach(elements, function(element) {
 	    if (isConnection$5(element)) {
 	      element.waypoints = map$1(element.waypoints, function(waypoint) {
 	        return {
@@ -50625,7 +49855,7 @@
 
 	  var cache = {};
 
-	  forEach$1(elements, function(element) {
+	  forEach(elements, function(element) {
 	    if (isConnection$5(element)) {
 	      cache[ element.id ] = isNumber(parentIndex) ?
 	        modeling.createConnection(
@@ -50834,7 +50064,7 @@
 	  context.parent = parent;
 
 	  // remember containment
-	  context.parentIndex = indexOf$1(parent.children, connection);
+	  context.parentIndex = indexOf(parent.children, connection);
 
 	  context.source = connection.source;
 	  context.target = connection.target;
@@ -50884,7 +50114,7 @@
 	      elementRegistry = this._elementRegistry,
 	      elements = context.elements;
 
-	  forEach$1(elements, function(element) {
+	  forEach(elements, function(element) {
 
 	    // element may have been removed with previous
 	    // remove operations already (e.g. in case of nesting)
@@ -50956,7 +50186,7 @@
 	  context.oldParent = oldParent;
 
 	  // remove containment
-	  context.oldParentIndex = indexOf$1(oldParent.children, shape);
+	  context.oldParentIndex = indexOf(oldParent.children, shape);
 
 	  // remove shape
 	  canvas.removeShape(shape);
@@ -51047,7 +50277,7 @@
 	      spaceInBetween,
 	      groupsSize = 0; // the size of each range
 
-	  forEach$1(groups, function(group, idx) {
+	  forEach(groups, function(group, idx) {
 	    var sortedElements,
 	        refElem,
 	        refCenter;
@@ -51074,7 +50304,7 @@
 	    // wanna update the ranges after the shapes have been centered
 	    group.range = null;
 
-	    forEach$1(sortedElements, function(element) {
+	    forEach(sortedElements, function(element) {
 
 	      centerElement(refCenter, element);
 
@@ -51104,7 +50334,7 @@
 	    return;
 	  }
 
-	  forEach$1(groups, function(group, groupIdx) {
+	  forEach(groups, function(group, groupIdx) {
 	    var delta = {},
 	        prevGroup;
 
@@ -51116,7 +50346,7 @@
 
 	    group.range.max = 0;
 
-	    forEach$1(group.elements, function(element, idx) {
+	    forEach(group.elements, function(element, idx) {
 	      delta[OFF_AXIS[axis]] = 0;
 	      delta[axis] = (prevGroup.range.max - element[axis]) + margin;
 
@@ -51191,7 +50421,7 @@
 
 	  // save old parent in context
 	  context.oldParent = oldParent;
-	  context.oldParentIndex = remove$1(oldParent.children, connection);
+	  context.oldParentIndex = remove(oldParent.children, connection);
 
 	  // add to new parent at position
 	  add(newParent.children, connection, newParentIndex);
@@ -51200,7 +50430,7 @@
 	  connection.parent = newParent;
 
 	  // update waypoint positions
-	  forEach$1(connection.waypoints, function(p) {
+	  forEach(connection.waypoints, function(p) {
 	    p.x += delta.x;
 	    p.y += delta.y;
 
@@ -51222,7 +50452,7 @@
 	      delta = context.delta;
 
 	  // remove from newParent
-	  remove$1(newParent.children, connection);
+	  remove(newParent.children, connection);
 
 	  // restore previous location in old parent
 	  add(oldParent.children, connection, oldParentIndex);
@@ -51231,7 +50461,7 @@
 	  connection.parent = oldParent;
 
 	  // revert to old waypoint positions
-	  forEach$1(connection.waypoints, function(p) {
+	  forEach(connection.waypoints, function(p) {
 	    p.x -= delta.x;
 	    p.y -= delta.y;
 
@@ -51322,7 +50552,7 @@
 	  }
 
 	  // move all shapes
-	  forEach$1(allShapes, function(shape) {
+	  forEach(allShapes, function(shape) {
 
 	    // move the element according to the given delta
 	    modeling.moveShape(shape, delta, topLevel[shape.id] && !keepParent && newParent, {
@@ -51332,7 +50562,7 @@
 	  });
 
 	  // move all child connections / layout external connections
-	  forEach$1(allConnections, function(c) {
+	  forEach(allConnections, function(c) {
 
 	    var sourceMoved = !!allShapes[c.source.id],
 	        targetMoved = !!allShapes[c.target.id];
@@ -51414,7 +50644,7 @@
 
 	  // save old parent in context
 	  context.oldParent = oldParent;
-	  context.oldParentIndex = remove$1(oldParent.children, shape);
+	  context.oldParentIndex = remove(oldParent.children, shape);
 
 	  // add to new parent at position
 	  add(newParent.children, shape, newParentIndex);
@@ -51439,13 +50669,13 @@
 
 	  if (hints.layout !== false) {
 
-	    forEach$1(shape.incoming, function(c) {
+	    forEach(shape.incoming, function(c) {
 	      modeling.layoutConnection(c, {
 	        connectionEnd: getMovedTargetAnchor(c, shape, delta)
 	      });
 	    });
 
-	    forEach$1(shape.outgoing, function(c) {
+	    forEach(shape.outgoing, function(c) {
 	      modeling.layoutConnection(c, {
 	        connectionStart: getMovedSourceAnchor(c, shape, delta)
 	      });
@@ -51508,7 +50738,7 @@
 	    throw new Error('newSource or newTarget required');
 	  }
 
-	  if (isArray$1(dockingOrPoints)) {
+	  if (isArray$2(dockingOrPoints)) {
 	    context.oldWaypoints = connection.waypoints;
 	    connection.waypoints = dockingOrPoints;
 	  }
@@ -51549,12 +50779,12 @@
 
 	  if (newSource && (!newTarget || hints.docking === 'source')) {
 	    layoutConnectionHints.connectionStart = layoutConnectionHints.connectionStart
-	      || getDocking(isArray$1(dockingOrPoints) ? dockingOrPoints[ 0 ] : dockingOrPoints);
+	      || getDocking(isArray$2(dockingOrPoints) ? dockingOrPoints[ 0 ] : dockingOrPoints);
 	  }
 
 	  if (newTarget && (!newSource || hints.docking === 'target')) {
 	    layoutConnectionHints.connectionEnd = layoutConnectionHints.connectionEnd
-	      || getDocking(isArray$1(dockingOrPoints) ? dockingOrPoints[ dockingOrPoints.length - 1 ] : dockingOrPoints);
+	      || getDocking(isArray$2(dockingOrPoints) ? dockingOrPoints[ dockingOrPoints.length - 1 ] : dockingOrPoints);
 	  }
 
 	  if (hints.newWaypoints) {
@@ -51675,7 +50905,7 @@
 	  var incoming = oldShape.incoming.slice(),
 	      outgoing = oldShape.outgoing.slice();
 
-	  forEach$1(incoming, function(connection) {
+	  forEach(incoming, function(connection) {
 	    var source = connection.source,
 	        allowed = canReconnect(source, newShape, connection);
 
@@ -51688,7 +50918,7 @@
 	    }
 	  });
 
-	  forEach$1(outgoing, function(connection) {
+	  forEach(outgoing, function(connection) {
 	    var target = connection.target,
 	        allowed = canReconnect(newShape, target, connection);
 
@@ -51804,13 +51034,13 @@
 	    return;
 	  }
 
-	  forEach$1(shape.incoming, function(c) {
+	  forEach(shape.incoming, function(c) {
 	    modeling.layoutConnection(c, {
 	      connectionEnd: getResizedTargetAnchor(c, shape, oldBounds)
 	    });
 	  });
 
-	  forEach$1(shape.outgoing, function(c) {
+	  forEach(shape.outgoing, function(c) {
 	    modeling.layoutConnection(c, {
 	      connectionStart: getResizedSourceAnchor(c, shape, oldBounds)
 	    });
@@ -51855,7 +51085,7 @@
 	  this.moveShapes(movingShapes, delta);
 
 	  // (2a) save old bounds of resized shapes
-	  forEach$1(resizingShapes, function(shape) {
+	  forEach(resizingShapes, function(shape) {
 	    oldBounds[shape.id] = getBounds(shape);
 	  });
 
@@ -51880,7 +51110,7 @@
 	SpaceToolHandler.prototype.moveShapes = function(shapes, delta) {
 	  var self = this;
 
-	  forEach$1(shapes, function(element) {
+	  forEach(shapes, function(element) {
 	    self._modeling.moveShape(element, delta, null, {
 	      autoResize: false,
 	      layout: false,
@@ -51892,7 +51122,7 @@
 	SpaceToolHandler.prototype.resizeShapes = function(shapes, delta, direction) {
 	  var self = this;
 
-	  forEach$1(shapes, function(shape) {
+	  forEach(shapes, function(shape) {
 	    var newBounds = resizeBounds(shape, direction, delta);
 
 	    self._modeling.resizeShape(shape, newBounds, null, {
@@ -51920,7 +51150,7 @@
 	  var self = this,
 	      affectedShapes = movingShapes.concat(resizingShapes);
 
-	  forEach$1(connections, function(connection) {
+	  forEach(connections, function(connection) {
 	    var source = connection.source,
 	        target = connection.target,
 	        waypoints = copyWaypoints(connection),
@@ -52090,7 +51320,7 @@
 
 	  var result = {};
 
-	  forEach$1(elements, function(element) {
+	  forEach(elements, function(element) {
 	    result[element.id] = element.hidden;
 
 	    if (element.children) {
@@ -52104,7 +51334,7 @@
 
 	function setHiddenRecursive(elements, newHidden) {
 	  var result = [];
-	  forEach$1(elements, function(element) {
+	  forEach(elements, function(element) {
 	    element.hidden = newHidden;
 
 	    result = result.concat(element);
@@ -52119,7 +51349,7 @@
 
 	function restoreVisibilityRecursive(elements, lastState) {
 	  var result = [];
-	  forEach$1(elements, function(element) {
+	  forEach(elements, function(element) {
 	    element.hidden = lastState[element.id];
 
 	    result = result.concat(element);
@@ -52182,7 +51412,7 @@
 	function removeAttacher(host, attacher) {
 
 	  // remove attacher from host
-	  return remove$1(host && host.attachers, attacher);
+	  return remove(host && host.attachers, attacher);
 	}
 
 	function addAttacher(host, attacher, idx) {
@@ -52288,7 +51518,7 @@
 	 * @param {CommandStack} commandStack
 	 */
 	Modeling$1.prototype.registerHandlers = function(commandStack) {
-	  forEach$1(this.getHandlers(), function(handler, id) {
+	  forEach(this.getHandlers(), function(handler, id) {
 	    commandStack.registerHandler(id, handler);
 	  });
 	};
@@ -52488,7 +51718,7 @@
 
 
 	Modeling$1.prototype.createElements = function(elements, position, parent, parentIndex, hints) {
-	  if (!isArray$1(elements)) {
+	  if (!isArray$2(elements)) {
 	    elements = [ elements ];
 	  }
 
@@ -52713,25 +51943,11 @@
 	  this._commandStack.execute('shape.toggleCollapse', context);
 	};
 
-	var require$$0 = /*@__PURE__*/getAugmentedNamespace(index_esm);
-
-	var require$$1 = /*@__PURE__*/getAugmentedNamespace(ModelUtil);
-
-	var reduce = require$$0.reduce,
-	    keys = require$$0.keys,
-	    forEach = require$$0.forEach,
-	    is = require$$1.is,
-	    getBusinessObject = require$$1.getBusinessObject;
-
-
 	function UpdateModdlePropertiesHandler(elementRegistry) {
 	  this._elementRegistry = elementRegistry;
 	}
 
 	UpdateModdlePropertiesHandler.$inject = ['elementRegistry'];
-
-	var UpdateModdlePropertiesHandler_1 = UpdateModdlePropertiesHandler;
-
 
 	UpdateModdlePropertiesHandler.prototype.execute = function(context) {
 
@@ -52775,7 +51991,7 @@
 
 	  var elementRegistry = this._elementRegistry;
 
-	  if (is(moddleElement, 'bpmn:DataObject')) {
+	  if (is$1(moddleElement, 'bpmn:DataObject')) {
 	    return getAllDataObjectReferences(moddleElement, elementRegistry);
 	  }
 
@@ -52801,7 +52017,7 @@
 	function getAllDataObjectReferences(dataObject, elementRegistry) {
 	  return elementRegistry.filter(function(element) {
 	    return (
-	      is(element, 'bpmn:DataObjectReference') &&
+	      is$1(element, 'bpmn:DataObjectReference') &&
 	          getBusinessObject(element).dataObjectRef === dataObject
 	    );
 	  });
@@ -52910,7 +52126,7 @@
 	  var element = context.element,
 	      label = element.label;
 
-	  var text = label && getBusinessObject$1(label).name;
+	  var text = label && getBusinessObject(label).name;
 
 	  if (!text) {
 	    return;
@@ -52960,18 +52176,18 @@
 
 
 	function getProperties(element, properties) {
-	  var propertyNames = keys$2(properties),
+	  var propertyNames = keys(properties),
 	      businessObject = element.businessObject,
-	      di = getDi$1(element);
+	      di = getDi(element);
 
-	  return reduce$2(propertyNames, function(result, key) {
+	  return reduce(propertyNames, function(result, key) {
 
 	    // handle DI separately
 	    if (key !== DI) {
 	      result[key] = businessObject.get(key);
 
 	    } else {
-	      result[key] = getDiProperties(di, keys$2(properties.di));
+	      result[key] = getDiProperties(di, keys(properties.di));
 	    }
 
 	    return result;
@@ -52980,7 +52196,7 @@
 
 
 	function getDiProperties(di, propertyNames) {
-	  return reduce$2(propertyNames, function(result, key) {
+	  return reduce(propertyNames, function(result, key) {
 	    result[key] = di && di.get(key);
 
 	    return result;
@@ -52990,9 +52206,9 @@
 
 	function setProperties(element, properties) {
 	  var businessObject = element.businessObject,
-	      di = getDi$1(element);
+	      di = getDi(element);
 
-	  forEach$2(properties, function(value, key) {
+	  forEach(properties, function(value, key) {
 
 	    if (key !== DI) {
 	      businessObject.set(key, value);
@@ -53008,7 +52224,7 @@
 
 
 	function setDiProperties(di, properties) {
-	  forEach$2(properties, function(value, key) {
+	  forEach(properties, function(value, key) {
 	    di.set(key, value);
 	  });
 	}
@@ -53027,11 +52243,11 @@
 	 */
 	function unwrapBusinessObjects(properties) {
 
-	  var unwrappedProps = assign$1({}, properties);
+	  var unwrappedProps = assign({}, properties);
 
 	  referencePropertyNames.forEach(function(name) {
 	    if (name in properties) {
-	      unwrappedProps[name] = getBusinessObject$1(unwrappedProps[name]);
+	      unwrappedProps[name] = getBusinessObject(unwrappedProps[name]);
 	    }
 	  });
 
@@ -53058,7 +52274,7 @@
 	      oldRoot = canvas.getRootElement(),
 	      oldRootBusinessObject = oldRoot.businessObject,
 	      bpmnDefinitions = oldRootBusinessObject.$parent,
-	      diPlane = getDi$1(oldRoot);
+	      diPlane = getDi(oldRoot);
 
 	  // (1) replace process old <> new root
 	  canvas.setRootElement(newRoot, true);
@@ -53067,7 +52283,7 @@
 	  add(bpmnDefinitions.rootElements, newRootBusinessObject);
 	  newRootBusinessObject.$parent = bpmnDefinitions;
 
-	  remove$1(bpmnDefinitions.rootElements, oldRootBusinessObject);
+	  remove(bpmnDefinitions.rootElements, oldRootBusinessObject);
 	  oldRootBusinessObject.$parent = null;
 
 	  // (3) wire di
@@ -53092,13 +52308,13 @@
 	      oldRoot = context.oldRoot,
 	      oldRootBusinessObject = oldRoot.businessObject,
 	      bpmnDefinitions = newRootBusinessObject.$parent,
-	      diPlane = getDi$1(newRoot);
+	      diPlane = getDi(newRoot);
 
 	  // (1) replace process old <> new root
 	  canvas.setRootElement(oldRoot, true);
 
 	  // (2) update root elements
-	  remove$1(bpmnDefinitions.rootElements, newRootBusinessObject);
+	  remove(bpmnDefinitions.rootElements, newRootBusinessObject);
 	  newRootBusinessObject.$parent = null;
 
 	  add(bpmnDefinitions.rootElements, oldRootBusinessObject);
@@ -53172,7 +52388,7 @@
 	      return [];
 	    }
 
-	    return filter$1(element.children, function(c) {
+	    return filter(element.children, function(c) {
 	      return c !== shape;
 	    });
 	  });
@@ -53355,7 +52571,7 @@
 	  eachElement(lanesRoot, function(element) {
 	    allAffected.push(element);
 
-	    if (is$2(element, 'bpmn:Lane') || is$2(element, 'bpmn:Participant')) {
+	    if (is$1(element, 'bpmn:Lane') || is$1(element, 'bpmn:Participant')) {
 	      allLanes.push(element);
 	    }
 
@@ -53477,7 +52693,7 @@
 	    }
 
 	    var children = root.children.filter(function(c) {
-	      return is$2(c, 'bpmn:FlowNode');
+	      return is$1(c, 'bpmn:FlowNode');
 	    });
 
 	    children.forEach(addFlowNodeShape);
@@ -53530,8 +52746,8 @@
 
 	    // unwire old
 	    update.remove.forEach(function(oldLane) {
-	      remove$1(lanes, oldLane);
-	      remove$1(oldLane.get(FLOW_NODE_REFS_ATTR), flowNode);
+	      remove(lanes, oldLane);
+	      remove(oldLane.get(FLOW_NODE_REFS_ATTR), flowNode);
 	    });
 
 	    // wire new
@@ -53557,8 +52773,8 @@
 
 	    // unwire new
 	    update.add.forEach(function(newLane) {
-	      remove$1(lanes, newLane);
-	      remove$1(newLane.get(FLOW_NODE_REFS_ATTR), flowNode);
+	      remove(lanes, newLane);
+	      remove(newLane.get(FLOW_NODE_REFS_ATTR), flowNode);
 	    });
 
 	    // wire old
@@ -53624,7 +52840,7 @@
 	      return undefined;
 	    }
 
-	    if (isString$1(color)) {
+	    if (isString(color)) {
 	      var hexColor = colorToHex(color);
 
 	      if (hexColor) {
@@ -53650,17 +52866,17 @@
 	  var di = {};
 
 	  if ('fill' in colors) {
-	    assign$1(di, {
+	    assign(di, {
 	      'background-color': this._normalizeColor(colors.fill) });
 	  }
 
 	  if ('stroke' in colors) {
-	    assign$1(di, {
+	    assign(di, {
 	      'border-color': this._normalizeColor(colors.stroke) });
 	  }
 
-	  forEach$2(elements, function(element) {
-	    var assignedDi = isConnection$3(element) ? pick$1(di, [ 'border-color' ]) : di;
+	  forEach(elements, function(element) {
+	    var assignedDi = isConnection$3(element) ? pick(di, [ 'border-color' ]) : di;
 
 	    // TODO @barmac: remove once we drop bpmn.io properties
 	    ensureLegacySupport(assignedDi);
@@ -53800,7 +53016,7 @@
 	        hints = ctx.hints || {};
 
 	    // ignore internal labels for elements except text annotations
-	    if (!isLabel$6(label) && !is$2(label, 'bpmn:TextAnnotation')) {
+	    if (!isLabel$6(label) && !is$1(label, 'bpmn:TextAnnotation')) {
 	      return;
 	    }
 
@@ -53864,7 +53080,7 @@
 	  this._bpmnRules = bpmnRules;
 	}
 
-	inherits$2(Modeling, Modeling$1);
+	inherits$1(Modeling, Modeling$1);
 
 	Modeling.$inject = [
 	  'eventBus',
@@ -53877,7 +53093,7 @@
 	Modeling.prototype.getHandlers = function() {
 	  var handlers = Modeling$1.prototype.getHandlers.call(this);
 
-	  handlers['element.updateModdleProperties'] = UpdateModdlePropertiesHandler_1;
+	  handlers['element.updateModdleProperties'] = UpdateModdlePropertiesHandler;
 	  handlers['element.updateProperties'] = UpdatePropertiesHandler;
 	  handlers['canvas.updateRoot'] = UpdateCanvasRootHandler;
 	  handlers['lane.add'] = AddLaneHandler;
@@ -54381,7 +53597,7 @@
 	 */
 	function repairConnection(source, target, start, end, waypoints, hints) {
 
-	  if (isArray$1(start)) {
+	  if (isArray$2(start)) {
 	    waypoints = start;
 	    hints = end;
 
@@ -54819,7 +54035,7 @@
 
 	function BpmnLayouter() {}
 
-	inherits$2(BpmnLayouter, BaseLayouter);
+	inherits$1(BpmnLayouter, BaseLayouter);
 
 
 	BpmnLayouter.prototype.layoutConnection = function(connection, hints) {
@@ -54847,17 +54063,17 @@
 	  // TODO(nikku): support vertical modeling
 	  // and invert preferredLayouts accordingly
 
-	  if (is$2(connection, 'bpmn:Association') ||
-	      is$2(connection, 'bpmn:DataAssociation')) {
+	  if (is$1(connection, 'bpmn:Association') ||
+	      is$1(connection, 'bpmn:DataAssociation')) {
 
 	    if (waypoints && !isCompensationAssociation(source, target)) {
 	      return [].concat([ connectionStart ], waypoints.slice(1, -1), [ connectionEnd ]);
 	    }
 	  }
 
-	  if (is$2(connection, 'bpmn:MessageFlow')) {
+	  if (is$1(connection, 'bpmn:MessageFlow')) {
 	    manhattanOptions = getMessageFlowManhattanOptions(source, target);
-	  } else if (is$2(connection, 'bpmn:SequenceFlow') || isCompensationAssociation(source, target)) {
+	  } else if (is$1(connection, 'bpmn:SequenceFlow') || isCompensationAssociation(source, target)) {
 
 	    // layout all connection between flow elements h:h, except for
 	    // (1) outgoing of boundary events -> layout based on attach orientation and target orientation
@@ -54867,17 +54083,17 @@
 	      manhattanOptions = {
 	        preferredLayouts: getLoopPreferredLayout(source, connection)
 	      };
-	    } else if (is$2(source, 'bpmn:BoundaryEvent')) {
+	    } else if (is$1(source, 'bpmn:BoundaryEvent')) {
 	      manhattanOptions = {
 	        preferredLayouts: getBoundaryEventPreferredLayouts(source, target, connectionEnd)
 	      };
 	    } else if (isExpandedSubProcess(source) || isExpandedSubProcess(target)) {
 	      manhattanOptions = getSubProcessManhattanOptions(source);
-	    } else if (is$2(source, 'bpmn:Gateway')) {
+	    } else if (is$1(source, 'bpmn:Gateway')) {
 	      manhattanOptions = {
 	        preferredLayouts: [ 'v:h' ]
 	      };
-	    } else if (is$2(target, 'bpmn:Gateway')) {
+	    } else if (is$1(target, 'bpmn:Gateway')) {
 	      manhattanOptions = {
 	        preferredLayouts: [ 'h:v' ]
 	      };
@@ -54889,7 +54105,7 @@
 	  }
 
 	  if (manhattanOptions) {
-	    manhattanOptions = assign$1(manhattanOptions, hints);
+	    manhattanOptions = assign(manhattanOptions, hints);
 
 	    updatedWaypoints = withoutRedundantPoints(repairConnection(
 	      source,
@@ -54923,11 +54139,11 @@
 	function getMessageFlowPreserveDocking(source, target) {
 
 	  // (1) docking element connected to participant has precedence
-	  if (is$2(target, 'bpmn:Participant')) {
+	  if (is$1(target, 'bpmn:Participant')) {
 	    return 'source';
 	  }
 
-	  if (is$2(source, 'bpmn:Participant')) {
+	  if (is$1(source, 'bpmn:Participant')) {
 	    return 'target';
 	  }
 
@@ -54941,11 +54157,11 @@
 	  }
 
 	  // (3) docking event has precedence
-	  if (is$2(target, 'bpmn:Event')) {
+	  if (is$1(target, 'bpmn:Event')) {
 	    return 'target';
 	  }
 
-	  if (is$2(source, 'bpmn:Event')) {
+	  if (is$1(source, 'bpmn:Event')) {
 	    return 'source';
 	  }
 
@@ -54968,13 +54184,13 @@
 	}
 
 	function isCompensationAssociation(source, target) {
-	  return is$2(target, 'bpmn:Activity') &&
-	    is$2(source, 'bpmn:BoundaryEvent') &&
+	  return is$1(target, 'bpmn:Activity') &&
+	    is$1(source, 'bpmn:BoundaryEvent') &&
 	    target.businessObject.isForCompensation;
 	}
 
 	function isExpandedSubProcess(element) {
-	  return is$2(element, 'bpmn:SubProcess') && isExpanded(element);
+	  return is$1(element, 'bpmn:SubProcess') && isExpanded(element);
 	}
 
 	function isSame(a, b) {
@@ -55619,9 +54835,9 @@
 	    if (!context.dragGroup) {
 	      var dragGroup = create$1('g');
 
-	      attr$1(dragGroup, styles.cls('djs-drag-group', [ 'no-events' ]));
+	      attr(dragGroup, styles.cls('djs-drag-group', [ 'no-events' ]));
 
-	      var activeLayer = canvas.getActivePlane().layer;
+	      var activeLayer = canvas.getActiveLayer();
 
 	      append(activeLayer, dragGroup);
 
@@ -55645,7 +54861,7 @@
 	    }
 
 	    // add dragging marker
-	    forEach$1(allDraggedElements, function(e) {
+	    forEach(allDraggedElements, function(e) {
 	      canvas.addMarker(e, MARKER_DRAGGING);
 	    });
 
@@ -55695,12 +54911,12 @@
 
 
 	    // remove dragging marker
-	    forEach$1(allDraggedElements, function(e) {
+	    forEach(allDraggedElements, function(e) {
 	      canvas.removeMarker(e, MARKER_DRAGGING);
 	    });
 
 	    if (dragGroup) {
-	      remove$2(dragGroup);
+	      remove$1(dragGroup);
 	    }
 	  });
 
@@ -55956,7 +55172,7 @@
 
 	  var twoColumn;
 
-	  var cls = classes(container);
+	  var cls = classes$1(container);
 
 	  if ('twoColumn' in state) {
 	    twoColumn = state.twoColumn;
@@ -55982,9 +55198,9 @@
 	  var entriesContainer = query('.djs-palette-entries', this._container),
 	      entries = this._entries = this.getEntries();
 
-	  clear(entriesContainer);
+	  clear$1(entriesContainer);
 
-	  forEach$1(entries, function(entry, id) {
+	  forEach(entries, function(entry, id) {
 
 	    var grouping = entry.group || 'default';
 
@@ -56004,10 +55220,10 @@
 	    container.appendChild(control);
 
 	    if (!entry.separator) {
-	      attr(control, 'data-action', id);
+	      attr$1(control, 'data-action', id);
 
 	      if (entry.title) {
-	        attr(control, 'title', entry.title);
+	        attr$1(control, 'title', entry.title);
 	      }
 
 	      if (entry.className) {
@@ -56042,7 +55258,7 @@
 	    return event.preventDefault();
 	  }
 
-	  entry = entries[attr(button, 'data-action')];
+	  entry = entries[attr$1(button, 'data-action')];
 
 	  // when user clicks on the palette and not on an action
 	  if (!entry) {
@@ -56136,14 +55352,14 @@
 
 	  toolsContainer = this._toolsContainer;
 
-	  forEach$1(toolsContainer.children, function(tool) {
+	  forEach(toolsContainer.children, function(tool) {
 	    var actionName = tool.getAttribute('data-action');
 
 	    if (!actionName) {
 	      return;
 	    }
 
-	    var toolClasses = classes(tool);
+	    var toolClasses = classes$1(tool);
 
 	    actionName = actionName.replace('-tool', '');
 
@@ -56170,7 +55386,7 @@
 	 * @return {boolean} true if palette is opened
 	 */
 	Palette.prototype.isOpen = function() {
-	  return classes(this._container).has(PALETTE_OPEN_CLS);
+	  return classes$1(this._container).has(PALETTE_OPEN_CLS);
 	};
 
 	/**
@@ -56196,11 +55412,11 @@
 
 	function addClasses(element, classNames) {
 
-	  var classes$1 = classes(element);
+	  var classes = classes$1(element);
 
-	  var actualClassNames = isArray$1(classNames) ? classNames : classNames.split(/\s+/g);
+	  var actualClassNames = isArray$2(classNames) ? classNames : classNames.split(/\s+/g);
 	  actualClassNames.forEach(function(cls) {
-	    classes$1.add(cls);
+	    classes.add(cls);
 	  });
 	}
 
@@ -56212,7 +55428,7 @@
 	    return entriesOrUpdater(entries);
 	  }
 
-	  forEach$1(entriesOrUpdater, function(entry, id) {
+	  forEach(entriesOrUpdater, function(entry, id) {
 	    entries[id] = entry;
 	  });
 
@@ -56246,11 +55462,11 @@
 	  var visuals = {
 
 	    create: function(context) {
-	      var container = canvas.getActivePlane().layer,
+	      var container = canvas.getActiveLayer(),
 	          frame;
 
 	      frame = context.frame = create$1('rect');
-	      attr$1(frame, {
+	      attr(frame, {
 	        class: 'djs-lasso-overlay',
 	        width:  1,
 	        height: 1,
@@ -56265,7 +55481,7 @@
 	      var frame = context.frame,
 	          bbox = context.bbox;
 
-	      attr$1(frame, {
+	      attr(frame, {
 	        x: bbox.x,
 	        y: bbox.y,
 	        width: bbox.width,
@@ -56276,7 +55492,7 @@
 	    remove: function(context) {
 
 	      if (context.frame) {
-	        remove$2(context.frame);
+	        remove$1(context.frame);
 	      }
 	    }
 	  };
@@ -56836,10 +56052,10 @@
 	  function createAction(type, group, className, title, options) {
 
 	    function createListener(event) {
-	      var shape = elementFactory.createShape(assign$1({ type: type }, options));
+	      var shape = elementFactory.createShape(assign({ type: type }, options));
 
 	      if (options) {
-	        var di = getDi$1(shape);
+	        var di = getDi(shape);
 	        di.isExpanded = options.isExpanded;
 	      }
 
@@ -56885,7 +56101,7 @@
 	    create.start(event, elementFactory.createParticipantShape());
 	  }
 
-	  assign$1(actions, {
+	  assign(actions, {
 	    'hand-tool': {
 	      group: 'tools',
 	      className: 'bpmn-icon-hand-tool',
@@ -56999,114 +56215,6 @@
 	  paletteProvider: [ 'type', PaletteProvider ]
 	};
 
-	var css_escape = {exports: {}};
-
-	/*! https://mths.be/cssescape v1.5.1 by @mathias | MIT license */
-
-	(function (module, exports) {
-	(function(root, factory) {
-		// https://github.com/umdjs/umd/blob/master/returnExports.js
-		{
-			// For Node.js.
-			module.exports = factory(root);
-		}
-	}(typeof commonjsGlobal != 'undefined' ? commonjsGlobal : commonjsGlobal, function(root) {
-
-		if (root.CSS && root.CSS.escape) {
-			return root.CSS.escape;
-		}
-
-		// https://drafts.csswg.org/cssom/#serialize-an-identifier
-		var cssEscape = function(value) {
-			if (arguments.length == 0) {
-				throw new TypeError('`CSS.escape` requires an argument.');
-			}
-			var string = String(value);
-			var length = string.length;
-			var index = -1;
-			var codeUnit;
-			var result = '';
-			var firstCodeUnit = string.charCodeAt(0);
-			while (++index < length) {
-				codeUnit = string.charCodeAt(index);
-				// Note: there’s no need to special-case astral symbols, surrogate
-				// pairs, or lone surrogates.
-
-				// If the character is NULL (U+0000), then the REPLACEMENT CHARACTER
-				// (U+FFFD).
-				if (codeUnit == 0x0000) {
-					result += '\uFFFD';
-					continue;
-				}
-
-				if (
-					// If the character is in the range [\1-\1F] (U+0001 to U+001F) or is
-					// U+007F, […]
-					(codeUnit >= 0x0001 && codeUnit <= 0x001F) || codeUnit == 0x007F ||
-					// If the character is the first character and is in the range [0-9]
-					// (U+0030 to U+0039), […]
-					(index == 0 && codeUnit >= 0x0030 && codeUnit <= 0x0039) ||
-					// If the character is the second character and is in the range [0-9]
-					// (U+0030 to U+0039) and the first character is a `-` (U+002D), […]
-					(
-						index == 1 &&
-						codeUnit >= 0x0030 && codeUnit <= 0x0039 &&
-						firstCodeUnit == 0x002D
-					)
-				) {
-					// https://drafts.csswg.org/cssom/#escape-a-character-as-code-point
-					result += '\\' + codeUnit.toString(16) + ' ';
-					continue;
-				}
-
-				if (
-					// If the character is the first character and is a `-` (U+002D), and
-					// there is no second character, […]
-					index == 0 &&
-					length == 1 &&
-					codeUnit == 0x002D
-				) {
-					result += '\\' + string.charAt(index);
-					continue;
-				}
-
-				// If the character is not handled by one of the above rules and is
-				// greater than or equal to U+0080, is `-` (U+002D) or `_` (U+005F), or
-				// is in one of the ranges [0-9] (U+0030 to U+0039), [A-Z] (U+0041 to
-				// U+005A), or [a-z] (U+0061 to U+007A), […]
-				if (
-					codeUnit >= 0x0080 ||
-					codeUnit == 0x002D ||
-					codeUnit == 0x005F ||
-					codeUnit >= 0x0030 && codeUnit <= 0x0039 ||
-					codeUnit >= 0x0041 && codeUnit <= 0x005A ||
-					codeUnit >= 0x0061 && codeUnit <= 0x007A
-				) {
-					// the character itself
-					result += string.charAt(index);
-					continue;
-				}
-
-				// Otherwise, the escaped character.
-				// https://drafts.csswg.org/cssom/#escape-a-character
-				result += '\\' + string.charAt(index);
-
-			}
-			return result;
-		};
-
-		if (!root.CSS) {
-			root.CSS = {};
-		}
-
-		root.CSS.escape = cssEscape;
-		return cssEscape;
-
-	}));
-	}(css_escape));
-
-	var cssEscape = css_escape.exports;
-
 	var LOW_PRIORITY = 250;
 
 
@@ -57125,7 +56233,7 @@
 
 	    var replacements = context.canExecute.replacements;
 
-	    forEach$2(replacements, function(replacement) {
+	    forEach(replacements, function(replacement) {
 
 	      var id = replacement.oldElementId;
 
@@ -57140,7 +56248,7 @@
 
 	      var element = elementRegistry.get(id);
 
-	      assign$1(newElement, { x: element.x, y: element.y });
+	      assign(newElement, { x: element.x, y: element.y });
 
 	      // create a temporary shape
 	      var tempShape = elementFactory.createShape(newElement);
@@ -57148,10 +56256,10 @@
 	      canvas.addShape(tempShape, element.parent);
 
 	      // select the original SVG element related to the element and hide it
-	      var gfx = query$1('[data-element-id="' + cssEscape(element.id) + '"]', context.dragGroup);
+	      var gfx = query('[data-element-id="' + cssEscape(element.id) + '"]', context.dragGroup);
 
 	      if (gfx) {
-	        attr$2(gfx, { display: 'none' });
+	        attr(gfx, { display: 'none' });
 	      }
 
 	      // clone the gfx of the temporary shape and add it to the drag group
@@ -57172,12 +56280,12 @@
 
 	    var visualReplacements = context.visualReplacements;
 
-	    forEach$2(visualReplacements, function(dragger, id) {
+	    forEach(visualReplacements, function(dragger, id) {
 
-	      var originalGfx = query$1('[data-element-id="' + cssEscape(id) + '"]', context.dragGroup);
+	      var originalGfx = query('[data-element-id="' + cssEscape(id) + '"]', context.dragGroup);
 
 	      if (originalGfx) {
-	        attr$2(originalGfx, { display: 'inline' });
+	        attr(originalGfx, { display: 'inline' });
 	      }
 
 	      dragger.remove();
@@ -57213,7 +56321,7 @@
 	  'previewSupport'
 	];
 
-	inherits$2(BpmnReplacePreview, CommandInterceptor);
+	inherits$1(BpmnReplacePreview, CommandInterceptor);
 
 	var ReplacePreviewModule = {
 	  __depends__: [
@@ -57287,19 +56395,19 @@
 	      }
 
 	      // snap source and target
-	      if (is$2(source, 'bpmn:BoundaryEvent') && target === source.host) {
+	      if (is$1(source, 'bpmn:BoundaryEvent') && target === source.host) {
 	        snapBoundaryEventLoop(event);
 	      }
 
 	    } else if (isType(canExecute, 'bpmn:MessageFlow')) {
 
-	      if (is$2(start, 'bpmn:Event')) {
+	      if (is$1(start, 'bpmn:Event')) {
 
 	        // snap start
 	        context.connectionStart = mid$2(start);
 	      }
 
-	      if (is$2(hover, 'bpmn:Event')) {
+	      if (is$1(hover, 'bpmn:Event')) {
 
 	        // snap hover
 	        snapToPosition(event, mid$2(hover));
@@ -57390,7 +56498,7 @@
 	}
 
 	function isAnyType(attrs, types) {
-	  return some$1(types, function(type) {
+	  return some(types, function(type) {
 	    return isType(attrs, type);
 	  });
 	}
@@ -57400,7 +56508,7 @@
 	}
 
 	function getTargetBoundsPadding(target) {
-	  if (is$2(target, 'bpmn:Task')) {
+	  if (is$1(target, 'bpmn:Task')) {
 	    return TASK_BOUNDS_PADDING;
 	  } else {
 	    return TARGET_BOUNDS_PADDING;
@@ -57574,8 +56682,8 @@
 
 	  var self = this;
 
-	  forEach$1(defaultSnaps || {}, function(snapPoints, snapLocation) {
-	    forEach$1(snapPoints, function(point) {
+	  forEach(defaultSnaps || {}, function(snapPoints, snapLocation) {
+	    forEach(snapPoints, function(point) {
 	      self.add(snapLocation, point);
 	    });
 	  });
@@ -57708,7 +56816,7 @@
 	CreateMoveSnapping.prototype.addSnapTargetPoints = function(snapPoints, shape, target) {
 	  var snapTargets = this.getSnapTargets(shape, target);
 
-	  forEach$1(snapTargets, function(snapTarget) {
+	  forEach(snapTargets, function(snapTarget) {
 
 	    // handle labels
 	    if (isLabel$1(snapTarget)) {
@@ -57731,7 +56839,7 @@
 	      // ignore first and last waypoint
 	      var waypoints = snapTarget.waypoints.slice(1, -1);
 
-	      forEach$1(waypoints, function(waypoint) {
+	      forEach(waypoints, function(waypoint) {
 	        snapPoints.add('mid', waypoint);
 	      });
 
@@ -57808,7 +56916,7 @@
 	  });
 	}
 
-	inherits$2(BpmnCreateMoveSnapping, CreateMoveSnapping);
+	inherits$1(BpmnCreateMoveSnapping, CreateMoveSnapping);
 
 	BpmnCreateMoveSnapping.$inject = [
 	  'eventBus',
@@ -57823,7 +56931,7 @@
 	  var isMove = !!this._elementRegistry.get(shape.id);
 
 	  // snap to docking points
-	  forEach$2(shape.outgoing, function(connection) {
+	  forEach(shape.outgoing, function(connection) {
 	    var docking = connection.waypoints[0];
 
 	    docking = docking.original || docking;
@@ -57831,7 +56939,7 @@
 	    snapContext.setSnapOrigin(connection.id + '-docking', getDockingSnapOrigin(docking, isMove, event));
 	  });
 
-	  forEach$2(shape.incoming, function(connection) {
+	  forEach(shape.incoming, function(connection) {
 	    var docking = connection.waypoints[connection.waypoints.length - 1];
 
 	    docking = docking.original || docking;
@@ -57839,7 +56947,7 @@
 	    snapContext.setSnapOrigin(connection.id + '-docking', getDockingSnapOrigin(docking, isMove, event));
 	  });
 
-	  if (is$2(shape, 'bpmn:Participant')) {
+	  if (is$1(shape, 'bpmn:Participant')) {
 
 	    // snap to borders with higher priority
 	    snapContext.setSnapLocations([ 'top-left', 'bottom-right', 'mid' ]);
@@ -57853,7 +56961,7 @@
 
 	  var snapTargets = this.getSnapTargets(shape, target);
 
-	  forEach$2(snapTargets, function(snapTarget) {
+	  forEach(snapTargets, function(snapTarget) {
 
 	    // handle TRBL alignment
 	    //
@@ -57868,7 +56976,7 @@
 	  var elementRegistry = this._elementRegistry;
 
 	  // snap to docking points if not create mode
-	  forEach$2(shape.incoming, function(connection) {
+	  forEach(shape.incoming, function(connection) {
 	    if (elementRegistry.get(shape.id)) {
 
 	      if (!includes(snapTargets, connection.source)) {
@@ -57880,7 +56988,7 @@
 	    }
 	  });
 
-	  forEach$2(shape.outgoing, function(connection) {
+	  forEach(shape.outgoing, function(connection) {
 	    if (elementRegistry.get(shape.id)) {
 
 	      if (!includes(snapTargets, connection.target)) {
@@ -57894,7 +57002,7 @@
 	  });
 
 	  // add sequence flow parents as snap targets
-	  if (is$2(target, 'bpmn:SequenceFlow')) {
+	  if (is$1(target, 'bpmn:SequenceFlow')) {
 	    snapPoints = this.addSnapTargetPoints(snapPoints, shape, target.parent);
 	  }
 
@@ -57906,7 +57014,7 @@
 	    .filter(function(snapTarget) {
 
 	      // do not snap to lanes
-	      return !is$2(snapTarget, 'bpmn:Lane');
+	      return !is$1(snapTarget, 'bpmn:Lane');
 	    });
 	};
 
@@ -57943,16 +57051,16 @@
 
 	function areAll(elements, type) {
 	  return elements.every(function(el) {
-	    return is$2(el, type);
+	    return is$1(el, type);
 	  });
 	}
 
 	function isContainer(element) {
-	  if (is$2(element, 'bpmn:SubProcess') && isExpanded(element)) {
+	  if (is$1(element, 'bpmn:SubProcess') && isExpanded(element)) {
 	    return true;
 	  }
 
-	  return is$2(element, 'bpmn:Participant');
+	  return is$1(element, 'bpmn:Participant');
 	}
 
 
@@ -58075,7 +57183,7 @@
 	ResizeSnapping.prototype.addSnapTargetPoints = function(snapPoints, shape, target, direction) {
 	  var snapTargets = this.getSnapTargets(shape, target);
 
-	  forEach$1(snapTargets, function(snapTarget) {
+	  forEach(snapTargets, function(snapTarget) {
 	    snapPoints.add('corner', bottomRight(snapTarget));
 	    snapPoints.add('corner', topLeft(snapTarget));
 	  });
@@ -58185,7 +57293,7 @@
 	    y: isSnapped(event, 'y')
 	  };
 
-	  forEach$1(snapLocations, function(location) {
+	  forEach(snapLocations, function(location) {
 	    var snapOrigin = snapContext.getSnapOrigin(location);
 
 	    var snapCurrent = {
@@ -58194,7 +57302,7 @@
 	    };
 
 	    // snap both axis if not snapped already
-	    forEach$1([ 'x', 'y' ], function(axis) {
+	    forEach([ 'x', 'y' ], function(axis) {
 	      var locationSnapping;
 
 	      if (!snapping[axis]) {
@@ -58220,7 +57328,7 @@
 	  this.showSnapLine('horizontal', snapping.y && snapping.y.value);
 
 	  // snap event
-	  forEach$1([ 'x', 'y' ], function(axis) {
+	  forEach([ 'x', 'y' ], function(axis) {
 	    var axisSnapping = snapping[axis];
 
 	    if (isObject(axisSnapping)) {
@@ -58234,9 +57342,9 @@
 
 	  var line = create$1('path');
 
-	  attr$1(line, { d: 'M0,0 L0,0' });
+	  attr(line, { d: 'M0,0 L0,0' });
 
-	  classes$1(line).add('djs-snap-line');
+	  classes(line).add('djs-snap-line');
 
 	  append(root, line);
 
@@ -58244,15 +57352,15 @@
 	    update: function(position) {
 
 	      if (!isNumber(position)) {
-	        attr$1(line, { display: 'none' });
+	        attr(line, { display: 'none' });
 	      } else {
 	        if (orientation === 'horizontal') {
-	          attr$1(line, {
+	          attr(line, {
 	            d: 'M-100000,' + position + ' L+100000,' + position,
 	            display: ''
 	          });
 	        } else {
-	          attr$1(line, {
+	          attr(line, {
 	            d: 'M ' + position + ',-100000 L ' + position + ', +100000',
 	            display: ''
 	          });
@@ -58289,7 +57397,7 @@
 	};
 
 	Snapping.prototype.hide = function() {
-	  forEach$1(this._snapLines, function(snapLine) {
+	  forEach(this._snapLines, function(snapLine) {
 	    snapLine.update();
 	  });
 	};
@@ -58533,7 +57641,7 @@
 	 * Clears all results data.
 	 */
 	SearchPad.prototype._clearResults = function() {
-	  clear(this._resultsContainer);
+	  clear$1(this._resultsContainer);
 
 	  this._results = [];
 
@@ -58576,7 +57684,7 @@
 	  // secondary tokens (represent element ID) are allways available
 	  createInnerTextNode(node, result.secondaryTokens, SearchPad.RESULT_SECONDARY_HTML);
 
-	  attr(node, SearchPad.RESULT_ID_ATTRIBUTE, id);
+	  attr$1(node, SearchPad.RESULT_ID_ATTRIBUTE, id);
 
 	  this._resultsContainer.appendChild(node);
 
@@ -58613,7 +57721,7 @@
 
 	  this._open = true;
 
-	  classes(this._container).add('open');
+	  classes$1(this._container).add('open');
 
 	  this._searchInput.focus();
 
@@ -58633,7 +57741,7 @@
 
 	  this._open = false;
 
-	  classes(this._container).remove('open');
+	  classes$1(this._container).remove('open');
 
 	  this._clearResults();
 
@@ -58677,13 +57785,13 @@
 
 	  // removing preselection from current node
 	  if (selectedNode) {
-	    classes(selectedNode).remove(SearchPad.RESULT_SELECTED_CLASS);
+	    classes$1(selectedNode).remove(SearchPad.RESULT_SELECTED_CLASS);
 	  }
 
-	  var id = attr(node, SearchPad.RESULT_ID_ATTRIBUTE);
+	  var id = attr$1(node, SearchPad.RESULT_ID_ATTRIBUTE);
 	  var element = this._results[id].element;
 
-	  classes(node).add(SearchPad.RESULT_SELECTED_CLASS);
+	  classes$1(node).add(SearchPad.RESULT_SELECTED_CLASS);
 
 	  this._resetOverlay(element);
 
@@ -58701,7 +57809,7 @@
 	 * @param  {Element} element
 	 */
 	SearchPad.prototype._select = function(node) {
-	  var id = attr(node, SearchPad.RESULT_ID_ATTRIBUTE);
+	  var id = attr$1(node, SearchPad.RESULT_ID_ATTRIBUTE);
 	  var element = this._results[id].element;
 
 	  this.close();
@@ -58884,11 +57992,11 @@
 	  });
 
 	  // do not include root element
-	  elements = filter$1(elements, function(element) {
+	  elements = filter(elements, function(element) {
 	    return element !== rootElement;
 	  });
 
-	  elements = map$3(elements, function(element) {
+	  elements = map$1(elements, function(element) {
 	    return {
 	      primaryTokens: matchAndSplit(getLabel(element), pattern),
 	      secondaryTokens: matchAndSplit(element.id, pattern),
@@ -58897,11 +58005,11 @@
 	  });
 
 	  // exclude non-matched elements
-	  elements = filter$1(elements, function(element) {
+	  elements = filter(elements, function(element) {
 	    return hasMatched(element.primaryTokens) || hasMatched(element.secondaryTokens);
 	  });
 
-	  elements = sortBy$1(elements, function(element) {
+	  elements = sortBy(elements, function(element) {
 	    return getLabel(element.element) + element.element.id;
 	  });
 
@@ -58910,7 +58018,7 @@
 
 
 	function hasMatched(tokens) {
-	  var matched = filter$1(tokens, function(t) {
+	  var matched = filter(tokens, function(t) {
 	    return !!t.matched;
 	  });
 
@@ -58962,157 +58070,6 @@
 	  ],
 	  __init__: [ 'bpmnSearch'],
 	  bpmnSearch: [ 'type', BpmnSearchProvider ]
-	};
-
-	// import {
-	//   assign
-	// } from 'min-dash';
-
-	var ARROW_DOWN_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.81801948,3.50735931 L10.4996894,9.1896894 L10.5,4 L12,4 L12,12 L4,12 L4,10.5 L9.6896894,10.4996894 L3.75735931,4.56801948 C3.46446609,4.27512627 3.46446609,3.80025253 3.75735931,3.50735931 C4.05025253,3.21446609 4.52512627,3.21446609 4.81801948,3.50735931 Z"/></svg>';
-
-	// var BASE_LAYER = 'sid-c0e088a1-aae1-4ed2-b939-5371e7cf26ad';
-
-	function CollapsedProcesses(eventBus, elementRegistry, overlays, canvas) {
-
-	  var breadcrumbs = domify$1('<ul class="breadcrumbs" style="position: absolute; top: 10px; left: 100px;"></ul>');
-	  assign$1(breadcrumbs.style, {
-	    fontFamily: 'Arial, sans-serif'
-	  });
-
-	  var container = canvas.getContainer();
-
-	  container.appendChild(breadcrumbs);
-
-	  eventBus.on('plane.set', function(event) {
-	    var plane = event.plane;
-
-	    updateBreadcrumbs(plane);
-	  });
-
-	  const updateBreadcrumbs = function(plane) {
-	    var parents = getParentChain(plane.rootElement);
-
-	    var path = parents.map(function(el, idx, array) {
-
-	      var separator = domify$1('<span>»</span>');
-
-	      assign$1(separator.style, {
-	        padding: '8px'
-	      });
-
-	      var html = domify$1(`<li><a>${el.name || el.id}</a></li>`);
-
-	      assign$1(html.style, {
-	        display: 'inline',
-	      });
-
-	      html.addEventListener('click', () => {
-	        if (elementRegistry.get(el.id + '_layer')) {
-	          canvas.setActivePlane(el.id);
-	        } else {
-	          var plane = canvas.findPlane(el.id);
-	          canvas.setActivePlane(plane);
-	        }
-	      });
-
-	      if (idx + 1 < array.length) {
-	        assign$1(html.style, {
-	          color: '#4d90ff',
-	          cursor: 'pointer'
-	        });
-	      }
-
-	      if (idx !== 0) {
-	        return [separator, html];
-	      }
-
-	      return [html];
-	    });
-
-	    breadcrumbs.innerHTML = '';
-	    breadcrumbs.append(...path.flat());
-	  };
-
-
-	  const addOverlays = (elements) => {
-	    elements.forEach(element => {
-	      if (element.type === 'bpmn:SubProcess' && element.collapsed) {
-	        let html = document.createElement('button');
-
-	        assign$1(html.style, {
-	          padding: '0px',
-	          fontSize: '0',
-	          border: 'none',
-	          borderRadius: '2px',
-	          fill: 'white',
-	          outline: 'none',
-	          cursor: 'pointer',
-	          backgroundColor: '#4d90ff',
-	        });
-
-	        html.innerHTML = `${ARROW_DOWN_SVG}`;
-
-	        html.addEventListener('click', () => {
-	          canvas.setActivePlane(element.id);
-	        });
-
-
-	        overlays.add(element, {
-	          position: {
-	            right: 0,
-	            bottom: 0
-	          },
-	          html
-	        });
-	      }
-	    });
-	  };
-
-	  eventBus.on('import.done', function(context) {
-	    addOverlays(elementRegistry.getAll());
-	  });
-
-	}
-
-	CollapsedProcesses.$inject = [ 'eventBus', 'elementRegistry', 'overlays', 'canvas' ];
-
-
-	var getParentChain = function(child) {
-	  var bo = getBusinessObject$1(child);
-
-	  var parents = [];
-
-	  for (var element = bo; element; element = element.$parent) {
-	    if (is$2(element, 'bpmn:SubProcess') || is$2(element, 'bpmn:Process')) {
-	      parents.push(element);
-	    }
-	  }
-
-	  return parents.reverse();
-	};
-
-	// import RemoveDiagramBehavior from './DeleteBehaviour';
-	// import DiagramUtil from './diagramUtil';
-	// import ExpandBehaviour from './ExpandBehaviour';
-
-	// import UndoBehaviour from './UndoBehaviour';
-
-	var CollapsedSubprocessModule = {
-	  __depends__: [ ],
-	  __init__: [ 'collapsedProcesses',
-
-	    // 'diagramUtil', 'removeDiagramBehavior',
-
-	  //   // 'undoBehaviour',
-	  //   'expandBehaviour'
-	  ],
-	  collapsedProcesses: [ 'type', CollapsedProcesses ],
-
-	  // diagramUtil: [ 'type', DiagramUtil ],
-	  // removeDiagramBehavior: ['type', RemoveDiagramBehavior],
-
-	  // // undoBehaviour: ['type', UndoBehaviour],
-	  // expandBehaviour: ['type', ExpandBehaviour]
 	};
 
 	var initialDiagram =
@@ -59212,7 +58169,7 @@
 	  BaseModeler.call(this, options);
 	}
 
-	inherits$2(Modeler, BaseModeler);
+	inherits$1(Modeler, BaseModeler);
 
 
 	Modeler.Viewer = Viewer;
@@ -59250,8 +58207,7 @@
 	  KeyboardMoveModule,
 	  MoveCanvasModule,
 	  TouchModule,
-	  ZoomScrollModule,
-	  CollapsedSubprocessModule
+	  ZoomScrollModule
 	];
 
 	Modeler.prototype._modelingModules = [
